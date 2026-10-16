@@ -16,6 +16,7 @@ import { setDemoAuthenticated, useDemoAuth } from "../../lib/demo-auth";
 const navigationLinks = [
   { label: "ফিচার", englishLabel: "Features", href: "/#features" },
   { label: "পরীক্ষা", englishLabel: "Exams", href: "/exams" },
+  { label: "ব্লগ", englishLabel: "Blog", href: "/blogs" },
   { label: "লিডারবোর্ড", englishLabel: "Leaderboard", href: "/#leaderboard" },
   { label: "FAQ", englishLabel: "FAQ", href: "/#faq" },
 ];
