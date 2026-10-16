@@ -2,18 +2,27 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { FiArrowUpRight, FiBookOpen, FiMenu, FiX } from "react-icons/fi";
+import {
+  FiArrowUpRight,
+  FiBookOpen,
+  FiLogOut,
+  FiMenu,
+  FiUserPlus,
+  FiX,
+} from "react-icons/fi";
 import { ModeToggle } from "../ui/ModeToggle";
+import { setDemoAuthenticated, useDemoAuth } from "../../lib/demo-auth";
 
 const navigationLinks = [
-  { label: "ফিচার", englishLabel: "Features", href: "#features" },
-  { label: "পরীক্ষা", englishLabel: "Exams", href: "exams" },
-  { label: "লিডারবোর্ড", englishLabel: "Leaderboard", href: "#leaderboard" },
-  { label: "FAQ", englishLabel: "FAQ", href: "#faq" },
+  { label: "ফিচার", englishLabel: "Features", href: "/#features" },
+  { label: "পরীক্ষা", englishLabel: "Exams", href: "/exams" },
+  { label: "লিডারবোর্ড", englishLabel: "Leaderboard", href: "/#leaderboard" },
+  { label: "FAQ", englishLabel: "FAQ", href: "/#faq" },
 ];
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isAuthenticated = useDemoAuth();
 
   function closeMenu() {
     setMobileMenuOpen(false);
@@ -54,13 +63,26 @@ export default function Navbar() {
 
         <div className="flex shrink-0 items-center gap-2">
           <ModeToggle />
-          <Link
-            href="#get-started"
-            className="hidden items-center gap-2 rounded-full bg-zinc-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-600 dark:bg-white dark:text-zinc-950 dark:hover:bg-emerald-400 sm:inline-flex"
-          >
-            শুরু করুন
-            <FiArrowUpRight aria-hidden="true" />
-          </Link>
+          {isAuthenticated ? (
+            <button
+              type="button"
+              onClick={() => setDemoAuthenticated(false)}
+              className="hidden items-center gap-2 rounded-full border border-zinc-200 px-4 py-2.5 text-sm font-semibold text-zinc-700 transition hover:border-rose-300 hover:text-rose-600 dark:border-zinc-700 dark:text-zinc-200 dark:hover:text-rose-300 sm:inline-flex"
+            >
+              <FiLogOut aria-hidden="true" />
+              Logout
+            </button>
+          ) : (
+            <div className="hidden items-center gap-2 sm:flex">
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-600"
+              >
+                <FiUserPlus aria-hidden="true" />
+                Login
+              </Link>
+            </div>
+          )}
           <button
             type="button"
             aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -91,8 +113,32 @@ export default function Navbar() {
                 <span className="text-xs text-zinc-400">{item.englishLabel}</span>
               </Link>
             ))}
+            {isAuthenticated ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setDemoAuthenticated(false);
+                  closeMenu();
+                }}
+                className="mt-2 inline-flex items-center justify-center gap-2 rounded-full border border-zinc-200 px-5 py-3 text-sm font-semibold text-zinc-700 dark:border-zinc-700 dark:text-zinc-200"
+              >
+                <FiLogOut aria-hidden="true" />
+                Logout
+              </button>
+            ) : (
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <Link
+                  href="/login"
+                  onClick={closeMenu}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-5 py-3 text-sm font-semibold text-white"
+                >
+                  <FiUserPlus aria-hidden="true" />
+                  Login
+                </Link>
+              </div>
+            )}
             <Link
-              href="#get-started"
+              href="/#get-started"
               onClick={closeMenu}
               className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-5 py-3 text-sm font-semibold text-white"
             >

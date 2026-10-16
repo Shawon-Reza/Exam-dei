@@ -1,9 +1,11 @@
-import React from 'react'
+import type { Metadata } from "next";
+import DemoAuthForm from "../../../components/auth/DemoAuthForm";
 
-const page = () => {
-  return (
-    <div>page</div>
-  )
+export const metadata: Metadata = {
+  title: "Register",
+  description: "Chakriova-তে account তৈরি করে আপনার exam preparation শুরু করুন।",
+};
+
+export default function RegisterPage() {
+  return <DemoAuthForm mode="register" />;
 }
-
-export default page
