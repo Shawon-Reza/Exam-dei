@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+.mobile-nav-link {
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  color: #3f3f46;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 150ms, color 150ms;
+}
+
+.mobile-nav-link:hover {
+  background: #f4f4f5;
+  color: #09090b;
+}
+
+.dark .mobile-nav-link {
+  color: #e4e4e7;
+}
+
+.dark .mobile-nav-link:hover {
+  background: #27272a;
+  color: #ffffff;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.global-error-page {
+  --error-background: #fafafa;
+  --error-card: #ffffff;
+  --error-text: #18181b;
+  --error-muted: #71717a;
+  --error-border: #e4e4e7;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--error-background);
+  color: var(--error-text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.global-error-card {
+  border-color: var(--error-border);
+  background: var(--error-card);
+  color: var(--error-text);
+}
+
+.global-error-muted {
+  color: var(--error-muted);
+}
+
+@media (prefers-color-scheme: dark) {
+  .global-error-page {
+    --error-background: #09090b;
+    --error-card: #18181b;
+    --error-text: #fafafa;
+    --error-muted: #a1a1aa;
+    --error-border: #3f3f46;
+  }
+}
