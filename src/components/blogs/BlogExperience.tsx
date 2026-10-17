@@ -8,6 +8,7 @@ import { BlogPostCard } from "./BlogPostCard";
 import { PostReader } from "./BlogPostReader";
 import { PollComposer } from "./PollComposer";
 import { PollCard } from "./PollCard";
+import { getBlogPostUrl } from "../../lib/site-config";
 import type { BlogPost, PollOption, PollVoteState } from "./types";
 import type { JSONContent } from "@tiptap/react";
 
@@ -21,6 +22,7 @@ export default function BlogExperience() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("poll");
   const [visibleCount, setVisibleCount] = useState(initialPageSize);
+  const [sharedPostId, setSharedPostId] = useState<string | null>(null);
   const [composerMode, setComposerMode] = useState<ComposerMode>(null);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [likedPosts, setLikedPosts] = useState<string[]>([]);
@@ -29,11 +31,14 @@ export default function BlogExperience() {
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const requestedCategory = new URLSearchParams(window.location.search).get("category");
+    const params = new URLSearchParams(window.location.search);
+    const requestedCategory = params.get("category");
+    const requestedPostId = params.get("post");
     const sharedCategory = categories.find((category) => category.id === requestedCategory);
 
     const timeout = window.setTimeout(() => {
-      if (sharedCategory) setActiveCategory(sharedCategory.id);
+      setSharedPostId(requestedPostId);
+      setActiveCategory(requestedPostId ? "all" : sharedCategory?.id ?? "poll");
 
       try {
         setUserPosts(readSavedPosts());
@@ -59,12 +64,13 @@ export default function BlogExperience() {
   const filteredPosts = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
     return posts.filter((post) => {
+      if (sharedPostId && post.id !== sharedPostId) return false;
       const matchesCategory = activeCategory === "all" || post.categoryId === activeCategory;
       const searchable = `${post.title} ${post.excerpt} ${post.author} ${categoryLabel(post.categoryId)}`
         .toLocaleLowerCase();
       return matchesCategory && (!query || searchable.includes(query));
     });
-  }, [activeCategory, posts, search]);
+  }, [activeCategory, posts, search, sharedPostId]);
 
   const visiblePosts = filteredPosts.slice(0, visibleCount);
 
@@ -89,6 +95,14 @@ export default function BlogExperience() {
     const timeout = window.setTimeout(() => setNotice(""), 3000);
     return () => window.clearTimeout(timeout);
   }, [notice]);
+
+  useEffect(() => {
+    if (!sharedPostId || !storageReady || filteredPosts.length === 0) return;
+    document.getElementById(`blog-${sharedPostId}`)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [filteredPosts.length, sharedPostId, storageReady]);
 
   function refreshPosts() {
     try {
@@ -129,6 +143,7 @@ export default function BlogExperience() {
       console.log("Published blog post data:", newPost);
       setUserPosts(updatedPosts);
       setSearch("");
+      dismissSharedPost();
       setActiveCategory("all");
       setVisibleCount(initialPageSize);
       setComposerMode(null);
@@ -177,6 +192,7 @@ export default function BlogExperience() {
       console.log("Published blog poll data:", newPoll);
       setUserPosts(updatedPosts);
       setSearch("");
+      dismissSharedPost();
       setActiveCategory("poll");
       setVisibleCount(initialPageSize);
       setComposerMode(null);
@@ -223,28 +239,12 @@ export default function BlogExperience() {
     );
   }
 
-  async function sharePost(post: BlogPost) {
-    
+  function dismissSharedPost() {
+    setSharedPostId(null);
     const url = new URL(window.location.href);
-    url.searchParams.set("category", "all");
+    url.searchParams.delete("post");
     url.hash = "";
-    const shareData = {
-      title: post.title,
-      text: post.excerpt || post.title,
-      url: url.toString(),
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(shareData.url);
-        setNotice("পোস্টের লিংক কপি হয়েছে");
-      }
-    } catch (error) {
-      if (error instanceof DOMException && error.name === "AbortError") return;
-      setNotice("পোস্ট শেয়ার করা যায়নি। আবার চেষ্টা করুন।");
-    }
+    window.history.replaceState(null, "", url);
   }
 
   return (
@@ -298,6 +298,7 @@ export default function BlogExperience() {
                     aria-pressed={active}
                     onClick={() => {
                       setVisibleCount(initialPageSize);
+                      dismissSharedPost();
                       setActiveCategory(item.id);
                     }}
                     className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition ${
@@ -422,6 +423,7 @@ export default function BlogExperience() {
                       type="button"
                       onClick={() => {
                         setVisibleCount(initialPageSize);
+                        dismissSharedPost();
                         setActiveCategory(category.id);
                       }}
                       aria-pressed={active}
@@ -452,7 +454,7 @@ export default function BlogExperience() {
                         post={post as BlogPost & { poll: NonNullable<BlogPost["poll"]> }}
                         voteState={pollVotes[post.id]}
                         onVote={voteOnPoll}
-                        onShare={() => void sharePost(post)}
+                        shareUrl={getBlogPostUrl(post.id)}
                       />
                     ) : (
                       <BlogPostCard
@@ -461,10 +463,30 @@ export default function BlogExperience() {
                         onRead={() => setSelectedPost(post)}
                         liked={likedPosts.includes(post.id)}
                         onLike={() => toggleLike(post.id)}
-                        onShare={() => void sharePost(post)}
+                        shareUrl={getBlogPostUrl(post.id)}
                       />
                     ),
                   )}
+                </div>
+              ) : sharedPostId && storageReady ? (
+                <div className="rounded-3xl border border-dashed border-zinc-300 bg-white px-6 py-14 text-center dark:border-zinc-700 dark:bg-zinc-900">
+                  <h3 className="text-base font-bold text-zinc-800 dark:text-white">
+                    এই পোস্টটি পাওয়া যায়নি
+                  </h3>
+                  <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-zinc-500 dark:text-zinc-400">
+                    এই ডেমোতে পোস্টগুলো শুধু যিনি প্রকাশ করেছেন তাঁর browser-এ থাকে। অন্যদের সঙ্গে পোস্টটি শেয়ার করতে হলে সার্ভারে প্রকাশনার সুবিধা প্রয়োজন।
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      dismissSharedPost();
+                      setVisibleCount(initialPageSize);
+                      setActiveCategory("poll");
+                    }}
+                    className="mt-4 text-sm font-bold text-emerald-700 hover:text-emerald-800 dark:text-emerald-400"
+                  >
+                    কমিউনিটি ফিডে ফিরে যান
+                  </button>
                 </div>
               ) : (
                 <div className="rounded-3xl border border-dashed border-zinc-300 bg-white px-6 py-14 text-center dark:border-zinc-700 dark:bg-zinc-900">
@@ -480,6 +502,7 @@ export default function BlogExperience() {
                     onClick={() => {
                       setVisibleCount(initialPageSize);
                       setSearch("");
+                      dismissSharedPost();
                       setActiveCategory("poll");
                     }}
                     className="mt-4 text-sm font-bold text-emerald-700 hover:text-emerald-800 dark:text-emerald-400"

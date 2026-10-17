@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "../components/layouts/Navbar";
 import { ThemeProvider } from "../components/theme-provider";
 import Footer from "../components/layouts/Footer";
+import { siteUrl } from "../lib/site-config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://chakriova.com"),
+  metadataBase: siteUrl,
 
   title: {
     default: "Chakriova - বাংলাদেশের চাকরি প্রস্তুতির প্ল্যাটফর্ম",
@@ -69,7 +70,7 @@ export const metadata: Metadata = {
       "MCQ প্র্যাকটিস, মডেল টেস্ট, গুরুত্বপূর্ণ নোট ও অনলাইন পরীক্ষার মাধ্যমে চাকরির প্রস্তুতি নিন।",
     images: [
       {
-        url: "/og-image.png",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
         alt: "Chakriova - Job Preparation Platform",
@@ -82,7 +83,7 @@ export const metadata: Metadata = {
     title: "Chakriova - বাংলাদেশের চাকরি প্রস্তুতির প্ল্যাটফর্ম",
     description:
       "চাকরির প্রস্তুতির জন্য MCQ, মডেল টেস্ট, নোট ও অনলাইন পরীক্ষা।",
-    images: ["/og-image.png"],
+    images: ["/opengraph-image"],
   },
 
   robots: {

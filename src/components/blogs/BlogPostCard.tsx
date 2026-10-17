@@ -1,18 +1,19 @@
-import { FiClock, FiEye, FiGlobe, FiHeart, FiMessageCircle, FiShare2 } from "react-icons/fi";
+import { FiClock, FiEye, FiGlobe, FiHeart, FiMessageCircle } from "react-icons/fi";
 import { categoryLabel, formatDate } from "./blog-data";
+import FacebookShareButton from "../share/FacebookShareButton";
 import type { BlogPost } from "./types";
 
 export function BlogPostCard({
   post,
   onRead,
   onLike,
-  onShare,
+  shareUrl,
   liked,
 }: {
   post: BlogPost;
   onRead: () => void;
   onLike: () => void;
-  onShare: () => void;
+  shareUrl: string;
   liked: boolean;
 }) {
   return (
@@ -34,15 +35,12 @@ export function BlogPostCard({
             <FiGlobe aria-label="সবার জন্য" className="size-3" />
           </div>
         </div>
-        <button
-          type="button"
-          onClick={onShare}
-          aria-label="পোস্ট শেয়ার করুন"
-          title="শেয়ার"
-          className="grid size-9 shrink-0 place-items-center rounded-full text-zinc-400 transition hover:bg-zinc-100 hover:text-emerald-700 dark:hover:bg-zinc-800 dark:hover:text-emerald-300"
-        >
-          <FiShare2 aria-hidden="true" />
-        </button>
+        <FacebookShareButton
+          url={shareUrl}
+          label="Facebook-এ পোস্টটি শেয়ার করুন"
+          iconOnly
+          className="size-9 shrink-0 rounded-full text-[#1877F2] hover:bg-blue-50 dark:hover:bg-blue-950/50"
+        />
       </div>
       <div className="px-4 pb-3 pt-4 sm:px-5">
         <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -107,14 +105,10 @@ export function BlogPostCard({
             <FiMessageCircle aria-hidden="true" />
             পড়ুন
           </button>
-          <button
-            type="button"
-            onClick={onShare}
-            className="inline-flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-bold text-zinc-500 transition hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
-          >
-            <FiShare2 aria-hidden="true" />
-            শেয়ার
-          </button>
+          <FacebookShareButton
+            url={shareUrl}
+            className="w-full rounded-lg py-2.5 text-sm font-bold text-[#1877F2] hover:bg-blue-50 dark:hover:bg-blue-950/50"
+          />
         </div>
       </div>
     </article>

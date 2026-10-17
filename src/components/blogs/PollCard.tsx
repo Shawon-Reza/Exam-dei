@@ -1,19 +1,20 @@
 "use client";
 
-import { FiBarChart2, FiCheck, FiGlobe, FiShare2 } from "react-icons/fi";
+import { FiBarChart2, FiCheck, FiGlobe } from "react-icons/fi";
 import { formatDate } from "./blog-data";
+import FacebookShareButton from "../share/FacebookShareButton";
 import type { BlogPost, BlogPoll, PollVoteState } from "./types";
 
 export function PollCard({
   post,
   voteState,
   onVote,
-  onShare,
+  shareUrl,
 }: {
   post: BlogPost & { poll: BlogPoll };
   voteState?: PollVoteState;
   onVote: (post: BlogPost & { poll: BlogPoll }, optionId: string) => void;
-  onShare: () => void;
+  shareUrl: string;
 }) {
   const poll = voteState
     ? { ...post.poll, votes: voteState.votes, totalVotes: voteState.totalVotes }
@@ -146,14 +147,11 @@ export function PollCard({
           <span>{hasVoted ? "আপনার উত্তর জমা হয়েছে" : "আপনার উত্তর দিন"}</span>
         </div>
         <div className="border-t border-zinc-100 py-1 dark:border-zinc-800">
-          <button
-            type="button"
-            onClick={onShare}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-bold text-zinc-500 transition hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
-          >
-            <FiShare2 aria-hidden="true" />
-            শেয়ার
-          </button>
+          <FacebookShareButton
+            url={shareUrl}
+            label="Facebook-এ Poll-টি শেয়ার করুন"
+            className="w-full rounded-lg py-2.5 text-sm font-bold text-[#1877F2] hover:bg-blue-50 dark:hover:bg-blue-950/50"
+          />
         </div>
       </div>
     </article>
