@@ -112,7 +112,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col px-3">
 
 
         <QueryProvider>
@@ -122,16 +122,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             enableSystem
             disableTransitionOnChange
           >
-            <SiteChrome
-              navbar={
-                <Suspense fallback={<div className="min-h-[72px]" aria-hidden="true" />}>
-                  <AuthNavbar />
-                </Suspense>
-              }
-              footer={<Footer />}
-            >
-              {children}
-            </SiteChrome>
+            <Suspense fallback={<div className="min-h-screen" aria-hidden="true" />}>
+              <SiteChrome
+                navbar={
+                  <Suspense fallback={<div className="min-h-[72px]" aria-hidden="true" />}>
+                    <AuthNavbar />
+                  </Suspense>
+                }
+                footer={<Footer />}
+              >
+                {children}
+              </SiteChrome>
+            </Suspense>
 
 
           </ThemeProvider>

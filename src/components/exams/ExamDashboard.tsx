@@ -47,9 +47,20 @@ function ExamDashboardContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isAuthenticated = useDemoAuth();
+  const requestedSubjectId = searchParams.get("subject");
+  const requestedSubject = examSubjects.find(
+    (subject) => subject.id === requestedSubjectId,
+  );
+  const requestedTopicId = searchParams.get("topic");
   const [browseMode, setBrowseMode] = useState<BrowseMode>("subject");
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
-  const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(
+    requestedSubject?.id ?? null,
+  );
+  const [selectedTopicId, setSelectedTopicId] = useState<string | null>(
+    requestedSubject?.topics.some((topic) => topic.id === requestedTopicId)
+      ? requestedTopicId
+      : null,
+  );
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchTerm, setSearchTerm] = useState("");
@@ -144,76 +155,12 @@ function ExamDashboardContent() {
 
   return (
     <main className="flex-1 bg-zinc-50 dark:bg-zinc-950">
-      <section className="relative isolate overflow-hidden border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/50">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.12),transparent_45%),radial-gradient(ellipse_at_top_right,rgba(6,182,212,0.10),transparent_40%)]"
-        />
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[1fr_auto] lg:items-center lg:px-8 lg:py-20">
-          <div className="max-w-3xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300">
-              <FiZap aria-hidden="true" />
-              প্রস্তুতি হোক লক্ষ্যভিত্তিক
-            </p>
-            <h1 className="mt-5 text-3xl font-black leading-tight tracking-tight text-zinc-950 dark:text-white sm:text-4xl lg:text-5xl">
-              আপনার পরের পরীক্ষাটি
-              <span className="block bg-gradient-to-r from-emerald-600 to-cyan-500 bg-clip-text text-transparent">
-                এখান থেকেই শুরু।
-              </span>
-            </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-600 dark:text-zinc-400 sm:text-base">
-              Subject-wise পড়ুন, নির্দিষ্ট topic-এ practice করুন, অথবা BCS,
-              NTRCA ও Primary-এর মতো চাকরির পরীক্ষার জন্য প্রস্তুতি নিন।
-            </p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <a
-                href="#find-exam"
-                className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-600"
-              >
-                পরীক্ষা খুঁজুন
-                <FiArrowDown aria-hidden="true" />
-              </a>
-              <a
-                href="#live-exams"
-                className="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-white/70 px-5 py-3 text-sm font-semibold text-zinc-700 transition hover:border-emerald-400 dark:border-zinc-700 dark:bg-zinc-900/70 dark:text-zinc-200"
-              >
-                <span className="size-2 animate-pulse rounded-full bg-rose-500" />
-                Live exam দেখুন
-              </a>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:w-[390px]">
-            {[
-              { value: "০২", label: "বাছাইয়ের ধরন", icon: FiLayers },
-              { value: "০৪", label: "পরীক্ষার অবস্থা", icon: FiClock },
-              { value: "∞", label: "নিজের গতিতে", icon: FiTrendingUp },
-            ].map((stat) => {
-              const Icon = stat.icon;
-              return (
-                <div
-                  key={stat.label}
-                  className="rounded-2xl border border-white bg-white/80 p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/80 sm:p-4"
-                >
-                  <Icon
-                    aria-hidden="true"
-                    className="size-4 text-emerald-600 dark:text-emerald-400"
-                  />
-                  <p className="mt-3 text-xl font-extrabold text-zinc-950 dark:text-white sm:text-2xl">
-                    {stat.value}
-                  </p>
-                  <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400 sm:text-xs">
-                    {stat.label}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+     
 
       <section id="find-exam" className="scroll-mt-24 py-12 sm:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
+
           <div className="mx-auto mb-9 max-w-3xl text-center">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">
               Find your next test · পরীক্ষা বেছে নিন
@@ -227,7 +174,7 @@ function ExamDashboardContent() {
             </p>
           </div>
 
-          <div className="mx-auto max-w-5xl">
+          <div className="mx-auto max-w-7xl">
             <div
               aria-label="পরীক্ষা খোঁজার ধরন"
               className="mx-auto mb-7 grid max-w-md grid-cols-2 rounded-2xl border border-zinc-200 bg-white p-1.5 dark:border-zinc-800 dark:bg-zinc-900"

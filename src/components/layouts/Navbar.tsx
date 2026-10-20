@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   FiArrowUpRight,
   FiBookOpen,
@@ -19,7 +20,8 @@ import type { CurrentUser } from "@/src/apis/auth/auth.types";
 
 const navigationLinks = [
   { label: "ফিচার", englishLabel: "Features", href: "/#features" },
-  { label: "পরীক্ষা", englishLabel: "Exams", href: "/exams" },
+  { label: "বিষয়সমূহ", englishLabel: "Topics", href: "/topics" },
+   { label: "পরীক্ষা", englishLabel: "Exams", href: "/exams" },
   { label: "ব্লগ", englishLabel: "Blog", href: "/blogs" },
   { label: "লিডারবোর্ড", englishLabel: "Leaderboard", href: "/#leaderboard" },
   { label: "FAQ", englishLabel: "FAQ", href: "/#faq" },
@@ -27,11 +29,33 @@ const navigationLinks = [
 
 export default function Navbar({ initialUser }: { initialUser: CurrentUser | null }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeHash, setActiveHash] = useState("");
+  const pathname = usePathname();
   const logoutMutation = useLogout();
-  
-  const { data: user } = useAuth(initialUser);
-  console.log(user)
 
+  console.log(pathname)
+
+  const { data: user } = useAuth(initialUser);
+
+  useEffect(() => {
+    function updateActiveHash() {
+      setActiveHash(window.location.hash);
+    }
+
+    updateActiveHash();
+    window.addEventListener("hashchange", updateActiveHash);
+    return () => window.removeEventListener("hashchange", updateActiveHash);
+  }, [pathname]);
+
+  function isActiveLink(href: string) {
+    const [route, hash] = href.split("#");
+    const routeMatches =
+      route === "/"
+        ? pathname === "/"
+        : pathname === route || pathname.startsWith(`${route}/`);
+    if (!routeMatches) return false;
+    return hash ? activeHash === `#${hash}` : true;
+  }
 
   function closeMenu() {
     setMobileMenuOpen(false);
@@ -42,7 +66,7 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
     <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/90 backdrop-blur-xl dark:border-zinc-800/80 dark:bg-zinc-950/90">
       <nav
         aria-label="Main navigation"
-        className="mx-auto flex min-h-[72px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
+        className="mx-auto flex min-h-[72px] z-30 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
       >
         <Link
           href="/"
@@ -59,16 +83,28 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
         </Link>
 
         <div className="hidden items-center gap-1 lg:flex">
-          {navigationLinks.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-full px-4 py-2 text-sm font-medium text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
-            >
-              <span>{item.label}</span>
-              <span className="ml-1.5 text-xs text-zinc-400">{item.englishLabel}</span>
-            </Link>
-          ))}
+          {navigationLinks.map((item) => {
+            const isActive = isActiveLink(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={isActive ? "page" : undefined}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                  isActive
+                    ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
+                }`}
+              >
+                <span>{item.label}</span>
+                <span
+                  className={`ml-1.5 text-xs ${isActive ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400"}`}
+                >
+                  {item.englishLabel}
+                </span>
+              </Link>
+            );
+          })}
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
@@ -132,17 +168,29 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
       {mobileMenuOpen && (
         <div className="border-t border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950 lg:hidden">
           <div className="mx-auto flex max-w-7xl flex-col">
-            {navigationLinks.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={closeMenu}
-                className="flex items-center justify-between rounded-xl px-3 py-3 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
-              >
-                {item.label}
-                <span className="text-xs text-zinc-400">{item.englishLabel}</span>
-              </Link>
-            ))}
+            {navigationLinks.map((item) => {
+              const isActive = isActiveLink(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={closeMenu}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`flex items-center justify-between rounded-xl px-3 py-3 text-sm font-medium transition ${
+                    isActive
+                      ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                  }`}
+                >
+                  {item.label}
+                  <span
+                    className={`text-xs ${isActive ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400"}`}
+                  >
+                    {item.englishLabel}
+                  </span>
+                </Link>
+              );
+            })}
             {user ? (
               <button
                 type="button"
