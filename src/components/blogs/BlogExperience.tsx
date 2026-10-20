@@ -8,11 +8,12 @@ import { BlogPostCard } from "./BlogPostCard";
 import { PostReader } from "./BlogPostReader";
 import { PollComposer } from "./PollComposer";
 import { PollCard } from "./PollCard";
+import SimplePostComposer from "./SimplePostComposer";
 import { getBlogPostUrl } from "../../lib/site-config";
 import type { BlogPost, PollOption, PollVoteState } from "./types";
 import type { JSONContent } from "@tiptap/react";
 
-type ComposerMode = "blog" | "poll" | null;
+type ComposerMode = "post" | "blog" | "poll" | null;
 
 export default function BlogExperience() {
   const [userPosts, setUserPosts] = useState<BlogPost[]>([]);
@@ -152,6 +153,15 @@ export default function BlogExperience() {
     } catch {
       setStorageError("পোস্ট সংরক্ষণ করা যায়নি। ব্রাউজারের storage space পরীক্ষা করুন।");
     }
+
+  }
+
+  function publishSimplePost(caption: string, content: JSONContent, imageAlt?: string) {
+    if (!storageReady) return;
+    const title = caption
+      ? caption.split(/\s+/).slice(0, 8).join(" ")
+      : imageAlt ?? "কমিউনিটি ছবি";
+    publishPost(title, "experience", content, caption || "একটি ছবি শেয়ার করেছেন");
   }
 
   function publishPoll(question: string, description: string, options: PollOption[]) {
@@ -250,30 +260,7 @@ export default function BlogExperience() {
   return (
     <main className="flex-1 bg-[#f0f2f5] text-zinc-900 dark:bg-[#111315] dark:text-white">
       <div className="mx-auto max-w-[1440px] px-3 pb-20 pt-5 sm:px-6 lg:px-8">
-        <section className="mb-5 flex flex-col justify-between gap-4 rounded-2xl border border-zinc-200/80 bg-white px-5 py-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 sm:flex-row sm:items-center sm:px-7">
-          <div className="flex items-center gap-4">
-            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-              <FiUsers aria-hidden="true" className="size-6" />
-            </span>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.15em] text-emerald-700 dark:text-emerald-400">
-                Chakriova community
-              </p>
-              <h1 className="mt-0.5 text-2xl font-black tracking-tight text-zinc-950 dark:text-white">
-                কমিউনিটি ফিড
-              </h1>
-              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                শিখুন, অভিজ্ঞতা ভাগ করুন, একসঙ্গে এগিয়ে চলুন।
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 sm:pr-2">
-            <span className="hidden size-2 rounded-full bg-emerald-500 sm:block" />
-            <span className="text-sm font-semibold text-zinc-600 dark:text-zinc-300">
-              {(userPosts.length + 48).toLocaleString("bn-BD")} জন কমিউনিটি লেখক
-            </span>
-          </div>
-        </section>
+    
 
         <div className="mx-auto grid max-w-[1320px] gap-5 lg:grid-cols-[205px_minmax(0,680px)_260px] xl:grid-cols-[225px_minmax(0,700px)_280px]">
           <nav aria-label="কমিউনিটি নেভিগেশন" className="hidden space-y-2 lg:sticky lg:top-24 lg:block lg:self-start">
@@ -327,7 +314,7 @@ export default function BlogExperience() {
                   </span>
                   <button
                     type="button"
-                    onClick={() => setComposerMode("blog")}
+                    onClick={() => setComposerMode("post")}
                     className="flex h-11 flex-1 items-center rounded-full bg-zinc-100 px-5 text-left text-sm text-zinc-500 transition hover:bg-zinc-200/70 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
                   >
                     আজ কী শেয়ার করতে চান?
@@ -358,6 +345,12 @@ export default function BlogExperience() {
                 onPublish={publishPost}
                 onCancel={() => setComposerMode(null)}
                 onNotice={setNotice}
+              />
+            )}
+            {composerMode === "post" && (
+              <SimplePostComposer
+                onPublish={publishSimplePost}
+                onCancel={() => setComposerMode(null)}
               />
             )}
             {composerMode === "poll" && (

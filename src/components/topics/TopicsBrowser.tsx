@@ -2,17 +2,13 @@
 
 import { useState } from "react";
 import { examSubjects } from "../exams/exam-data";
+import TopicTopicsModal from "./TopicTopicsModal";
 import TopicsCard from "./TopicsCard";
 
 export default function TopicsBrowser() {
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(
-    null,
-  );
-  function toggleSubject(subjectId: string) {
-    setSelectedSubjectId((currentId) =>
-      currentId === subjectId ? null : subjectId,
-    );
-  }
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
+  const selectedSubject =
+    examSubjects.find((subject) => subject.id === selectedSubjectId) ?? null;
 
   return (
     <section
@@ -23,10 +19,14 @@ export default function TopicsBrowser() {
         <TopicsCard
           key={subject.id}
           subject={subject}
-          isSelected={subject.id === selectedSubjectId}
-          onSelect={toggleSubject}
+          onSelect={setSelectedSubjectId}
         />
       ))}
+      <TopicTopicsModal
+        key={selectedSubject?.id ?? "closed"}
+        subject={selectedSubject}
+        onClose={() => setSelectedSubjectId(null)}
+      />
     </section>
   );
 }
