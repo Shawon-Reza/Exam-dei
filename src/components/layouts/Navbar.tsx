@@ -11,7 +11,11 @@ import {
   FiX,
 } from "react-icons/fi";
 import { ModeToggle } from "../ui/ModeToggle";
-import { setDemoAuthenticated, useDemoAuth } from "../../lib/demo-auth";
+import { useAuth } from "@/src/apis/auth/useAuth";
+import Image from "next/image";
+import { useLogout } from "@/src/apis/auth/auth.mutations";
+import { IoLogOutOutline } from "react-icons/io5";
+import type { CurrentUser } from "@/src/apis/auth/auth.types";
 
 const navigationLinks = [
   { label: "ফিচার", englishLabel: "Features", href: "/#features" },
@@ -21,13 +25,18 @@ const navigationLinks = [
   { label: "FAQ", englishLabel: "FAQ", href: "/#faq" },
 ];
 
-export default function Navbar() {
+export default function Navbar({ initialUser }: { initialUser: CurrentUser | null }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const isAuthenticated = useDemoAuth();
+  const logoutMutation = useLogout();
+  
+  const { data: user } = useAuth(initialUser);
+  console.log(user)
+
 
   function closeMenu() {
     setMobileMenuOpen(false);
   }
+
 
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/90 backdrop-blur-xl dark:border-zinc-800/80 dark:bg-zinc-950/90">
@@ -64,15 +73,33 @@ export default function Navbar() {
 
         <div className="flex shrink-0 items-center gap-2">
           <ModeToggle />
-          {isAuthenticated ? (
-            <button
-              type="button"
-              onClick={() => setDemoAuthenticated(false)}
-              className="hidden items-center gap-2 rounded-full border border-zinc-200 px-4 py-2.5 text-sm font-semibold text-zinc-700 transition hover:border-rose-300 hover:text-rose-600 dark:border-zinc-700 dark:text-zinc-200 dark:hover:text-rose-300 sm:inline-flex"
-            >
-              <FiLogOut aria-hidden="true" />
-              Logout
-            </button>
+
+
+          {user ? (
+            <div className=" flex gap-2 items-center justify-center">
+              <Image
+                className="h-10 w-10 rounded-full object-cover border border-2 border-b-blue-500 shadow-2xl cursor-pointer"
+                src={user.image || "https://res.cloudinary.com/dbmdhxmtx/image/upload/v1792349936/wired-lineal-21-avatar_dm77ip.gif"}
+                alt="Profile"
+                width={300}
+                height={300}
+              />
+              <IoLogOutOutline size={30}
+                className="border border-2 border-b-blue-500 shadow-2xl rounded-full cursor-pointer pl-0.5"
+                onClick={() => {
+                  logoutMutation.mutate();
+                }}
+              />
+            </div>
+
+            // <button
+            //   type="button"
+            //   onClick={() => setDemoAuthenticated(false)}
+            //   className="hidden items-center gap-2 rounded-full border border-zinc-200 px-4 py-2.5 text-sm font-semibold text-zinc-700 transition hover:border-rose-300 hover:text-rose-600 dark:border-zinc-700 dark:text-zinc-200 dark:hover:text-rose-300 sm:inline-flex"
+            // >
+            //   <FiLogOut aria-hidden="true" />
+            //   Logout
+            // </button>
           ) : (
             <div className="hidden items-center gap-2 sm:flex">
               <Link
@@ -84,6 +111,8 @@ export default function Navbar() {
               </Link>
             </div>
           )}
+
+
           <button
             type="button"
             aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -94,7 +123,7 @@ export default function Navbar() {
             {mobileMenuOpen ? (
               <FiX aria-hidden="true" className="size-5" />
             ) : (
-              <FiMenu aria-hidden="true" className="size-5" />
+              <FiMenu aria-hidden="true" className="size-5 cursor-pointer" />
             )}
           </button>
         </div>
@@ -114,30 +143,31 @@ export default function Navbar() {
                 <span className="text-xs text-zinc-400">{item.englishLabel}</span>
               </Link>
             ))}
-            {isAuthenticated ? (
+            {user ? (
               <button
                 type="button"
                 onClick={() => {
-                  setDemoAuthenticated(false);
+                  logoutMutation.mutate();
                   closeMenu();
                 }}
-                className="mt-2 inline-flex items-center justify-center gap-2 rounded-full border border-zinc-200 px-5 py-3 text-sm font-semibold text-zinc-700 dark:border-zinc-700 dark:text-zinc-200"
+                className="mt-2 inline-flex items-center justify-center gap-2 rounded-full border border-zinc-200 px-5 py-3 text-sm font-semibold text-zinc-700 dark:border-zinc-700 dark:text-zinc-200 cursor-pointer"
               >
                 <FiLogOut aria-hidden="true" />
                 Logout
               </button>
             ) : (
-              <div className="mt-2 grid grid-cols-2 gap-2">
+              <div className="mt-2 ">
                 <Link
                   href="/login"
                   onClick={closeMenu}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-5 py-3 text-sm font-semibold text-white"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-5 py-3 text-sm font-semibold text-white w-full cursor-pointer"
                 >
                   <FiUserPlus aria-hidden="true" />
                   Login
                 </Link>
               </div>
             )}
+
             <Link
               href="/#get-started"
               onClick={closeMenu}

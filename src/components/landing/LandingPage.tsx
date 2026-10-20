@@ -9,6 +9,9 @@ import HeroSection from "./HeroSection";
 import { LeaderboardSection, LearningBenefitsSection } from "./SocialProofSections";
 
 export default function LandingPage() {
+  
+  
+
   return (
     <main>
       <HeroSection />

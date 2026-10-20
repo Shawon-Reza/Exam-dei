@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
-import Navbar from "../components/layouts/Navbar";
+import AuthNavbar from "../components/layouts/AuthNavbar";
 import { ThemeProvider } from "../components/theme-provider";
 import Footer from "../components/layouts/Footer";
+import SiteChrome from "../components/layouts/SiteChrome";
 import { siteUrl } from "../lib/site-config";
+import { QueryProvider } from "../lib/query-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -112,20 +115,28 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
 
 
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SiteChrome
+              navbar={
+                <Suspense fallback={<div className="min-h-[72px]" aria-hidden="true" />}>
+                  <AuthNavbar />
+                </Suspense>
+              }
+              footer={<Footer />}
+            >
+              {children}
+            </SiteChrome>
 
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Navbar />
-          {children}
 
-          <Footer />
+          </ThemeProvider>
+        </QueryProvider>
 
-
-        </ThemeProvider>
 
 
 
