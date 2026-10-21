@@ -17,9 +17,9 @@ import { ModeToggle } from "../ui/ModeToggle";
 import { useAuth } from "@/src/apis/auth/useAuth";
 import Image from "next/image";
 import { useLogout } from "@/src/apis/auth/auth.mutations";
-import { IoLogOutOutline } from "react-icons/io5";
 import type { CurrentUser } from "@/src/apis/auth/auth.types";
 import logo from "@/src/app/icon.jpg";
+import ProfileDrawer from "./ProfileDrawer";
 
 const navigationLinks = [
   { label: "ফিচার", englishLabel: "Features", href: "/#features" },
@@ -56,6 +56,7 @@ const resourceLinks = [
 export default function Navbar({ initialUser }: { initialUser: CurrentUser | null }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
+  const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
   const [activeHash, setActiveHash] = useState("");
   const resourcesRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -108,6 +109,12 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
   function closeMenu() {
     setMobileMenuOpen(false);
     setResourcesOpen(false);
+  }
+
+  function handleLogout() {
+    setProfileDrawerOpen(false);
+    closeMenu();
+    logoutMutation.mutate();
   }
 
 
@@ -258,20 +265,22 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
 
 
           {user ? (
-            <div className=" flex gap-2 items-center justify-center">
-              <Image
-                className="h-10 w-10 rounded-full object-cover border border-2 border-b-blue-500 shadow-2xl cursor-pointer"
-                src={user.image || "https://res.cloudinary.com/dbmdhxmtx/image/upload/v1792349936/wired-lineal-21-avatar_dm77ip.gif"}
-                alt="Profile"
-                width={300}
-                height={300}
-              />
-              <IoLogOutOutline size={30}
-                className="border border-2 border-b-blue-500 shadow-2xl rounded-full cursor-pointer pl-0.5"
-                onClick={() => {
-                  logoutMutation.mutate();
-                }}
-              />
+            <div className="flex items-center justify-center">
+              <button
+                type="button"
+                onClick={() => setProfileDrawerOpen(true)}
+                aria-label="প্রোফাইল মেনু খুলুন"
+                aria-expanded={profileDrawerOpen}
+                className="rounded-full border-2 border-b-blue-500 shadow-2xl transition hover:scale-105 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-950 cursor-pointer"
+              >
+                <Image
+                  className="h-9 w-9 rounded-full object-cover"
+                  src={user.image || "https://res.cloudinary.com/dbmdhxmtx/image/upload/v1792349936/wired-lineal-21-avatar_dm77ip.gif"}
+                  alt="Profile"
+                  width={300}
+                  height={300}
+                />
+              </button>
             </div>
 
             // <button
@@ -310,6 +319,16 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
           </button>
         </div>
       </nav>
+
+      {user && (
+        <ProfileDrawer
+          user={user}
+          open={profileDrawerOpen}
+          onOpenChange={setProfileDrawerOpen}
+          onLogout={handleLogout}
+          isLoggingOut={logoutMutation.isPending}
+        />
+      )}
 
       {mobileMenuOpen && (
         <div className="border-t border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950 lg:hidden">
