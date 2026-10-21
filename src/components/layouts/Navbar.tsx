@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FiArrowUpRight,
+  FiBook,
   FiBookOpen,
+  FiFileText,
   FiLogOut,
   FiMenu,
   FiUserPlus,
@@ -17,23 +19,47 @@ import Image from "next/image";
 import { useLogout } from "@/src/apis/auth/auth.mutations";
 import { IoLogOutOutline } from "react-icons/io5";
 import type { CurrentUser } from "@/src/apis/auth/auth.types";
+import logo from "@/src/app/icon.jpg";
 
 const navigationLinks = [
   { label: "ফিচার", englishLabel: "Features", href: "/#features" },
   { label: "বিষয়সমূহ", englishLabel: "Topics", href: "/topics" },
-   { label: "পরীক্ষা", englishLabel: "Exams", href: "/exams" },
+  { label: "পরীক্ষা", englishLabel: "Exams", href: "/exams" },
   { label: "ব্লগ", englishLabel: "Blog", href: "/blogs" },
-  { label: "প্রশ্ন ব্যাংক", englishLabel: "Question Bank", href: "/question-bank" },
+  // { label: "প্রশ্ন ব্যাংক", englishLabel: "Question Bank", href: "/question-bank" },
   { label: "লিডারবোর্ড", englishLabel: "Leaderboard", href: "/#leaderboard" },
+];
+
+const noteLinks = [
+  { label: "বাংলা", englishLabel: "Bangla", href: "/notes/bangla" },
+  { label: "ইংরেজি", englishLabel: "English", href: "/notes/english" },
+  { label: "সাধারণ জ্ঞান", englishLabel: "General Knowledge", href: "/notes/gk" },
+  { label: "গণিত", englishLabel: "Math", href: "/notes/math" },
+  { label: "ICT", englishLabel: "ICT", href: "/notes/ict" },
+];
+
+const resourceLinks = [
+  {
+    title: "প্রশ্ন ব্যাংক",
+    description: "পূর্ববর্তী পরীক্ষার প্রশ্ন অনুশীলন করুন",
+    href: "/question-bank",
+    icon: FiBookOpen,
+  },
+  {
+    title: "বই ও গাইড",
+    description: "পরীক্ষার প্রস্তুতির জন্য বাছাই করা বই",
+    href: "/books",
+    icon: FiBook,
+  },
 ];
 
 export default function Navbar({ initialUser }: { initialUser: CurrentUser | null }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [resourcesOpen, setResourcesOpen] = useState(false);
   const [activeHash, setActiveHash] = useState("");
+  const resourcesRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const logoutMutation = useLogout();
-
-  console.log(pathname)
 
   const { data: user } = useAuth(initialUser);
 
@@ -47,6 +73,28 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
     return () => window.removeEventListener("hashchange", updateActiveHash);
   }, [pathname]);
 
+  useEffect(() => {
+    function closeResourcesOnOutsideClick(event: PointerEvent) {
+      if (
+        resourcesRef.current &&
+        !resourcesRef.current.contains(event.target as Node)
+      ) {
+        setResourcesOpen(false);
+      }
+    }
+
+    function closeResourcesOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setResourcesOpen(false);
+    }
+
+    document.addEventListener("pointerdown", closeResourcesOnOutsideClick);
+    document.addEventListener("keydown", closeResourcesOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeResourcesOnOutsideClick);
+      document.removeEventListener("keydown", closeResourcesOnEscape);
+    };
+  }, []);
+
   function isActiveLink(href: string) {
     const [route, hash] = href.split("#");
     const routeMatches =
@@ -59,6 +107,7 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
 
   function closeMenu() {
     setMobileMenuOpen(false);
+    setResourcesOpen(false);
   }
 
 
@@ -74,8 +123,14 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
           className="flex shrink-0 items-center gap-2.5"
           aria-label="Chakriova home"
         >
-          <span className="flex size-10 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/20">
-            <FiBookOpen aria-hidden="true" className="size-5" />
+          <span className="flex size-10 items-center justify-center rounded-full text-white shadow-lg shadow-emerald-500/20 border border-2 border-b-emerald-500">
+            <Image
+              src={logo}
+              alt="Chakriova Logo"
+              width={40}
+              height={40}
+              className="rounded-2xl"
+            />
           </span>
           <span className="text-lg font-extrabold tracking-tight text-zinc-950 dark:text-white sm:text-xl">
             Chakri<span className="text-emerald-500">ova</span>
@@ -90,11 +145,10 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                 key={item.href}
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                  isActive
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${isActive
                     ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
                     : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
-                }`}
+                  }`}
               >
                 <span>{item.label}</span>
                 <span
@@ -105,6 +159,98 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
               </Link>
             );
           })}
+          <div
+            ref={resourcesRef}
+            className="relative"
+            onMouseEnter={() => setResourcesOpen(true)}
+            onMouseLeave={() => setResourcesOpen(false)}
+          >
+            <button
+              type="button"
+              onClick={() => setResourcesOpen((open) => !open)}
+              onFocus={() => setResourcesOpen(true)}
+              aria-haspopup="dialog"
+              aria-expanded={resourcesOpen}
+              aria-current={
+                pathname.startsWith("/notes") ||
+                pathname === "/books" ||
+                pathname === "/question-bank"
+                  ? "page"
+                  : undefined
+              }
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                pathname.startsWith("/notes") ||
+                pathname === "/books" ||
+                pathname === "/question-bank"
+                  ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
+              }`}
+            >
+              <span>শিক্ষা উপকরণ</span>
+              <span
+                className={`ml-1.5 text-xs ${
+                  pathname.startsWith("/notes") ||
+                  pathname === "/books" ||
+                  pathname === "/question-bank"
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-zinc-400"
+                }`}
+              >
+                Resources
+              </span>
+              <span className="ml-1 text-xs text-zinc-400 transition-transform" aria-hidden="true">
+                {resourcesOpen ? "⌃" : "⌄"}
+              </span>
+            </button>
+            {resourcesOpen && (
+              <div
+                role="dialog"
+                aria-label="শিক্ষা উপকরণ"
+                className="absolute right-0 top-full z-50 w-[min(680px,calc(100vw-2rem))] pt-2"
+              >
+                <div className="grid max-h-[min(70vh,520px)] gap-4 overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-4 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] sm:gap-5 sm:p-5">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                        প্রস্তুতির উপকরণ
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
+                        আপনার প্রয়োজন অনুযায়ী প্রশ্ন, নোট ও বই বেছে নিয়ে প্রস্তুতি আরও গুছিয়ে নিন।
+                      </p>
+                      <div className="mt-4 space-y-2">
+                        {resourceLinks.map(({ title, description, href, icon: Icon }) => (
+                          <Link key={href} href={href} onClick={closeMenu} className="flex items-center gap-2 rounded-lg p-2 transition hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                            <Icon className="size-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+                            <span>
+                              <span className="block font-bold text-zinc-900 dark:text-white">{title}</span>
+                              <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">{description}</span>
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="rounded-2xl bg-zinc-50 p-4 dark:bg-zinc-950">
+                      <div className="flex items-center gap-2">
+                        <FiFileText className="size-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+                        <div>
+                          <h2 className="text-sm font-bold text-zinc-900 dark:text-white">বিষয়ভিত্তিক নোট</h2>
+                          <p className="text-xs text-zinc-500 dark:text-zinc-400">যে বিষয়ের নোট পড়তে চান বেছে নিন</p>
+                        </div>
+                      </div>
+                      <div className="mt-3 grid grid-cols-2 gap-2">
+                        {noteLinks.map((note) => (
+                          <Link key={note.href} href={note.href} onClick={closeMenu} className="block rounded-lg border border-zinc-200 bg-white p-2 transition hover:bg-emerald-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-emerald-950/30">
+                            <span>
+                              <span className="block text-sm font-bold text-zinc-800 dark:text-zinc-100">{note.label}</span>
+                              <span className="block text-[11px] text-zinc-500 dark:text-zinc-400">{note.englishLabel}</span>
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
@@ -176,11 +322,10 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                   href={item.href}
                   onClick={closeMenu}
                   aria-current={isActive ? "page" : undefined}
-                  className={`flex items-center justify-between rounded-xl px-3 py-3 text-sm font-medium transition ${
-                    isActive
+                  className={`flex items-center justify-between rounded-xl px-3 py-3 text-sm font-medium transition ${isActive
                       ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
                       : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
-                  }`}
+                    }`}
                 >
                   {item.label}
                   <span
@@ -191,6 +336,45 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                 </Link>
               );
             })}
+            <div className="mt-2 rounded-2xl border border-zinc-200 p-3 dark:border-zinc-800">
+              <button
+                type="button"
+                onClick={() => setResourcesOpen((open) => !open)}
+                aria-expanded={resourcesOpen}
+                className="flex w-full items-center justify-between px-2 py-1 text-left text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400"
+              >
+                শিক্ষা উপকরণ
+                <span aria-hidden="true">{resourcesOpen ? "⌃" : "⌄"}</span>
+              </button>
+              {resourcesOpen && (
+                <div className="mt-1">
+                {resourceLinks.map(({ title, description, href }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={closeMenu}
+                    className="flex items-center justify-between rounded-xl px-2 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  >
+                    <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">{title}</span>
+                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{description}</span>
+                  </Link>
+                ))}
+                <p className="px-2 pt-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400">নোটের বিষয়</p>
+                <div className="mt-1 grid grid-cols-2 gap-1">
+                  {noteLinks.map((note) => (
+                    <Link
+                      key={note.href}
+                      href={note.href}
+                      onClick={closeMenu}
+                      className="rounded-lg px-2 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                    >
+                      {note.label}
+                    </Link>
+                  ))}
+                </div>
+                </div>
+              )}
+            </div>
             {user ? (
               <button
                 type="button"

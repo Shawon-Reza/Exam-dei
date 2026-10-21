@@ -27,7 +27,7 @@ export default function HeroSection() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(161,161,170,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(161,161,170,0.08)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent_80%)]" />
       </div>
 
-      <div className="mx-auto grid min-h-[680px] max-w-7xl items-center gap-14 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-24">
+      <div className="mx-auto grid min-h-[680px] max-w-7xl items-center gap-14 px-4  sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 ">
         <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1.5 text-xs font-semibold text-emerald-700 shadow-sm dark:border-emerald-900 dark:bg-zinc-900/80 dark:text-emerald-300 sm:text-sm">
             <span className="relative flex size-2">

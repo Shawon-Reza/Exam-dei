@@ -327,7 +327,7 @@ export default function BlogExperience() {
                     className="inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold text-zinc-600 transition hover:bg-emerald-50 hover:text-emerald-700 dark:text-zinc-300 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-300"
                   >
                     <FiEdit3 aria-hidden="true" className="text-emerald-600" />
-                    লেখা লিখুন
+                    Blog post
                   </button>
                   <button
                     type="button"

@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { FiBookOpen, FiFacebook, FiInstagram, FiYoutube } from "react-icons/fi";
+import logo from "@/src/app/icon.jpg";
 
 const footerGroups = [
   {
@@ -43,7 +45,15 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div className="max-w-sm">
             <Link href="/" className="inline-flex items-center gap-3">
-              <ByteSpaceMark />
+              <span className="flex size-10 items-center justify-center rounded-full text-white shadow-lg shadow-emerald-500/20 border border-2 border-b-emerald-500">
+                <Image
+                  src={logo}
+                  alt="Chakriova Logo"
+                  width={40}
+                  height={40}
+                  className="rounded-2xl"
+                />
+              </span>
               <span className="text-xl font-extrabold tracking-tight text-zinc-950 dark:text-white">
                 Chakri<span className="text-emerald-500">ova</span>
               </span>
