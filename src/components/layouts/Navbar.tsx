@@ -27,7 +27,6 @@ const navigationLinks = [
   { label: "পরীক্ষা", englishLabel: "Exams", href: "/exams" },
   { label: "ব্লগ", englishLabel: "Blog", href: "/blogs" },
   // { label: "প্রশ্ন ব্যাংক", englishLabel: "Question Bank", href: "/question-bank" },
-  { label: "লিডারবোর্ড", englishLabel: "Leaderboard", href: "/#leaderboard" },
 ];
 
 const noteLinks = [

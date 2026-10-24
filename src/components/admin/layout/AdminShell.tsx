@@ -11,6 +11,7 @@ import {
   FiHome,
   FiLogOut,
   FiMenu,
+  FiLayers,
   FiSettings,
   FiUsers,
   FiX,
@@ -23,6 +24,7 @@ const navigation: { id: AdminSection; label: string; icon: typeof FiHome; }[] = 
   { id: "questions", label: "Question Bank", icon: FiHelpCircle },
   { id: "students", label: "শিক্ষার্থী", icon: FiUsers },
   { id: "blogs", label: "Blogs & Content", icon: FiFileText },
+  { id: "resources", label: "Resources & Ranking", icon: FiLayers },
   { id: "settings", label: "সেটিংস", icon: FiSettings },
 ];
 
@@ -50,11 +52,11 @@ export default function AdminShell({
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f7f8] text-zinc-900 dark:bg-zinc-950 dark:text-white">
+    <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-[#292D1F] dark:text-[#f1f5f1]">
       <div className="flex min-h-screen">
         <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-zinc-200 bg-white transition-transform dark:border-zinc-800 dark:bg-zinc-900 lg:static lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
-          <Link href="/admin" className="flex h-[72px] items-center gap-3 border-b border-zinc-100 px-6 dark:border-zinc-800">
-            <span className="grid size-10 place-items-center rounded-xl bg-emerald-600 text-white"><FiActivity aria-hidden="true" size={20} /></span>
+          <Link href="/admin" className="flex h-[72px] items-center gap-3 border-b border-zinc-100 px-6 dark:border-[#576E67]">
+            <span className="grid size-10 place-items-center rounded-xl bg-[#576E67] text-white shadow-lg shadow-[#292D1F]/20"><FiActivity aria-hidden="true" size={20} /></span>
             <span><span className="block text-base font-extrabold tracking-tight">Chakriova</span><span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400">Admin console</span></span>
           </Link>
           <div className="px-4 pt-6">
@@ -64,14 +66,14 @@ export default function AdminShell({
             </nav>
           </div>
           <div className="mt-auto border-t border-zinc-100 p-4 dark:border-zinc-800">
-            <div className="flex items-center gap-3 rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800/70"><div className="grid size-9 place-items-center rounded-full bg-emerald-100 text-xs font-extrabold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">SA</div><div className="min-w-0 flex-1"><p className="truncate text-xs font-bold">Shawon Admin</p><p className="truncate text-[10px] text-zinc-500 dark:text-zinc-400">Super administrator</p></div><FiChevronDown aria-hidden="true" className="text-zinc-400" /></div>
+            <div className="flex items-center gap-3 rounded-xl bg-zinc-50 p-3 dark:bg-[#455045]"><div className="grid size-9 place-items-center rounded-full bg-[#607873] text-xs font-extrabold text-white">SA</div><div className="min-w-0 flex-1"><p className="truncate text-xs font-bold">Shawon Admin</p><p className="truncate text-[10px] text-zinc-500 dark:text-[#afbeb5]">Super administrator</p></div><FiChevronDown aria-hidden="true" className="text-zinc-400" /></div>
             <Link href="/" className="mt-2 flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-semibold text-zinc-500 transition hover:bg-zinc-50 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-white"><FiLogOut aria-hidden="true" />সাইটে ফিরে যান</Link>
           </div>
         </aside>
         {sidebarOpen && <button type="button" aria-label="Navigation বন্ধ করুন" onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-30 bg-zinc-950/40 lg:hidden" />}
 
         <div className="min-w-0 flex-1">
-          <header className="sticky top-0 z-20 flex h-[72px] items-center justify-between border-b border-zinc-200 bg-white/90 px-4 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/90 sm:px-7">
+          <header className="sticky top-0 z-20 flex h-[72px] items-center justify-between border-b border-zinc-200 bg-white/90 px-4 backdrop-blur-md dark:border-[#576E67] dark:bg-[#3B4A40]/90 sm:px-7">
             <div className="flex items-center gap-3">
               <button type="button" onClick={() => setSidebarOpen(true)} aria-label="Navigation খুলুন" className="grid size-9 place-items-center rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 lg:hidden"><FiMenu aria-hidden="true" size={19} /></button>
               <div><p className="text-[11px] font-medium text-zinc-400">Admin / {title}</p><p className="text-sm font-bold text-zinc-800 dark:text-zinc-100">{title}</p></div>

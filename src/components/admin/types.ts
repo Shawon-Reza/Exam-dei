@@ -6,6 +6,7 @@ export type AdminSection =
   | "questions"
   | "students"
   | "blogs"
+  | "resources"
   | "settings";
 
 export type StudentStatus = "Active" | "Suspended";

@@ -11,6 +11,7 @@ import OverviewSection from "./features/OverviewSection";
 import QuestionsSection from "./features/QuestionsSection";
 import SettingsSection from "./features/SettingsSection";
 import StudentsSection from "./features/StudentsSection";
+import ResourcesSection from "./features/ResourcesSection";
 import { makeQuestionRows, initialSettings, initialStudents } from "./data";
 import type { AdminSection, AdminSettings, QuestionRow, Student } from "./types";
 
@@ -48,6 +49,8 @@ export default function AdminDashboard() {
         return <StudentsSection students={students} onChange={setStudents} onNotice={setNotice} />;
       case "blogs":
         return <BlogsSection posts={posts} onChange={setPosts} onNotice={setNotice} />;
+      case "resources":
+        return <ResourcesSection onNotice={setNotice} />;
       case "settings":
         return <SettingsSection settings={settings} onChange={setSettings} onNotice={setNotice} />;
     }

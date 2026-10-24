@@ -258,7 +258,7 @@ export default function BlogExperience() {
   }
 
   return (
-    <main className="flex-1 bg-[#f0f2f5] text-zinc-900 dark:bg-[#111315] dark:text-white">
+    <main className="flex-1 bg-[#f0f2f5] text-zinc-900 dark:bg-[#292D1F] dark:text-white">
       <div className="mx-auto max-w-[1440px] px-3 pb-20 pt-5 sm:px-6 lg:px-8">
     
 

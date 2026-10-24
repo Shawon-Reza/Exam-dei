@@ -29,7 +29,7 @@ export default function OverviewSection({
   const activeExams = exams.filter((exam) => exam.status === "live" || exam.status === "running");
   const participants = exams.reduce((total, exam) => total + exam.participants, 0);
   const metrics = [
-    { label: "মোট শিক্ষার্থী", value: "২৪,৮৯২", delta: "+১২.৮%", icon: <FiUsers />, tone: "emerald" },
+    { label: "মোট শিক্ষার্থী", value: students.length.toLocaleString("bn-BD"), delta: "demo records", icon: <FiUsers />, tone: "emerald" },
     { label: "মোট পরীক্ষা", value: exams.length.toLocaleString("bn-BD"), delta: "+৮.২%", icon: <FiBookOpen />, tone: "blue" },
     { label: "Question Bank", value: questionsCount.toLocaleString("bn-BD"), delta: "+৫.৪%", icon: <FiHelpCircle />, tone: "violet" },
     { label: "মোট অংশগ্রহণ", value: participants.toLocaleString("bn-BD"), delta: "+১৮.৬%", icon: <FiActivity />, tone: "amber" },

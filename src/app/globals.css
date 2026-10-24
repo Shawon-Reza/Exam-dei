@@ -6,16 +6,39 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --popover: #ffffff;
+  --border: #e4e4e7;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --ring: #607873;
+  --dark-deep: #292d1f;
+  --dark-surface: #3b4a40;
+  --dark-elevated: #455045;
+  --dark-border: #576e67;
+  --dark-muted: #607873;
+  --dark-text: #f1f5f1;
+  --dark-text-muted: #afbeb5;
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: var(--dark-deep);
+  --foreground: var(--dark-text);
+  --popover: var(--dark-surface);
+  --border: var(--dark-border);
+  --muted: var(--dark-elevated);
+  --muted-foreground: var(--dark-text-muted);
+  --ring: var(--dark-muted);
+  color-scheme: dark;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-popover: var(--popover);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -35,18 +58,204 @@
 }
 
 .dark .mobile-nav-link {
-  color: #e4e4e7;
+  color: #d5e0d9;
 }
 
 .dark .mobile-nav-link:hover {
-  background: #27272a;
-  color: #ffffff;
+  background: var(--dark-elevated);
+  color: var(--dark-text);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: var(--dark-muted);
+  color: #ffffff;
+}
+
+.dark body {
+  background:
+    radial-gradient(circle at 8% -10%, rgb(96 120 115 / 0.1), transparent 30rem),
+    var(--dark-deep);
+}
+
+.dark :where(input, textarea, select) {
+  color-scheme: dark;
+  border-color: var(--dark-border);
+  background-color: var(--dark-surface);
+}
+
+.dark :where(input, textarea, select)::placeholder {
+  color: #91a59a;
+}
+
+.dark :where(input, textarea, select):focus {
+  border-color: var(--dark-muted);
+  outline-color: var(--dark-muted);
+  box-shadow: 0 0 0 3px rgb(96 120 115 / 0.22);
+}
+
+.dark :where(
+  [class~="dark:bg-zinc-950"],
+  [class~="dark:bg-zinc-950/50"],
+  [class~="dark:bg-zinc-950/40"],
+  [class~="dark:bg-zinc-950/95"],
+  [class~="dark:bg-zinc-950/90"]
+) {
+  background-color: var(--dark-deep) !important;
+}
+
+.dark :where(
+  [class~="dark:bg-zinc-900"],
+  [class~="dark:bg-zinc-900/60"],
+  [class~="dark:bg-zinc-900/50"],
+  [class~="dark:bg-zinc-900/40"],
+  [class~="dark:bg-zinc-900/95"],
+  [class~="dark:bg-zinc-900/90"]
+) {
+  background-color: var(--dark-surface) !important;
+}
+
+.dark :where(
+  [class~="dark:bg-zinc-800"],
+  [class~="dark:bg-zinc-800/70"],
+  [class~="dark:bg-zinc-800/80"],
+  [class~="dark:bg-zinc-800/60"],
+  [class~="dark:bg-zinc-800/50"]
+) {
+  background-color: var(--dark-elevated) !important;
+}
+
+.dark :where(
+  [class~="dark:border-zinc-800"],
+  [class~="dark:border-zinc-700"],
+  [class~="dark:border-zinc-600"]
+) {
+  border-color: var(--dark-border) !important;
+}
+
+.dark :where(
+  [class~="dark:text-white"],
+  [class~="dark:text-zinc-50"],
+  [class~="dark:text-zinc-100"]
+) {
+  color: var(--dark-text) !important;
+}
+
+.dark :where([class~="dark:text-zinc-200"], [class~="dark:text-zinc-300"]) {
+  color: #d5e0d9 !important;
+}
+
+.dark :where(
+  [class~="dark:text-zinc-400"],
+  [class~="dark:text-zinc-500"]
+) {
+  color: var(--dark-text-muted) !important;
+}
+
+.dark :where(
+  [class~="dark:hover:bg-zinc-950"],
+  [class~="dark:hover:bg-zinc-900"],
+  [class~="dark:hover:bg-zinc-800"]
+):hover {
+  background-color: var(--dark-muted) !important;
+}
+
+.dark :where(
+  [class~="dark:bg-emerald-950"],
+  [class~="dark:bg-emerald-950/40"],
+  [class~="dark:bg-emerald-950/30"],
+  [class~="dark:bg-emerald-950/25"],
+  [class~="dark:bg-emerald-950/20"]
+) {
+  background-color: color-mix(in srgb, var(--dark-muted) 48%, var(--dark-deep)) !important;
+}
+
+.dark :where(
+  [class~="dark:text-emerald-300"],
+  [class~="dark:text-emerald-400"]
+) {
+  color: #b8cec3 !important;
+}
+
+.dark :where(
+  [class~="dark:border-emerald-900"],
+  [class~="dark:border-emerald-800"]
+) {
+  border-color: var(--dark-muted) !important;
+}
+
+.dark :where([class~="dark:hover:text-emerald-300"]):hover {
+  color: #c9ddd3 !important;
+}
+
+.dark :where([class~="dark:hover:border-emerald-900"]):hover {
+  border-color: #728c81 !important;
+}
+
+.dark :where([class~="dark:divide-zinc-800"]) {
+  --tw-divide-opacity: 1;
+  border-color: var(--dark-border) !important;
+}
+
+.dark ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: var(--dark-deep);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  border: 2px solid var(--dark-deep);
+  border-radius: 999px;
+  background: var(--dark-border);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-muted);
+}
+
+.dark :where(button, a) {
+  -webkit-tap-highlight-color: rgb(96 120 115 / 0.2);
+}
+
+.dark :where(button, a):focus-visible {
+  outline: 2px solid var(--dark-muted);
+  outline-offset: 2px;
+}
+
+.dark .blog-prose .tiptap blockquote {
+  border-left-color: var(--dark-muted);
+  color: var(--dark-text-muted);
+}
+
+.dark .blog-prose .tiptap pre {
+  background: #20261f;
+  color: #e4eee8;
+}
+
+.dark .blog-prose .tiptap code {
+  background: var(--dark-elevated);
+  color: #d5e0d9;
+}
+
+.dark .blog-prose .tiptap a {
+  color: #b8cec3;
+}
+
+.dark .blog-prose .tiptap th,
+.dark .blog-prose .tiptap td {
+  border-color: var(--dark-border);
+}
+
+.dark .blog-prose .tiptap th {
+  background: var(--dark-elevated);
 }
 
 .global-error-page {
@@ -66,6 +275,14 @@ body {
   border-color: var(--error-border);
   background: var(--error-card);
   color: var(--error-text);
+}
+
+.dark .global-error-page {
+  --error-background: var(--dark-deep);
+  --error-card: var(--dark-surface);
+  --error-text: var(--dark-text);
+  --error-muted: var(--dark-text-muted);
+  --error-border: var(--dark-border);
 }
 
 .global-error-muted {

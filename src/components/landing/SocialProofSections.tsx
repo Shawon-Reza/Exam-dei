@@ -28,9 +28,9 @@ export function LeaderboardSection() {
     <section id="leaderboard" className="scroll-mt-24 bg-white py-16 dark:bg-zinc-900/40 sm:py-20">
       <div className="mx-auto max-w-4xl px-4 sm:px-6">
         <SectionHeading
-          eyebrow="Demo leaderboard · অনুপ্রেরণার জন্য"
+          eyebrow="Leaderboard preview · অনুপ্রেরণার জন্য"
           title="এই সপ্তাহের টপাররা"
-          description="নিজের অগ্রগতি দেখুন, অন্যদের থেকে অনুপ্রেরণা নিন, আর প্রতিদিন একটু ভালো করুন। নিচের নাম ও score শুধু demo content।"
+          description="নিজের result review করার পাশাপাশি leaderboard থেকে অন্যদের performance দেখে প্রস্তুতিতে motivation ধরে রাখুন। নিচের নাম ও score demo content।"
         />
         <div className="overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-xl shadow-zinc-950/5 dark:border-zinc-800 dark:bg-zinc-900">
           <div className="grid grid-cols-[3rem_1fr_auto] gap-3 border-b border-zinc-100 bg-zinc-50 px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-zinc-400 dark:border-zinc-800 dark:bg-zinc-800/60 sm:grid-cols-[4rem_1fr_1fr_auto] sm:px-6">
@@ -61,7 +61,7 @@ export function LeaderboardSection() {
             ))}
           </div>
           <div className="border-t border-zinc-100 px-4 py-3 text-center text-xs text-zinc-400 dark:border-zinc-800">
-            Sample leaderboard · Your real progress will be yours alone to track.
+            Sample leaderboard · আপনার নিজের result ও progress আপনার account-এ review করুন।
           </div>
         </div>
       </div>

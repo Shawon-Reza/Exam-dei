@@ -17,7 +17,7 @@ export default function GettingStartedSection() {
           <SectionHeading
             eyebrow="Simple by design · সহজেই শুরু"
             title="প্রস্তুতির পথটা হোক পরিষ্কার"
-            description="A clear plan makes a big goal feel achievable. Follow three simple steps and build your momentum."
+            description="লক্ষ্য বেছে নিন, topic ধরে প্রস্তুতি নিন, তারপর exam দিয়ে নিজের readiness যাচাই করুন।"
           />
           <div className="relative grid gap-8 md:grid-cols-3 md:gap-6">
             <div aria-hidden="true" className="absolute left-[17%] right-[17%] top-7 hidden border-t border-dashed border-emerald-300 dark:border-emerald-900 md:block" />
@@ -41,12 +41,12 @@ export default function GettingStartedSection() {
           <div className="max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-100">Your next chapter starts today</p>
             <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-              প্রতিদিন একটু একটু করে—
+              নিজের লক্ষ্য অনুযায়ী—
               <br className="hidden sm:block" />
               লক্ষ্য থেকে আরেকটু কাছে।
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-7 text-emerald-50 sm:text-base">
-              একটি ছোট practice session-ই হতে পারে আপনার বড় পরিবর্তনের শুরু। আজই নিজের preparation journey শুরু করুন।
+              একটি topic থেকে শুরু করুন, question bank-এ practice করুন এবং exam result দেখে পরের step ঠিক করুন।
             </p>
           </div>
           <Link

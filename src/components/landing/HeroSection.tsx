@@ -34,7 +34,7 @@ export default function HeroSection() {
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
             </span>
-            বাংলাদেশের চাকরি প্রস্তুতির smart platform
+            আপনার চাকরি প্রস্তুতির focused workspace
           </div>
 
           <h1 className="text-4xl font-black leading-[1.15] tracking-tight text-zinc-950 dark:text-white sm:text-5xl lg:text-6xl">
@@ -45,11 +45,11 @@ export default function HeroSection() {
             </span>
           </h1>
           <p className="mt-5 text-lg font-semibold text-zinc-700 dark:text-zinc-300 sm:text-xl">
-            চাকরির স্বপ্ন পূরণে আপনার প্রতিদিনের সঙ্গী।
+            পড়ুন, practice করুন, exam দিন—এক জায়গা থেকেই।
           </p>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-zinc-600 dark:text-zinc-400 sm:text-base lg:mx-0">
-            Learn with a plan, practice with purpose, and track every improvement.
-            BCS, Bank, NTRCA ও সরকারি চাকরির প্রস্তুতি নিন এক প্ল্যাটফর্মে।
+            BCS, Bank, NTRCA ও সরকারি চাকরির প্রস্তুতির জন্য topic notes,
+            MCQ practice, question bank এবং timed exam একসাথে ব্যবহার করুন।
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-3 min-[420px]:flex-row lg:justify-start">
@@ -70,7 +70,7 @@ export default function HeroSection() {
           </div>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-zinc-500 dark:text-zinc-400 lg:justify-start">
-            {["ফ্রি practice test", "স্মার্ট progress tracking", "যেকোনো device-এ"].map((item) => (
+            {["বিষয়ভিত্তিক notes", "পূর্ববর্তী question bank", "responsive learning experience"].map((item) => (
               <span key={item} className="inline-flex items-center gap-1.5">
                 <FiCheck aria-hidden="true" className="text-emerald-500" />
                 {item}

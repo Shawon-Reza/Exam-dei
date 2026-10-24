@@ -7,6 +7,7 @@ import {
   FiGrid,
   FiHelpCircle,
   FiLogOut,
+  FiAward,
   FiSettings,
   FiUser,
   FiX,
@@ -43,6 +44,12 @@ const accountLinks = [
     description: "পূর্ববর্তী প্রশ্ন অনুশীলন করুন",
     href: "/question-bank",
     icon: FiHelpCircle,
+  },
+  {
+    label: "লিডারবোর্ড",
+    description: "সাপ্তাহিক ranking ও score দেখুন",
+    href: "/leaderboard",
+    icon: FiAward,
   },
 ];
 

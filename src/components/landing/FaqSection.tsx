@@ -10,7 +10,7 @@ export function FaqSection() {
         <SectionHeading
           eyebrow="FAQ · আপনার প্রশ্ন"
           title="সাধারণ জিজ্ঞাসা"
-          description="শুরু করার আগে কিছু জানতে চান? প্রয়োজনীয় উত্তরগুলো এখানে দেখে নিন।"
+          description="Topics, notes, question bank, exam ও profile flow নিয়ে common প্রশ্নগুলোর উত্তর দেখুন।"
         />
         <div className="space-y-3">
           {frequentlyAskedQuestions.map((item, index) => (
@@ -48,7 +48,7 @@ export function FinalCtaSection() {
           <br className="sm:hidden" /> আজ থেকেই শুরু হোক।
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-zinc-300 dark:text-emerald-100/80 sm:text-base">
-          আপনার লক্ষ্যটা বেছে নিন। বাকিটা—একটা ছোট step, তারপর আরেকটা—আমরা একসাথে গুছিয়ে নেব।
+          আপনার লক্ষ্যটা বেছে নিন। নোট পড়ুন, প্রশ্ন practice করুন এবং exam result দেখে প্রস্তুতি আরও focused করুন।
         </p>
         <div className="mt-8 flex flex-col justify-center gap-3 min-[420px]:flex-row">
           <Link
@@ -67,7 +67,7 @@ export function FinalCtaSection() {
           </a>
         </div>
         <p className="mt-5 text-xs text-zinc-400 dark:text-emerald-100/60">
-          Free to get started · নিজের গতিতে শিখুন · যেকোনো device-এ
+          Learn at your pace · Practice with purpose · যেকোনো device-এ
         </p>
       </div>
     </section>
