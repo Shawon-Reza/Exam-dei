@@ -46,7 +46,7 @@ export default function SettingsSection({
             <div className="mt-5"><ToggleSetting title="Maintenance চালু করুন" description="সাধারণ ব্যবহারকারীদের জন্য সাইট বন্ধ থাকবে" checked={settings.maintenanceMode} onChange={(checked) => onChange({ ...settings, maintenanceMode: checked })} /></div>
           </Panel>
           <Panel className="bg-emerald-700 p-5 text-white dark:bg-emerald-800">
-            <p className="text-xs font-bold uppercase tracking-wider text-emerald-100">Admin preview</p><p className="mt-2 text-xl font-extrabold">{settings.siteName || "Chakriova"}</p><p className="mt-1 text-sm text-emerald-100">{settings.supportEmail}</p><p className="mt-5 border-t border-white/20 pt-4 text-xs leading-5 text-emerald-100">সেটিংস এই demo session-এ সংরক্ষিত হবে। Backend যুক্ত হলে স্থায়ীভাবে save করা যাবে।</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-emerald-100">Admin preview</p><p className="mt-2 text-xl font-extrabold">{settings.siteName || "Chakriova"}</p><p className="mt-1 text-sm text-emerald-100">{settings.supportEmail}</p>            <p className="mt-5 border-t border-white/20 pt-4 text-xs leading-5 text-emerald-100">সেটিংস সংরক্ষণ করতে backend সংযোগ প্রয়োজন।</p>
           </Panel>
         </div>
         <div className="xl:col-span-2"><PrimaryButton type="submit">পরিবর্তন সংরক্ষণ</PrimaryButton></div>

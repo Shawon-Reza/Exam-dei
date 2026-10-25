@@ -12,6 +12,13 @@ import type { IconType } from "react-icons";
 export type ExamTopic = {
   id: string;
   label: string;
+  slug?: string;
+  description?: string;
+  searchName?: string;
+  sortOrder?: number;
+  isActive?: boolean;
+  iconUrl?: string | null;
+  subjectId?: string;
 };
 
 export type ExamSubject = {

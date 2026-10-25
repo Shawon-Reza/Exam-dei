@@ -2,9 +2,9 @@
 
 import { useMemo, useState, type FormEvent } from "react";
 import { FiActivity, FiBookOpen, FiEdit2, FiHelpCircle, FiPlus, FiTrash2 } from "react-icons/fi";
-import { examSubjects, type Exam } from "../../exams/exam-data";
+import { type Exam } from "../../exams/exam-data";
 import QuestionFormDialog from "./QuestionFormDialog";
-import type { QuestionDraft, QuestionRow } from "../types";
+import type { AdminSubject, QuestionDraft, QuestionRow } from "../types";
 import { EmptyTable, Panel, PrimaryButton, SearchBox, SectionHeading, SmallStat, TableFooter } from "../ui/AdminPrimitives";
 
 const emptyDraft: QuestionDraft = {
@@ -13,15 +13,18 @@ const emptyDraft: QuestionDraft = {
   options: ["", "", "", ""],
   answerIndex: 0,
   explanation: "",
+  topicId: "",
 };
 
 export default function QuestionsSection({
   questions,
+  subjects,
   exams,
   onChange,
   onNotice,
 }: {
   questions: QuestionRow[];
+  subjects: AdminSubject[];
   exams: Exam[];
   onChange: (questions: QuestionRow[]) => void;
   onNotice: (message: string) => void;
@@ -31,17 +34,18 @@ export default function QuestionsSection({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [draft, setDraft] = useState(emptyDraft);
   const filtered = useMemo(() => questions.filter((question) =>
-    `${question.prompt} ${question.subject} ${question.examTitle}`.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()),
+    `${question.prompt} ${question.subject} ${question.topic ?? ""} ${question.examTitle}`.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()),
   ), [questions, search]);
 
   function openDialog(question?: QuestionRow) {
     setEditingId(question?.id ?? null);
     setDialogOpen(true);
-    const subjectId = examSubjects.find((subject) => subject.label === question?.subject)?.id ?? "bangla";
+    const subjectId = subjects.find((subject) => subject.label === question?.subject)?.id ?? subjects[0]?.id ?? "";
     const options = question?.options ?? emptyDraft.options;
     setDraft({
       prompt: question?.prompt ?? "",
       subjectId,
+      topicId: question?.topicId ?? subjects.find((subject) => subject.id === subjectId)?.topics[0]?.id ?? "",
       options: options.length >= 4 ? [...options] : [...options, ...Array(4 - options.length).fill("")],
       answerIndex: question?.answerIndex ?? 0,
       explanation: question?.explanation ?? "",
@@ -50,7 +54,8 @@ export default function QuestionsSection({
 
   function saveQuestion(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const subject = examSubjects.find((item) => item.id === draft.subjectId);
+    const subject = subjects.find((item) => item.id === draft.subjectId);
+    const topic = subject?.topics.find((item) => item.id === draft.topicId);
     const options = draft.options.map((option) => option.trim());
     if (!subject || !draft.prompt.trim() || options.some((option) => !option)) return;
     const record = {
@@ -58,7 +63,10 @@ export default function QuestionsSection({
       options,
       answerIndex: draft.answerIndex,
       explanation: draft.explanation.trim(),
+      subjectId: subject.id,
       subject: subject.label,
+      topic: topic?.label,
+      topicId: topic?.id,
       examTitle: "Question Bank",
     };
     if (editingId) {
@@ -87,7 +95,7 @@ export default function QuestionsSection({
       />
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         <SmallStat label="মোট প্রশ্ন" value={questions.length.toLocaleString("bn-BD")} icon={<FiHelpCircle />} />
-        <SmallStat label="বিষয়" value={examSubjects.length.toLocaleString("bn-BD")} icon={<FiBookOpen />} />
+        <SmallStat label="বিষয়" value={subjects.length.toLocaleString("bn-BD")} icon={<FiBookOpen />} />
         <SmallStat label="পরীক্ষায় ব্যবহৃত" value={exams.length.toLocaleString("bn-BD")} icon={<FiActivity />} />
       </div>
       <Panel>
@@ -98,6 +106,7 @@ export default function QuestionsSection({
               <tr>
                 <th className="px-5 py-3 font-bold">প্রশ্ন</th>
                 <th className="px-4 py-3 font-bold">বিষয়</th>
+                <th className="px-4 py-3 font-bold">Topic</th>
                 <th className="px-4 py-3 font-bold">উত্তর</th>
                 <th className="px-4 py-3 font-bold">ব্যবহৃত</th>
                 <th className="px-4 py-3 text-right font-bold">Action</th>
@@ -113,6 +122,7 @@ export default function QuestionsSection({
                   <td className="px-4 py-4">
                     <span className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-semibold text-violet-700 dark:bg-violet-950/50 dark:text-violet-300">{question.subject}</span>
                   </td>
+                  <td className="px-4 py-4 text-xs text-zinc-500 dark:text-zinc-400">{question.topic ?? "সব topic"}</td>
                   <td className="max-w-48 px-4 py-4 text-zinc-600 dark:text-zinc-300">{question.options[question.answerIndex]}</td>
                   <td className="max-w-44 px-4 py-4 text-xs text-zinc-500">{question.examTitle}</td>
                   <td className="px-4 py-4">
@@ -123,7 +133,7 @@ export default function QuestionsSection({
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && <EmptyTable colSpan={5} text="কোনো প্রশ্ন পাওয়া যায়নি।" />}
+              {filtered.length === 0 && <EmptyTable colSpan={6} text="কোনো প্রশ্ন পাওয়া যায়নি।" />}
             </tbody>
           </table>
         </div>
@@ -138,6 +148,7 @@ export default function QuestionsSection({
             setDialogOpen(false);
             setEditingId(null);
           }}
+          subjects={subjects}
           onSubmit={saveQuestion}
         />
       )}

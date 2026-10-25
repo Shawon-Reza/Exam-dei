@@ -2,20 +2,21 @@
 
 import type { FormEvent } from "react";
 import { FiPlus } from "react-icons/fi";
-import { examSubjects } from "../../exams/exam-data";
-import type { QuestionDraft } from "../types";
+import type { AdminSubject, QuestionDraft } from "../types";
 import { AdminDialog, DialogActions, Field, inputClass } from "../ui/AdminPrimitives";
 
 export default function QuestionFormDialog({
   draft,
   setDraft,
   editing,
+  subjects,
   onClose,
   onSubmit,
 }: {
   draft: QuestionDraft;
   setDraft: (draft: QuestionDraft) => void;
   editing: boolean;
+  subjects: AdminSubject[];
   onClose: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }) {
@@ -41,7 +42,20 @@ export default function QuestionFormDialog({
             onChange={(event) => setDraft({ ...draft, subjectId: event.target.value })}
             className={inputClass}
           >
-            {examSubjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.label}</option>)}
+            {subjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.label}</option>)}
+          </select>
+        </Field>
+        <Field label="Topic">
+          <select
+            required
+            value={draft.topicId}
+            onChange={(event) => setDraft({ ...draft, topicId: event.target.value })}
+            className={inputClass}
+          >
+            <option value="">Topic নির্বাচন করুন</option>
+            {subjects.find((subject) => subject.id === draft.subjectId)?.topics.map((topic) => (
+              <option key={topic.id} value={topic.id}>{topic.label}</option>
+            ))}
           </select>
         </Field>
         <fieldset className="space-y-2">

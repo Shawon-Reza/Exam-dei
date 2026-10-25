@@ -8,6 +8,7 @@ import Footer from "../components/layouts/Footer";
 import SiteChrome from "../components/layouts/SiteChrome";
 import { siteUrl } from "../lib/site-config";
 import { QueryProvider } from "../lib/query-provider";
+import { Toaster } from "../components/ui/toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -132,6 +133,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 footer={<Footer />}
               >
                 {children}
+                <Toaster />
               </SiteChrome>
             </Suspense>
 

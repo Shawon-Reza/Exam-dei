@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { samplePosts } from "../blogs/blog-data";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import type { BlogPost } from "../blogs/types";
-import { exams as sampleExams } from "../exams/exam-data";
+import type { Exam } from "../exams/exam-data";
 import AdminShell from "./layout/AdminShell";
 import BlogsSection from "./features/BlogsSection";
 import ExamsSection from "./features/ExamsSection";
@@ -12,22 +12,36 @@ import QuestionsSection from "./features/QuestionsSection";
 import SettingsSection from "./features/SettingsSection";
 import StudentsSection from "./features/StudentsSection";
 import ResourcesSection from "./features/ResourcesSection";
-import { makeQuestionRows, initialSettings, initialStudents } from "./data";
-import type { AdminSection, AdminSettings, QuestionRow, Student } from "./types";
+import SubjectsTopicsSection from "./features/SubjectsTopicsSection";
+import { initialSettings } from "./data";
+import { adminSectionPaths, getAdminSectionFromPath, type AdminSection, type AdminSettings, type AdminSubject, type QuestionRow, type Student } from "./types";
 
 export default function AdminDashboard() {
-  const [section, setSection] = useState<AdminSection>("overview");
+  const pathname = usePathname();
+  const router = useRouter();
+  const section = getAdminSectionFromPath(pathname);
   const [notice, setNotice] = useState("");
-  const [exams, setExams] = useState(sampleExams);
-  const [questions, setQuestions] = useState<QuestionRow[]>(() => makeQuestionRows(sampleExams));
-  const [students, setStudents] = useState<Student[]>(initialStudents);
-  const [posts, setPosts] = useState<BlogPost[]>(samplePosts);
+  const [exams, setExams] = useState<Exam[]>([]);
+  const [subjects, setSubjects] = useState<AdminSubject[]>([]);
+  const [questions, setQuestions] = useState<QuestionRow[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
   const [settings, setSettings] = useState<AdminSettings>(initialSettings);
 
   function changeSection(nextSection: AdminSection) {
-    setSection(nextSection);
     setNotice("");
+    router.push(adminSectionPaths[nextSection]);
   }
+
+  const changeSubjects = useCallback((nextSubjects: AdminSubject[]) => {
+    setSubjects(nextSubjects);
+    setQuestions((currentQuestions) => currentQuestions.map((question) => {
+      const subject = nextSubjects.find((item) => item.id === question.subjectId)
+        ?? nextSubjects.find((item) => item.label === question.subject);
+      const topic = subject?.topics.find((item) => item.id === question.topicId);
+      return subject ? { ...question, subject: subject.label, topic: topic?.label } : question;
+    }));
+  }, []);
 
   function renderSection() {
     switch (section) {
@@ -43,8 +57,10 @@ export default function AdminDashboard() {
         );
       case "exams":
         return <ExamsSection exams={exams} onChange={setExams} onNotice={setNotice} />;
+      case "subjects":
+        return <SubjectsTopicsSection subjects={subjects} onChange={changeSubjects} onNotice={setNotice} />;
       case "questions":
-        return <QuestionsSection questions={questions} exams={exams} onChange={setQuestions} onNotice={setNotice} />;
+        return <QuestionsSection subjects={subjects} questions={questions} exams={exams} onChange={setQuestions} onNotice={setNotice} />;
       case "students":
         return <StudentsSection students={students} onChange={setStudents} onNotice={setNotice} />;
       case "blogs":
@@ -59,7 +75,6 @@ export default function AdminDashboard() {
   return (
     <AdminShell
       section={section}
-      onSectionChange={changeSection}
       questionCount={questions.length}
       notice={notice}
       onDismissNotice={() => setNotice("")}
