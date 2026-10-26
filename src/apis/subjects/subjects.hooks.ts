@@ -8,7 +8,7 @@ export const subjectsQueryKey = ["subjects", "list"] as const;
 export const useSubjects = () => {
   return useQuery({
     queryKey: subjectsQueryKey,
-    queryFn: subjectsApi.getSubjects,
+    queryFn: () => subjectsApi.getSubjects(),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: true,

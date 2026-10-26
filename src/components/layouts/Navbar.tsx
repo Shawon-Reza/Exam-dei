@@ -3,13 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import type { IconType } from "react-icons";
 import {
   FiArrowUpRight,
   FiBook,
   FiBookOpen,
+  FiCompass,
+  FiEye,
   FiFileText,
+  FiHeart,
   FiLogOut,
+  FiMail,
   FiMenu,
+  FiTarget,
   FiUserPlus,
   FiX,
 } from "react-icons/fi";
@@ -20,6 +26,7 @@ import { useLogout } from "@/src/apis/auth/auth.mutations";
 import type { CurrentUser } from "@/src/apis/auth/auth.types";
 import logo from "@/src/app/icon.jpg";
 import ProfileDrawer from "./ProfileDrawer";
+import { aboutSections } from "@/src/components/about/about-data";
 
 const navigationLinks = [
   { label: "ফিচার", englishLabel: "Features", href: "/#features" },
@@ -52,12 +59,24 @@ const resourceLinks = [
   },
 ];
 
+const aboutSectionIcons = {
+  mission: FiTarget,
+  vision: FiEye,
+  goal: FiCompass,
+  "why-platform": FiBookOpen,
+  motivation: FiHeart,
+  developer: FiUserPlus,
+  contact: FiMail,
+} satisfies Record<(typeof aboutSections)[number]["id"], IconType>;
+
 export default function Navbar({ initialUser }: { initialUser: CurrentUser | null }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
   const [activeHash, setActiveHash] = useState("");
   const resourcesRef = useRef<HTMLDivElement>(null);
+  const aboutRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const logoutMutation = useLogout();
 
@@ -74,24 +93,28 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
   }, [pathname]);
 
   useEffect(() => {
-    function closeResourcesOnOutsideClick(event: PointerEvent) {
-      if (
-        resourcesRef.current &&
-        !resourcesRef.current.contains(event.target as Node)
-      ) {
+    function closeMenusOnOutsideClick(event: PointerEvent) {
+      const target = event.target as Node;
+      if (resourcesRef.current && !resourcesRef.current.contains(target)) {
         setResourcesOpen(false);
+      }
+      if (aboutRef.current && !aboutRef.current.contains(target)) {
+        setAboutOpen(false);
       }
     }
 
-    function closeResourcesOnEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") setResourcesOpen(false);
+    function closeMenusOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setResourcesOpen(false);
+        setAboutOpen(false);
+      }
     }
 
-    document.addEventListener("pointerdown", closeResourcesOnOutsideClick);
-    document.addEventListener("keydown", closeResourcesOnEscape);
+    document.addEventListener("pointerdown", closeMenusOnOutsideClick);
+    document.addEventListener("keydown", closeMenusOnEscape);
     return () => {
-      document.removeEventListener("pointerdown", closeResourcesOnOutsideClick);
-      document.removeEventListener("keydown", closeResourcesOnEscape);
+      document.removeEventListener("pointerdown", closeMenusOnOutsideClick);
+      document.removeEventListener("keydown", closeMenusOnEscape);
     };
   }, []);
 
@@ -108,6 +131,7 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
   function closeMenu() {
     setMobileMenuOpen(false);
     setResourcesOpen(false);
+    setAboutOpen(false);
   }
 
   function handleLogout() {
@@ -257,6 +281,74 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
               </div>
             )}
           </div>
+          <div
+            ref={aboutRef}
+            className="relative"
+            onMouseEnter={() => setAboutOpen(true)}
+            onMouseLeave={() => setAboutOpen(false)}
+          >
+            <button
+              type="button"
+              onClick={() => setAboutOpen((open) => !open)}
+              onFocus={() => setAboutOpen(true)}
+              aria-haspopup="dialog"
+              aria-expanded={aboutOpen}
+              aria-current={pathname === "/about" ? "page" : undefined}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                pathname === "/about"
+                  ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
+              }`}
+            >
+              <span>আমাদের সম্পর্কে</span>
+              <span className={`ml-1.5 text-xs ${pathname === "/about" ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400"}`}>
+                About
+              </span>
+              <span className="ml-1 text-xs text-zinc-400" aria-hidden="true">
+                {aboutOpen ? "⌃" : "⌄"}
+              </span>
+            </button>
+            {aboutOpen && (
+              <div
+                role="dialog"
+                aria-label="About Chakriova sections"
+                className="absolute right-0 top-full z-50 w-[min(390px,calc(100vw-2rem))] pt-2"
+              >
+                <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900">
+                  <p className="px-2 text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                    Chakriova সম্পর্কে
+                  </p>
+                  <p className="px-2 pt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+                    আমাদের উদ্দেশ্য, মানুষ এবং গল্প সম্পর্কে জানুন।
+                  </p>
+                  <nav aria-label="About page sections" className="mt-3 grid gap-1 sm:grid-cols-2">
+                    {aboutSections.map((section) => {
+                      const Icon = aboutSectionIcons[section.id];
+                      return (
+                        <Link
+                          key={section.id}
+                          href={`/about#${section.id}`}
+                          onClick={closeMenu}
+                          className="flex items-start gap-3 rounded-xl p-2.5 transition hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                        >
+                          <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                          <span>
+                            <span className="block text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+                              {section.label}
+                              <span className="ml-1 text-[10px] font-medium text-zinc-400">{section.englishLabel}</span>
+                            </span>
+                            <span className="mt-0.5 block text-[11px] leading-4 text-zinc-500 dark:text-zinc-400">
+                              {section.description}
+                            </span>
+                          </span>
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
@@ -391,6 +483,35 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                   ))}
                 </div>
                 </div>
+              )}
+            </div>
+            <div className="mt-2 rounded-2xl border border-zinc-200 p-3 dark:border-zinc-800">
+              <button
+                type="button"
+                onClick={() => setAboutOpen((open) => !open)}
+                aria-expanded={aboutOpen}
+                className="flex w-full items-center justify-between px-2 py-1 text-left text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400"
+              >
+                আমাদের সম্পর্কে
+                <span aria-hidden="true">{aboutOpen ? "⌃" : "⌄"}</span>
+              </button>
+              {aboutOpen && (
+                <nav aria-label="About page sections" className="mt-1 grid gap-1">
+                  {aboutSections.map((section) => (
+                    <Link
+                      key={section.id}
+                      href={`/about#${section.id}`}
+                      onClick={closeMenu}
+                      className="rounded-xl px-2 py-2 transition hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    >
+                      <span className="block text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+                        {section.label}
+                        <span className="ml-1.5 text-[11px] font-normal text-zinc-400">{section.englishLabel}</span>
+                      </span>
+                      <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">{section.description}</span>
+                    </Link>
+                  ))}
+                </nav>
               )}
             </div>
             {user ? (

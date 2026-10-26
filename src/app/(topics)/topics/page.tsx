@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { FiBookOpen } from "react-icons/fi";
-import { examSubjects } from "@/src/components/exams/exam-data";
 import TopicsBrowser from "@/src/components/topics/TopicsBrowser";
 
 export const metadata: Metadata = {
@@ -10,11 +9,6 @@ export const metadata: Metadata = {
 };
 
 export default function TopicsPage() {
-  const topicCount = examSubjects.reduce(
-    (count, subject) => count + subject.topics.length,
-    0,
-  );
-
   return (
     <main className="min-h-screen bg-zinc-50 py-3 dark:bg-zinc-950 sm:py-5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -29,10 +23,6 @@ export default function TopicsPage() {
           <p className="mt-4 text-sm leading-7 text-zinc-600 dark:text-zinc-400 sm:text-base">
             প্রতিটি বিষয়ের গুরুত্বপূর্ণ topic এক জায়গায় সাজানো। নিজের প্রস্তুতি
             অনুযায়ী বিষয় বেছে নিয়ে অনুশীলন শুরু করুন।
-          </p>
-          <p className="mt-5 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-            {examSubjects.length}টি বিষয় <span aria-hidden="true">·</span>{" "}
-            {topicCount}টি topic
           </p>
         </header>
 

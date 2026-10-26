@@ -13,8 +13,8 @@ import type { ExamSubject, ExamTopic } from "../exams/exam-data";
 import GenerateTestDialog from "./GenerateTestDialog";
 
 type TopicOverviewSidebarProps = {
-  subject: Pick<ExamSubject, "id" | "label">;
-  topic: Pick<ExamTopic, "id" | "label">;
+  subject: Pick<ExamSubject, "id" | "slug" | "label">;
+  topic: Pick<ExamTopic, "id" | "slug" | "label">;
   className?: string;
   isCollapsed: boolean;
   onToggle: () => void;
@@ -59,7 +59,7 @@ export default function TopicOverviewSidebar({
                 {["Test 1", "Test 2", "Test 3"].map((testName, index) => (
                   <Link
                     key={testName}
-                    href={`/topics/${encodeURIComponent(topic.id)}/practice?subject=${encodeURIComponent(subject.id)}&test=${index + 1}`}
+                    href={`/topics/${encodeURIComponent(topic.slug ?? topic.id)}/practice?subject=${encodeURIComponent(subject.slug ?? subject.id)}&test=${index + 1}`}
                     className="group flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50/70 px-3 py-2.5 transition hover:border-emerald-300 hover:bg-emerald-50/70 dark:border-zinc-700 dark:bg-zinc-950/40 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/20"
                   >
                     <span className="flex min-w-0 items-center gap-2">

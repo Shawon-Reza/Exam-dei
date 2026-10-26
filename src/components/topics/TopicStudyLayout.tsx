@@ -14,7 +14,7 @@ import type { TopicNote } from "./topic-notes";
 import TopicOverviewSidebar from "./TopicOverviewSidebar";
 
 type TopicStudyLayoutProps = {
-  subject: Pick<ExamSubject, "id" | "label" | "englishLabel">;
+  subject: Pick<ExamSubject, "id" | "slug" | "label" | "englishLabel">;
   topic: ExamTopic;
   mcqCount: number;
   note: TopicNote;
@@ -158,8 +158,8 @@ export default function TopicStudyLayout({
         </article>
 
         <TopicOverviewSidebar
-          subject={{ id: subject.id, label: subject.label }}
-          topic={{ id: topic.id, label: topic.label }}
+          subject={{ id: subject.id, slug: subject.slug, label: subject.label }}
+          topic={{ id: topic.id, slug: topic.slug, label: topic.label }}
           isCollapsed={isSidebarCollapsed}
           onToggle={() => setIsSidebarCollapsed((collapsed) => !collapsed)}
           className={`border-t lg:border-l lg:border-t-0 ${

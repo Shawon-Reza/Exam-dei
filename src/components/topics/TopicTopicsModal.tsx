@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTopics } from "../../apis/topics/topics.hooks";
 import { FiArrowRight, FiBookOpen, FiSearch, FiX } from "react-icons/fi";
 import type { ExamSubject } from "../exams/exam-data";
 
@@ -15,6 +16,7 @@ export default function TopicTopicsModal({
   onClose,
 }: TopicTopicsModalProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const topicsQuery = useTopics(subject?.id ?? "", searchTerm.trim());
 
   useEffect(() => {
     if (!subject) return;
@@ -29,10 +31,11 @@ export default function TopicTopicsModal({
 
   if (!subject) return null;
 
-  const normalizedSearch = searchTerm.trim().toLocaleLowerCase();
-  const filteredTopics = subject.topics.filter((topic) =>
-    topic.label.toLocaleLowerCase().includes(normalizedSearch),
-  );
+  const filteredTopics = topicsQuery.data?.map((topic) => ({
+    id: topic.id,
+    label: topic.banglaName?.trim() || topic.name,
+    slug: topic.slug,
+  })) ?? [];
   const Icon = subject.icon;
 
   return (
@@ -97,12 +100,16 @@ export default function TopicTopicsModal({
         </header>
 
         <div className="min-h-0 overflow-y-auto p-4 sm:p-5">
-          {filteredTopics.length > 0 ? (
+          {topicsQuery.isLoading ? (
+            <div className="rounded-xl border border-dashed border-zinc-300 px-4 py-10 text-center text-sm text-zinc-500 dark:border-zinc-700">Topic লোড হচ্ছে...</div>
+          ) : topicsQuery.error ? (
+            <div className="rounded-xl border border-dashed border-rose-300 px-4 py-10 text-center text-sm text-rose-600 dark:border-rose-800 dark:text-rose-300">Topic লোড করা যায়নি। পরে আবার চেষ্টা করুন।</div>
+          ) : filteredTopics.length > 0 ? (
             <ul className="grid gap-2 min-[480px]:grid-cols-2">
               {filteredTopics.map((topic, index) => (
                 <li key={topic.id}>
                   <Link
-                    href={`/topics/${encodeURIComponent(topic.id)}?subject=${encodeURIComponent(subject.id)}`}
+                    href={`/topics/${encodeURIComponent(topic.slug)}?subject=${encodeURIComponent(subject.slug ?? subject.id)}`}
                     onClick={onClose}
                     className="group flex min-h-12 items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-zinc-50/70 px-3 py-2.5 text-xs font-semibold text-zinc-700 transition hover:border-emerald-300 hover:bg-emerald-50/70 hover:text-emerald-700 focus-visible:outline-2 focus-visible:outline-emerald-500 dark:border-zinc-700 dark:bg-zinc-950/40 dark:text-zinc-300 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/20 dark:hover:text-emerald-300"
                   >

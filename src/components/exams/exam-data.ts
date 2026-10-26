@@ -19,13 +19,18 @@ export type ExamTopic = {
   isActive?: boolean;
   iconUrl?: string | null;
   subjectId?: string;
+  pdfCount?: number;
 };
 
 export type ExamSubject = {
   id: string;
+  slug?: string;
   label: string;
   englishLabel: string;
   description: string;
+  iconUrl?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
   questionCount: string;
   icon: IconType;
   color: string;

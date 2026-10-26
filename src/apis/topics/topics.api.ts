@@ -13,6 +13,9 @@ export type TopicApiItem = {
   subjectId: string;
   createdAt?: string;
   updatedAt?: string;
+  _count?: {
+    pdfs?: number;
+  };
 };
 
 type TopicsResponse = {
@@ -56,12 +59,13 @@ function toFormData(payload: CreateTopicPayload) {
   return formData;
 }
 
-async function getTopics(subjectId: string, search?: string): Promise<TopicApiItem[]> {
+async function getTopics(subjectId: string, search?: string, cookie?: string): Promise<TopicApiItem[]> {
   const response = await axiosApi.get<TopicsResponse>("/api/v1/topics/", {
     params: {
       subjectId,
       ...(search ? { search } : {}),
     },
+    headers: cookie ? { Cookie: cookie } : undefined,
   });
   return response.data.data?.data ?? [];
 }

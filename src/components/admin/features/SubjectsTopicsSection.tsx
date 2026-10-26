@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import axios from "axios";
-import { FiBookOpen, FiEdit2, FiHash, FiPlus, FiTrash2 } from "react-icons/fi";
+import { FiBookOpen, FiEdit2, FiHash, FiPlus } from "react-icons/fi";
 import Swal from "sweetalert2";
 import type { SubjectApiItem } from "../../../apis/subjects/subjects.api";
 import type { TopicApiItem } from "../../../apis/topics/topics.api";
@@ -12,39 +12,20 @@ import type { ExamTopic } from "../../exams/exam-data";
 import type { AdminSubject, NoticeHandler } from "../types";
 import { toast } from "../../ui/toast";
 import {
-  AdminDialog,
-  DialogActions,
-  EmptyTable,
-  Field,
-  inputClass,
-  Panel,
-  PrimaryButton,
-  SearchBox,
-  SectionHeading,
-  SmallStat,
-  TableFooter,
-} from "../ui/AdminPrimitives";
-import Image from "next/image";
-
-type SubjectDraft = {
-  label: string;
-  englishLabel: string;
-  slug: string;
-  description: string;
-  isActive: boolean;
-  sortOrder: string;
-  file: File | null;
-};
-
-type TopicDraft = {
-  label: string;
-  slug: string;
-  description: string;
-  searchName: string;
-  sortOrder: string;
-  isActive: boolean;
-  file: File | null;
-};
+  emptySubject,
+  emptyTopic,
+  initialSubjectObject,
+  initialQuestionsObject,
+  QuestionsDialog,
+  initialTopicObject,
+  SubjectDialog,
+  TopicDialog,
+  type SubjectDraft,
+  type TopicDraft,
+} from "./SubjectsTopicsDialogs";
+import { SubjectsTopicsPanel } from "./SubjectsTopicsPanels";
+import { TopicPdfsModal } from "./TopicPdfsModal";
+import { PrimaryButton, SectionHeading, SmallStat } from "../ui/AdminPrimitives";
 
 type TopicObjectDraft = {
   slug: string;
@@ -66,28 +47,6 @@ type SubjectObjectDraft = {
   sortOrder: number;
   isActive: boolean;
 };
-
-const emptySubject: SubjectDraft = { label: "", englishLabel: "", slug: "", description: "", isActive: true, sortOrder: "", file: null };
-const emptyTopic: TopicDraft = { label: "", slug: "", description: "", searchName: "", sortOrder: "", isActive: true, file: null };
-const initialTopicObject = `{
-  "slug": "topic-slug",
-  "name": "Topic Name",
-  "banglaName": "টপিক নাম",
-  "description": "Topic description",
-  "searchName": "topic, টপিক",
-  "sortOrder": 1,
-  "isActive": true,
-  "icon": ""
-}`;
-const initialSubjectObject = `{
-  "slug": "english",
-  "name": "English",
-  "banglaName": "ইংরেজি",
-  "description": "English grammar, vocabulary, literature, and language skills for competitive examinations.",
-  "icon": "BookOpen",
-  "sortOrder": 2,
-  "isActive": true
-}`;
 
 function makeId(value: string) {
   return value.trim().toLocaleLowerCase().replace(/[^\w বাংলা-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") || `item-${Date.now()}`;
@@ -120,6 +79,7 @@ function mapApiTopic(topic: TopicApiItem): ExamTopic {
     isActive: topic.isActive,
     iconUrl: topic.icon,
     subjectId: topic.subjectId,
+    pdfCount: topic._count?.pdfs ?? 0,
   };
 }
 
@@ -155,6 +115,10 @@ export default function SubjectsTopicsSection({
   const [subjectInputMode, setSubjectInputMode] = useState<"form" | "object">("form");
   const [subjectObject, setSubjectObject] = useState(initialSubjectObject);
   const [topicDialog, setTopicDialog] = useState(false);
+  const [questionsDialog, setQuestionsDialog] = useState(false);
+  const [pdfModal, setPdfModal] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState<ExamTopic | null>(null);
+  const [questionsObject, setQuestionsObject] = useState(initialQuestionsObject);
   const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
   const [editingTopicId, setEditingTopicId] = useState<string | null>(null);
   const [topicInputMode, setTopicInputMode] = useState<"form" | "object">("form");
@@ -343,6 +307,44 @@ export default function SubjectsTopicsSection({
     setTopicDialog(true);
   }
 
+  function openQuestionsDialog(topic: ExamTopic) {
+    setSelectedTopic(topic);
+    setQuestionsObject(initialQuestionsObject);
+    setQuestionsDialog(true);
+  }
+
+  function openPdfModal(topic: ExamTopic) {
+    setSelectedTopic(topic);
+    setPdfModal(true);
+  }
+
+  function submitQuestions(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selectedSubject || !selectedTopic) return;
+
+    try {
+      const questions = JSON.parse(questionsObject);
+      if (!Array.isArray(questions)) throw new Error("Questions must be an array.");
+      console.log({
+        subjectId: selectedSubject.id,
+        topicId: selectedTopic.id,
+        questions,
+      });
+      onNotice("Questions console-এ পাঠানো হয়েছে");
+      setQuestionsDialog(false);
+    } catch (error) {
+      showEndpointError("Questions JSON সঠিক নয়", error, "একটি valid JSON array দিন।");
+    }
+  }
+
+  function submitPdf(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selectedSubject || !selectedTopic) return;
+
+    onNotice("PDF console-এ পাঠানো হয়েছে");
+    setPdfModal(false);
+  }
+
   async function saveTopic(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const label = topicDraft.label.trim();
@@ -436,146 +438,26 @@ export default function SubjectsTopicsSection({
 
   return (
     <>
-      <SectionHeading
-        eyebrow="Curriculum management"
-        title="বিষয় ও Topic"
-        description="Userside-এর subject catalog, topic এবং learning structure এক জায়গা থেকে পরিচালনা করুন।"
-        action={<PrimaryButton onClick={() => openSubjectDialog()}><FiPlus aria-hidden="true" /> বিষয় যোগ করুন</PrimaryButton>}
-      />
-
+      <SectionHeading eyebrow="Curriculum management" title="বিষয় ও Topic" description="Userside-এর subject catalog, topic এবং learning structure এক জায়গা থেকে পরিচালনা করুন।" action={<PrimaryButton onClick={() => openSubjectDialog()}><FiPlus aria-hidden="true" /> বিষয় যোগ করুন</PrimaryButton>} />
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         <SmallStat label="মোট বিষয়" value={subjects.length.toLocaleString("bn-BD")} icon={<FiBookOpen />} />
+
         <SmallStat label="মোট Topic" value={subjects.reduce((total, subject) => total + subject.topics.length, 0).toLocaleString("bn-BD")} icon={<FiHash />} />
         <SmallStat label="সর্বশেষ ব্যবস্থাপনা" value="—" icon={<FiEdit2 />} />
       </div>
+      <SubjectsTopicsPanel subjects={subjects} isLoading={subjectsQuery.isLoading} selectedSubjectId={activeSubjectId} selectedSubject={selectedSubject} search={search} onSelect={(subject) => { setSelectedSubjectId(subject.id); setSearch(""); }} onSearch={setSearch} onEditSubject={openSubjectDialog} onDeleteSubject={removeSubject} onAddTopic={() => openTopicDialog()} onEditTopic={openTopicDialog} onDeleteTopic={removeTopic} onAddQuestions={openQuestionsDialog} onAddPdf={openPdfModal} />
 
-      <Panel>
-        <div className="grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)]">
-          <div className="divide-y divide-zinc-100 dark:divide-zinc-800 lg:border-r dark:border-zinc-800">
-
-            {subjectsQuery.isLoading ? <div className="p-8 text-center text-sm text-zinc-500">বিষয় লোড হচ্ছে...</div> : subjects.map((subject) => {
-              const active = selectedSubject?.id === subject.id;
-              return (
-                <div key={subject.id} className={`flex items-center gap-3 p-4 transition ${active ? "bg-emerald-50/70 dark:bg-emerald-950/20" : "hover:bg-zinc-50 dark:hover:bg-zinc-800/30"}`}>
-                  <button type="button" onClick={() => { setSelectedSubjectId(subject.id); setSearch(""); }} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-
-                    <span className={`rounded-xl ${subject.color} h-10 w-10 shrink-0 grid place-items-center`}>
-                      <Image
-                        src={subject.iconUrl ?? "/default-subject-icon.svg"}
-                        alt={`${subject.label} আইকন`}
-                        width={24}
-                        height={24}
-                        className=" rounded-lg object-cover h-10 w-10 border-1"
-                      />
-
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm font-bold text-zinc-900 dark:text-white">{subject.label}</span>
-                      <span className="block truncate text-xs text-zinc-500">{subject.englishLabel} · {subject.topics.length} topic</span>
-                    </span>
-                  </button>
-                  <div className="flex shrink-0">
-                    <button type="button" onClick={() => openSubjectDialog(subject)} aria-label={`${subject.label} সম্পাদনা`} className="grid size-8 place-items-center rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"><FiEdit2 aria-hidden="true" size={14} /></button>
-                    <button type="button" disabled={deleteSubjectMutation.isPending} onClick={() => removeSubject(subject)} aria-label={`${subject.label} মুছুন`} className="grid size-8 place-items-center rounded-lg text-zinc-500 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-rose-950/40"><FiTrash2 aria-hidden="true" size={14} /></button>
-                  </div>
-                </div>
-              );
-            })}
-            {!subjectsQuery.isLoading && subjects.length === 0 && <div className="p-8 text-center text-sm text-zinc-500">কোনো বিষয় পাওয়া যায়নি।</div>}
-          </div>
-
-          <div className="min-w-0">
-            {selectedSubject ? (
-              <>
-                <div className="flex flex-col gap-3 border-b border-zinc-100 p-5 sm:flex-row sm:items-start sm:justify-between dark:border-zinc-800">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-600 dark:text-emerald-400">{selectedSubject.englishLabel}</p>
-                    <h2 className="mt-1 text-xl font-extrabold text-zinc-950 dark:text-white">{selectedSubject.label}</h2>
-                    <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{selectedSubject.description || "এই বিষয়ের topic গুলো পরিচালনা করুন।"}</p>
-                  </div>
-                  <div className="flex flex-col gap-2 sm:min-w-64 sm:items-end">
-                    <SearchBox value={search} onChange={setSearch} placeholder="এই বিষয়ের topic খুঁজুন..." />
-                    <PrimaryButton onClick={() => openTopicDialog()}><FiPlus aria-hidden="true" /> Topic যোগ করুন</PrimaryButton>
-                  </div>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[480px] text-left text-sm">
-                    <thead className="bg-zinc-50 text-[11px] uppercase tracking-wider text-zinc-500 dark:bg-zinc-800/60">
-                      <tr><th className="px-5 py-3 font-bold">Topic</th><th className="px-4 py-3 font-bold">ID</th><th className="px-4 py-3 text-right font-bold">Action</th></tr>
-                    </thead>
-                    <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                      {topicsQuery.isLoading ? (
-                        <tr><td colSpan={3} className="p-8 text-center text-sm text-zinc-500">Topic লোড হচ্ছে...</td></tr>
-                      ) : selectedSubject.topics.map((topic) => (
-                        <tr key={topic.id} className="hover:bg-zinc-50/70 dark:hover:bg-zinc-800/30">
-                          <td className="px-5 py-4 font-semibold text-zinc-900 dark:text-white">
-                            <span className="flex items-center gap-2">
-                              <Image src={topic.iconUrl ?? "/default-subject-icon.svg"} alt={`${topic.label} আইকন`} width={28} height={28} className="size-7 rounded-lg object-cover" />
-                              {topic.label}
-                            </span>
-                          </td>
-                          <td className="px-4 py-4 text-xs text-zinc-500">{topic.id}</td>
-                          <td className="px-4 py-4"><div className="flex justify-end gap-1"><button type="button" onClick={() => openTopicDialog(topic)} aria-label={`${topic.label} সম্পাদনা`} className="grid size-9 place-items-center rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"><FiEdit2 aria-hidden="true" /></button><button type="button" disabled={deleteTopicMutation.isPending} onClick={() => removeTopic(topic)} aria-label={`${topic.label} মুছুন`} className="grid size-9 place-items-center rounded-lg text-zinc-500 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-rose-950/40"><FiTrash2 aria-hidden="true" /></button></div></td>
-                        </tr>
-                      ))}
-                      {!topicsQuery.isLoading && selectedSubject.topics.length === 0 && <EmptyTable colSpan={3} text={search.trim() ? "এই search-এর সাথে কোনো topic মেলেনি।" : "এই বিষয়ে এখনো কোনো topic নেই।"} />}
-                    </tbody>
-                  </table>
-                </div>
-                <TableFooter count={selectedSubject.topics.length} label="টি topic" />
-              </>
-            ) : <div className="p-10 text-center text-sm text-zinc-500">Topic দেখতে একটি বিষয় নির্বাচন করুন।</div>}
-          </div>
-        </div>
-      </Panel>
-
-      {subjectDialog && <AdminDialog title={editingSubjectId ? "বিষয় সম্পাদনা" : "নতুন বিষয় যোগ করুন"} onClose={() => setSubjectDialog(false)}>
-        <form onSubmit={saveSubject} className="space-y-4">
-          {!editingSubjectId && <div className="grid grid-cols-2 rounded-xl bg-zinc-100 p-1 text-sm dark:bg-zinc-800">
-            <button type="button" onClick={() => setSubjectInputMode("form")} className={`rounded-lg px-3 py-2 font-semibold ${subjectInputMode === "form" ? "bg-white shadow-sm dark:bg-zinc-700" : "text-zinc-500"}`}>Form format</button>
-            <button type="button" onClick={() => setSubjectInputMode("object")} className={`rounded-lg px-3 py-2 font-semibold ${subjectInputMode === "object" ? "bg-white shadow-sm dark:bg-zinc-700" : "text-zinc-500"}`}>Object format</button>
-          </div>}
-          {subjectInputMode === "object" && !editingSubjectId ? (
-            <Field label="Subject object (JSON)">
-              <textarea required rows={14} value={subjectObject} onChange={(event) => setSubjectObject(event.target.value)} className={`${inputClass} resize-y font-mono text-xs`} spellCheck={false} />
-              <p className="mt-1 text-xs text-zinc-500">`icon` fieldটি তথ্য হিসেবে রাখা যাবে; upload icon-এর জন্য Form format ব্যবহার করুন।</p>
-            </Field>
-          ) : <>
-            <Field label="বাংলা নাম"><input required value={subjectDraft.label} onChange={(event) => setSubjectDraft({ ...subjectDraft, label: event.target.value })} className={inputClass} placeholder="যেমন: বাংলা" /></Field>
-            <Field label="English name"><input required value={subjectDraft.englishLabel} onChange={(event) => setSubjectDraft({ ...subjectDraft, englishLabel: event.target.value, slug: makeId(event.target.value) })} className={inputClass} placeholder="যেমন: Bangla" /></Field>
-            <Field label="Slug"><input required value={subjectDraft.slug} onChange={(event) => setSubjectDraft({ ...subjectDraft, slug: event.target.value })} className={inputClass} placeholder="যেমন: bangla" /></Field>
-            <Field label="সংক্ষিপ্ত বর্ণনা"><textarea rows={3} value={subjectDraft.description} onChange={(event) => setSubjectDraft({ ...subjectDraft, description: event.target.value })} className={`${inputClass} resize-y`} placeholder="এই বিষয়ের সম্পর্কে লিখুন..." /></Field>
-            <Field label="Icon"><input type="file" accept="image/*" onChange={(event) => setSubjectDraft({ ...subjectDraft, file: event.target.files?.[0] ?? null })} className={inputClass} /></Field>
-            <Field label="Sort order"><input type="number" min="0" value={subjectDraft.sortOrder} onChange={(event) => setSubjectDraft({ ...subjectDraft, sortOrder: event.target.value })} className={inputClass} /></Field>
-            <label className="flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-300"><input type="checkbox" checked={subjectDraft.isActive} onChange={(event) => setSubjectDraft({ ...subjectDraft, isActive: event.target.checked })} /> সক্রিয় বিষয়</label>
-          </>}
-          <DialogActions onCancel={() => setSubjectDialog(false)} submitLabel={createSubjectMutation.isPending || updateSubjectMutation.isPending ? "সংরক্ষণ হচ্ছে..." : editingSubjectId ? "পরিবর্তন সংরক্ষণ" : <><FiPlus aria-hidden="true" /> বিষয় যোগ করুন</>} />
-        </form>
-      </AdminDialog>}
-
-      {topicDialog && <AdminDialog title={editingTopicId ? "Topic সম্পাদনা" : `${selectedSubject?.label ?? "বিষয়"}-এ Topic যোগ করুন`} onClose={() => setTopicDialog(false)}>
-        <form onSubmit={saveTopic} className="space-y-4">
-          {!editingTopicId && <div className="grid grid-cols-2 rounded-xl bg-zinc-100 p-1 text-sm dark:bg-zinc-800">
-            <button type="button" onClick={() => setTopicInputMode("form")} className={`rounded-lg px-3 py-2 font-semibold ${topicInputMode === "form" ? "bg-white shadow-sm dark:bg-zinc-700" : "text-zinc-500"}`}>Form format</button>
-            <button type="button" onClick={() => setTopicInputMode("object")} className={`rounded-lg px-3 py-2 font-semibold ${topicInputMode === "object" ? "bg-white shadow-sm dark:bg-zinc-700" : "text-zinc-500"}`}>Object format</button>
-          </div>}
-          {topicInputMode === "object" && !editingTopicId ? (
-            <Field label="Topic object (JSON)">
-              <textarea required rows={14} value={topicObject} onChange={(event) => setTopicObject(event.target.value)} className={`${inputClass} resize-y font-mono text-xs`} spellCheck={false} />
-              <p className="mt-1 text-xs text-zinc-500">`subjectId` selected subject থেকে automatically যুক্ত হবে।</p>
-            </Field>
-          ) : <>
-            <Field label="Topic-এর নাম"><input required value={topicDraft.label} onChange={(event) => setTopicDraft({ ...topicDraft, label: event.target.value, slug: makeId(event.target.value) })} className={inputClass} placeholder="যেমন: সমাস" /></Field>
-            <Field label="Slug"><input required value={topicDraft.slug} onChange={(event) => setTopicDraft({ ...topicDraft, slug: event.target.value })} className={inputClass} placeholder="যেমন: shomash" /></Field>
-            <Field label="Description"><textarea rows={3} value={topicDraft.description} onChange={(event) => setTopicDraft({ ...topicDraft, description: event.target.value })} className={`${inputClass} resize-y`} /></Field>
-            <Field label="Search name"><input value={topicDraft.searchName} onChange={(event) => setTopicDraft({ ...topicDraft, searchName: event.target.value })} className={inputClass} placeholder="যেমন: shomash, সমাস" /></Field>
-            <Field label="Icon"><input type="file" accept="image/*" onChange={(event) => setTopicDraft({ ...topicDraft, file: event.target.files?.[0] ?? null })} className={inputClass} /></Field>
-            <Field label="Sort order"><input type="number" min="0" value={topicDraft.sortOrder} onChange={(event) => setTopicDraft({ ...topicDraft, sortOrder: event.target.value })} className={inputClass} /></Field>
-            <label className="flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-300"><input type="checkbox" checked={topicDraft.isActive} onChange={(event) => setTopicDraft({ ...topicDraft, isActive: event.target.checked })} /> সক্রিয় Topic</label>
-          </>}
-          <DialogActions onCancel={() => setTopicDialog(false)} submitLabel={createTopicMutation.isPending || updateTopicMutation.isPending ? "সংরক্ষণ হচ্ছে..." : editingTopicId ? "পরিবর্তন সংরক্ষণ" : <><FiPlus aria-hidden="true" /> Topic যোগ করুন</>} />
-        </form>
-      </AdminDialog>}
+      {subjectDialog && <SubjectDialog editingId={editingSubjectId} draft={subjectDraft} inputMode={subjectInputMode} objectValue={subjectObject} saving={createSubjectMutation.isPending || updateSubjectMutation.isPending} onDraftChange={setSubjectDraft} onInputModeChange={setSubjectInputMode} onObjectChange={setSubjectObject} onSubmit={saveSubject} onClose={() => setSubjectDialog(false)} />}
+      {topicDialog && <TopicDialog subjectLabel={selectedSubject?.label} editingId={editingTopicId} draft={topicDraft} inputMode={topicInputMode} objectValue={topicObject} saving={createTopicMutation.isPending || updateTopicMutation.isPending} onDraftChange={setTopicDraft} onInputModeChange={setTopicInputMode} onObjectChange={setTopicObject} onSubmit={saveTopic} onClose={() => setTopicDialog(false)} />}
+      {questionsDialog && selectedSubject && selectedTopic && <QuestionsDialog subjectId={selectedSubject.id} topicId={selectedTopic.id} topicLabel={selectedTopic.label} value={questionsObject} onChange={setQuestionsObject} onSubmit={submitQuestions} onClose={() => setQuestionsDialog(false)} />}
+      {pdfModal && selectedSubject && selectedTopic && (
+        <TopicPdfsModal
+          topicId={selectedTopic.id}
+          subjectId={selectedSubject.id}
+          topicLabel={selectedTopic.label}
+          onClose={() => setPdfModal(false)}
+        />
+      )}
     </>
   );
 }

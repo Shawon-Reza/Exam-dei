@@ -39,8 +39,10 @@ export type UpdateSubjectPayload = CreateSubjectPayload & {
   sortOrder?: number;
 };
 
-async function getSubjects(): Promise<SubjectApiItem[]> {
-  const response = await axiosApi.get<SubjectsResponse>("/api/v1/subjects/");
+async function getSubjects(cookie?: string): Promise<SubjectApiItem[]> {
+  const response = await axiosApi.get<SubjectsResponse>("/api/v1/subjects/", {
+    headers: cookie ? { Cookie: cookie } : undefined,
+  });
   return response.data.data?.data ?? [];
 }
 
