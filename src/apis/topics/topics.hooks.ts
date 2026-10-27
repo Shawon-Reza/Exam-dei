@@ -42,3 +42,11 @@ export const useDeleteTopic = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: topicsQueryKey }),
   });
 };
+
+export const useTopicDeepDetails = (topicID: string) => {
+  return useQuery({
+    queryKey: ["topic_deep_details", topicID],
+    queryFn: () => topicsApi.topic_deep_details(topicID),
+    enabled: Boolean(topicID),
+  });
+};

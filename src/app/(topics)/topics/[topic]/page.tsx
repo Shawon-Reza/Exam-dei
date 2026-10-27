@@ -34,31 +34,31 @@ async function findTopic(topicId: string, subjectId?: string) {
       const topics = await topicsApi.getTopics(subject.id, undefined, cookie);
       const topic = topics.find((item) => item.id === topicId || item.slug === topicId);
       if (topic) {
-      const mappedTopic = {
-        id: topic.id,
-        label: topic.banglaName?.trim() || topic.name,
-        slug: topic.slug,
-        description: topic.description ?? "",
-        searchName: topic.searchName ?? "",
-        sortOrder: topic.sortOrder,
-        isActive: topic.isActive,
-        iconUrl: topic.icon,
-        subjectId: topic.subjectId,
-      };
-      const mappedSubject: ExamSubject = {
-        id: subject.id,
-        slug: subject.slug,
-        label: subject.banglaName,
-        englishLabel: subject.name,
-        description: subject.description ?? "",
-        iconUrl: subject.icon,
-        sortOrder: subject.sortOrder,
-        isActive: subject.isActive,
-        questionCount: "—",
-        icon: FiBookOpen,
-        color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
-        topics: [mappedTopic],
-      };
+        const mappedTopic = {
+          id: topic.id,
+          label: topic.banglaName?.trim() || topic.name,
+          slug: topic.slug,
+          description: topic.description ?? "",
+          searchName: topic.searchName ?? "",
+          sortOrder: topic.sortOrder,
+          isActive: topic.isActive,
+          iconUrl: topic.icon,
+          subjectId: topic.subjectId,
+        };
+        const mappedSubject: ExamSubject = {
+          id: subject.id,
+          slug: subject.slug,
+          label: subject.banglaName,
+          englishLabel: subject.name,
+          description: subject.description ?? "",
+          iconUrl: subject.icon,
+          sortOrder: subject.sortOrder,
+          isActive: subject.isActive,
+          questionCount: "—",
+          icon: FiBookOpen,
+          color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
+          topics: [mappedTopic],
+        };
         return {
           subject: mappedSubject,
           topic: mappedTopic,
@@ -86,8 +86,10 @@ async function TopicPageContent({
   params,
   searchParams,
 }: TopicRouteProps) {
+
   const [{ topic: topicId }, query] = await Promise.all([params, searchParams]);
   const subjectId = Array.isArray(query.subject) ? query.subject[0] : query.subject;
+
   const topicDetails = await findTopic(topicId, subjectId);
 
   if (!topicDetails) notFound();
@@ -99,6 +101,13 @@ async function TopicPageContent({
         exam.topicId === topicDetails.topic.id,
     )
     .reduce((total, exam) => total + exam.questionCount, 0);
+
+
+  const topicID = topicDetails?.topic?.id
+  console.log("Found topic ID:", topicID);
+
+
+
 
   return (
     <TopicStudyLayout

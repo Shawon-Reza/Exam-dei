@@ -90,9 +90,8 @@ export function BlogPostCard({
             onClick={onLike}
             aria-label={liked ? "পছন্দ সরিয়ে নিন" : "পছন্দ করুন"}
             aria-pressed={liked}
-            className={`inline-flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-bold transition hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
-              liked ? "text-rose-500" : "text-zinc-500 dark:text-zinc-400"
-            }`}
+            className={`inline-flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-bold transition hover:bg-zinc-100 dark:hover:bg-zinc-800 ${liked ? "text-rose-500" : "text-zinc-500 dark:text-zinc-400"
+              }`}
           >
             <FiHeart aria-hidden="true" className={liked ? "fill-current" : ""} />
             পছন্দ

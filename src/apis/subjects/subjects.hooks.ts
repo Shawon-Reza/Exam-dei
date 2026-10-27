@@ -5,6 +5,7 @@ import { subjectsApi } from "./subjects.api";
 
 export const subjectsQueryKey = ["subjects", "list"] as const;
 
+
 export const useSubjects = () => {
   return useQuery({
     queryKey: subjectsQueryKey,

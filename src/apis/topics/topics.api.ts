@@ -14,7 +14,9 @@ export type TopicApiItem = {
   createdAt?: string;
   updatedAt?: string;
   _count?: {
-    pdfs?: number;
+    pdfs: number;
+    questions: number;
+    tests: number;
   };
 };
 
@@ -98,9 +100,15 @@ async function deleteTopic(topicId: string): Promise<void> {
   await axiosApi.delete(`/api/v1/topics/${topicId}`);
 }
 
+const topic_deep_details = async (topicID: string) => {
+  const res = await axiosApi.get(`/api/v1/topics/deep_details?topicID=${topicID}`)
+  return res.data;
+}
+
 export const topicsApi = {
   getTopics,
   createTopic,
   updateTopic,
   deleteTopic,
+  topic_deep_details
 };

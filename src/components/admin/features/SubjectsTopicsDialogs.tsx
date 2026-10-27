@@ -168,7 +168,7 @@ export function QuestionsDialog({
           <textarea required rows={20} value={value} onChange={(event) => onChange(event.target.value)} className={`${inputClass} resize-y font-mono text-xs`} spellCheck={false} />
           <p className="mt-1 text-xs text-zinc-500">Subject ID: {subjectId} · Topic ID: {topicId}</p>
         </Field>
-        <DialogActions onCancel={onClose} submitLabel={<><FiPlus aria-hidden="true" /> Console-এ পাঠান</>} />
+        <DialogActions onCancel={onClose} submitLabel={<><FiPlus aria-hidden="true" />Add Question</>} />
       </form>
     </AdminDialog>
   );

@@ -26,6 +26,7 @@ import {
 import { SubjectsTopicsPanel } from "./SubjectsTopicsPanels";
 import { TopicPdfsModal } from "./TopicPdfsModal";
 import { PrimaryButton, SectionHeading, SmallStat } from "../ui/AdminPrimitives";
+import { useAddQuestionToTopic } from "@/src/apis/questions/question.useHooks";
 
 type TopicObjectDraft = {
   slug: string;
@@ -80,6 +81,11 @@ function mapApiTopic(topic: TopicApiItem): ExamTopic {
     iconUrl: topic.icon,
     subjectId: topic.subjectId,
     pdfCount: topic._count?.pdfs ?? 0,
+    _count: {
+      pdfs: topic._count?.pdfs ?? 0,
+      questions: topic._count?.questions ?? 0,
+      tests: topic._count?.tests ?? 0,
+    },
   };
 }
 
@@ -136,6 +142,7 @@ export default function SubjectsTopicsSection({
   const createTopicMutation = useCreateTopic();
   const updateTopicMutation = useUpdateTopic();
   const deleteTopicMutation = useDeleteTopic();
+  const addQuestionToTopicMutation = useAddQuestionToTopic();
 
   useEffect(() => {
     if (subjectsQuery.data) {
@@ -318,7 +325,7 @@ export default function SubjectsTopicsSection({
     setPdfModal(true);
   }
 
-  function submitQuestions(event: FormEvent<HTMLFormElement>) {
+  async function submitQuestions(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!selectedSubject || !selectedTopic) return;
 
@@ -331,7 +338,26 @@ export default function SubjectsTopicsSection({
         questions,
       });
       onNotice("Questions console-এ পাঠানো হয়েছে");
+
+      const response = await addQuestionToTopicMutation.mutateAsync({
+        subjectId: selectedSubject.id,
+        topicId: selectedTopic.id,
+        questions,
+      });
+
+
+      toast.add(
+        {
+          title: `${response?.message}`,
+          description: `${response?.data?.count} টি question যোগ হয়েছে`
+        }
+      );
+
+      console.log("===================", response)
       setQuestionsDialog(false);
+
+
+
     } catch (error) {
       showEndpointError("Questions JSON সঠিক নয়", error, "একটি valid JSON array দিন।");
     }

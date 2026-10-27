@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { FiClock, FiX } from "react-icons/fi";
 import { categoryLabel, formatDate } from "./blog-data";
-import { blogEditorExtensions } from "./BlogEditor";
+import { blogEditorExtensions } from "./RichTextEditor";
 import type { BlogPost } from "./types";
 
 export function PostReader({ post, onClose }: { post: BlogPost; onClose: () => void }) {
@@ -15,6 +15,10 @@ export function PostReader({ post, onClose }: { post: BlogPost; onClose: () => v
     content: post.content,
   });
 
+
+  console.log("Editor------------------------>:", editor)
+  console.log("content------------------------>:", post.content)
+  console.log("post------------------------>:", post)
   useEffect(() => {
     function closeOnEscape(event: KeyboardEvent) {
       if (event.key === "Escape") onClose();
@@ -69,6 +73,7 @@ export function PostReader({ post, onClose }: { post: BlogPost; onClose: () => v
               <FiClock aria-hidden="true" /> {post.readTime} মিনিট পড়া
             </span>
           </div>
+
           <EditorContent
             editor={editor}
             className="blog-prose blog-reader mt-7 text-base leading-8 text-zinc-700 dark:text-zinc-300"

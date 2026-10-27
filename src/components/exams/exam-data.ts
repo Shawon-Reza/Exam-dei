@@ -20,6 +20,11 @@ export type ExamTopic = {
   iconUrl?: string | null;
   subjectId?: string;
   pdfCount?: number;
+  _count?: {
+    pdfs: number;
+    questions: number;
+    tests: number;
+  };
 };
 
 export type ExamSubject = {

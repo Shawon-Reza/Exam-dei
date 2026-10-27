@@ -109,7 +109,7 @@ export default function TopicTopicsModal({
               {filteredTopics.map((topic, index) => (
                 <li key={topic.id}>
                   <Link
-                    href={`/topics/${encodeURIComponent(topic.slug)}?subject=${encodeURIComponent(subject.slug ?? subject.id)}`}
+                    href={`/topics/${encodeURIComponent(topic.slug)}?subject=${encodeURIComponent(subject.slug ?? subject.id)}&topicID=${encodeURIComponent(topic.id)}`}
                     onClick={onClose}
                     className="group flex min-h-12 items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-zinc-50/70 px-3 py-2.5 text-xs font-semibold text-zinc-700 transition hover:border-emerald-300 hover:bg-emerald-50/70 hover:text-emerald-700 focus-visible:outline-2 focus-visible:outline-emerald-500 dark:border-zinc-700 dark:bg-zinc-950/40 dark:text-zinc-300 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/20 dark:hover:text-emerald-300"
                   >

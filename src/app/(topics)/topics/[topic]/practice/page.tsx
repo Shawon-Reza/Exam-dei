@@ -33,31 +33,31 @@ async function findTopic(topicId: string, subjectId?: string) {
       const topics = await topicsApi.getTopics(subject.id, undefined, cookie);
       const topic = topics.find((item) => item.id === topicId || item.slug === topicId);
       if (topic) {
-      const mappedTopic = {
-        id: topic.id,
-        label: topic.banglaName?.trim() || topic.name,
-        slug: topic.slug,
-        description: topic.description ?? "",
-        searchName: topic.searchName ?? "",
-        sortOrder: topic.sortOrder,
-        isActive: topic.isActive,
-        iconUrl: topic.icon,
-        subjectId: topic.subjectId,
-      };
-      const mappedSubject: ExamSubject = {
-        id: subject.id,
-        slug: subject.slug,
-        label: subject.banglaName,
-        englishLabel: subject.name,
-        description: subject.description ?? "",
-        iconUrl: subject.icon,
-        sortOrder: subject.sortOrder,
-        isActive: subject.isActive,
-        questionCount: "—",
-        icon: FiBookOpen,
-        color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
-        topics: [mappedTopic],
-      };
+        const mappedTopic = {
+          id: topic.id,
+          label: topic.banglaName?.trim() || topic.name,
+          slug: topic.slug,
+          description: topic.description ?? "",
+          searchName: topic.searchName ?? "",
+          sortOrder: topic.sortOrder,
+          isActive: topic.isActive,
+          iconUrl: topic.icon,
+          subjectId: topic.subjectId,
+        };
+        const mappedSubject: ExamSubject = {
+          id: subject.id,
+          slug: subject.slug,
+          label: subject.banglaName,
+          englishLabel: subject.name,
+          description: subject.description ?? "",
+          iconUrl: subject.icon,
+          sortOrder: subject.sortOrder,
+          isActive: subject.isActive,
+          questionCount: "—",
+          icon: FiBookOpen,
+          color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
+          topics: [mappedTopic],
+        };
         return {
           subject: mappedSubject,
           topic: mappedTopic,

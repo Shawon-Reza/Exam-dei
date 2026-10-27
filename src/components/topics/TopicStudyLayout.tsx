@@ -12,6 +12,8 @@ import {
 import type { ExamSubject, ExamTopic } from "../exams/exam-data";
 import type { TopicNote } from "./topic-notes";
 import TopicOverviewSidebar from "./TopicOverviewSidebar";
+import { useSearchParams } from "next/navigation";
+import { useTopicDeepDetails } from "@/src/apis/topics/topics.hooks";
 
 type TopicStudyLayoutProps = {
   subject: Pick<ExamSubject, "id" | "slug" | "label" | "englishLabel">;
@@ -27,6 +29,16 @@ export default function TopicStudyLayout({
   note,
 }: TopicStudyLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
+
+  const searchParams = useSearchParams()
+  const topicID = searchParams.get('topicID')
+  console.log("==============", topic.id, topicID)
+
+  const topicDeepDetails = useTopicDeepDetails(topic.id)
+  console.log("topicDeepDetails", topicDeepDetails?.data)
+
+
+
 
   useEffect(() => {
     const desktopQuery = window.matchMedia("(min-width: 1024px)");
@@ -60,16 +72,14 @@ export default function TopicStudyLayout({
       </div>
 
       <div
-        className={`mx-auto grid min-h-screen max-w-[1600px] lg:h-full lg:min-h-0 ${
-          isSidebarCollapsed
-            ? "grid-cols-1 lg:grid-cols-[minmax(0,1fr)_56px]"
-            : "grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(280px,32%)] lg:grid-cols-[minmax(0,3fr)_minmax(280px,1fr)]"
-        }`}
+        className={`mx-auto grid min-h-screen max-w-[1600px] lg:h-full lg:min-h-0 ${isSidebarCollapsed
+          ? "grid-cols-1 lg:grid-cols-[minmax(0,1fr)_56px]"
+          : "grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(280px,32%)] lg:grid-cols-[minmax(0,3fr)_minmax(280px,1fr)]"
+          }`}
       >
         <article
-          className={`min-w-0 px-4 pb-8 sm:px-6 sm:pb-10 lg:h-full lg:overflow-y-auto lg:px-8 lg:pb-12 ${
-            !isSidebarCollapsed ? "max-md:hidden" : ""
-          }`}
+          className={`min-w-0 px-4 pb-8 sm:px-6 sm:pb-10 lg:h-full lg:overflow-y-auto lg:px-8 lg:pb-12 ${!isSidebarCollapsed ? "max-md:hidden" : ""
+            }`}
         >
           <div className="hidden items-center justify-between gap-3 lg:flex">
             <Link
@@ -113,7 +123,7 @@ export default function TopicStudyLayout({
             id="notes-content"
             className="py-2 sm:py-4"
           >
-           
+
             <article className="mx-auto max-w-4xl rounded-2xl border border-zinc-200 bg-white px-4 py-6 shadow-sm shadow-zinc-950/[0.03] dark:border-zinc-800 dark:bg-zinc-900 sm:px-9 sm:py-10 lg:px-12">
               <header className="border-b border-zinc-100 pb-5 text-center dark:border-zinc-800 sm:pb-7">
                 <p className="text-xs font-semibold tracking-wide text-emerald-700 dark:text-emerald-400">
@@ -154,7 +164,7 @@ export default function TopicStudyLayout({
               </div>
             </article>
           </section>
-          
+
         </article>
 
         <TopicOverviewSidebar
@@ -162,11 +172,10 @@ export default function TopicStudyLayout({
           topic={{ id: topic.id, slug: topic.slug, label: topic.label }}
           isCollapsed={isSidebarCollapsed}
           onToggle={() => setIsSidebarCollapsed((collapsed) => !collapsed)}
-          className={`border-t lg:border-l lg:border-t-0 ${
-            isSidebarCollapsed
-              ? "hidden lg:block"
-              : "block max-md:min-h-screen md:max-lg:min-h-full"
-          }`}
+          className={`border-t lg:border-l lg:border-t-0 ${isSidebarCollapsed
+            ? "hidden lg:block"
+            : "block max-md:min-h-screen md:max-lg:min-h-full"
+            }`}
         />
       </div>
     </main>
