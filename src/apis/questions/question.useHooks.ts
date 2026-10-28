@@ -22,6 +22,7 @@ export const useGetTopicQuestions = (
     return useQuery({
         queryKey: ["questions", "topic", params],
         queryFn: () => questionsApi.getQuestionsByTopic(params),
+        enabled: enabled && Boolean(params),
     });
 };
 
@@ -56,3 +57,13 @@ export const useAssignQuestionsToTest = (testId: string) => {
         },
     });
 };
+
+
+export const useGetQuestions = (params: string, enabled = true) => {
+    return useQuery({
+        queryKey: ["questions", "", params],
+        queryFn: () => questionsApi.getquestions(params),
+        enabled: enabled && Boolean(params),
+        retry: false,
+    });
+}

@@ -1,72 +1,198 @@
-import { FiCheckCircle, FiHelpCircle } from "react-icons/fi";
-import type { ExamQuestion } from "../exams/exam-data";
+"use client";
+
+import { FiCheckCircle, FiXCircle } from "react-icons/fi";
+
+type QuestionOption = {
+  text: string;
+  isCorrect: boolean;
+};
+
+type McqQuestion = {
+  id: string;
+  question: string;
+  type: string;
+  difficulty: number;
+  explanation: string;
+  options: QuestionOption[];
+};
+
+type SubmittedAnswer = {
+  selectedIndex: number | null;
+  isCorrect: boolean;
+} | null;
 
 type McqQuestionCardProps = {
-  question: ExamQuestion;
+  question: McqQuestion;
   questionNumber: number;
+  onAnswerSelect: (
+    questionId: string,
+    optionIndex: number,
+  ) => void;
+  selectedOptionIndex: number | null;
+  disabled?: boolean;
+  isPracticeMode?: boolean;
+  isSubmitted?: boolean;
+  submittedAnswer?: SubmittedAnswer;
 };
 
 export default function McqQuestionCard({
   question,
   questionNumber,
+  onAnswerSelect,
+  selectedOptionIndex,
+  disabled = false,
+  isPracticeMode = false,
+  isSubmitted = false,
+  submittedAnswer = null,
 }: McqQuestionCardProps) {
+  const correctOption = question.options.find(
+    (option) => option.isCorrect
+  );
+  const correctOptionIndex = question.options.findIndex(
+    (option) => option.isCorrect
+  );
+
+  const isReviewMode = isSubmitted || isPracticeMode;
+  const userSelectedIndex = isSubmitted ? submittedAnswer?.selectedIndex : selectedOptionIndex;
+  const userIsCorrect = isSubmitted ? submittedAnswer?.isCorrect : false;
+
   return (
     <article className="flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm shadow-zinc-950/[0.03] dark:border-zinc-800 dark:bg-zinc-900 sm:p-5">
+      {/* Question header */}
       <div className="flex items-start gap-3">
         <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-xs font-extrabold text-emerald-700 dark:text-emerald-300">
           {String(questionNumber).padStart(2, "0")}
         </span>
+
         <h2 className="pt-1 text-sm font-bold leading-6 text-zinc-950 dark:text-white">
-          {question.prompt}
+          {question.question}
         </h2>
       </div>
 
-      <ol className="mt-4 grid grid-cols-2 gap-2">
-        {question.options.map((option, index) => {
-          const isAnswer = index === question.answerIndex;
+      {/* Options */}
+      <fieldset className="mt-4 flex-1">
+        <legend className="sr-only">
+          প্রশ্ন {questionNumber}-এর উত্তর নির্বাচন করুন
+        </legend>
 
-          return (
-            <li
-              key={`${index}-${option}`}
-              className={`flex min-w-0 items-start gap-2 rounded-xl border px-2 py-2.5 text-xs leading-5 sm:gap-2.5 sm:px-3 ${
-                isAnswer
-                  ? "border-emerald-300 bg-emerald-50 font-semibold text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200"
-                  : "border-zinc-100 bg-zinc-50/70 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950/50 dark:text-zinc-300"
-              }`}
-            >
-              <span
-                className={`grid size-5 shrink-0 place-items-center rounded-full text-[10px] font-bold ${
-                  isAnswer
-                    ? "bg-emerald-600 text-white"
-                    : "bg-zinc-200 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"
-                }`}
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {question.options.map((option, index) => {
+            const isSelected = userSelectedIndex === index;
+            const isCorrectOption = index === correctOptionIndex;
+            const showAsCorrect = isReviewMode && isCorrectOption;
+            const showAsUserWrong = isReviewMode && isSelected && !isCorrectOption;
+
+            return (
+              <label
+                key={`${question.id}-${index}`}
+                className={`flex min-w-0 items-start gap-2 rounded-xl border px-2 py-2.5 text-xs leading-5 transition sm:gap-2.5 sm:px-3 ${disabled || isReviewMode
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer hover:border-emerald-300 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20"
+                  } ${showAsCorrect
+                    ? "border-emerald-400 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/40"
+                    : showAsUserWrong
+                    ? "border-rose-400 bg-rose-50 dark:border-rose-800 dark:bg-rose-950/40"
+                    : isSelected
+                    ? "border-emerald-400 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/40"
+                    : "border-zinc-100 bg-zinc-50/70 dark:border-zinc-800 dark:bg-zinc-950/50"
+                  }`}
               >
-                {String.fromCharCode(65 + index)}
-              </span>
-              <span className="min-w-0 flex-1 break-words">{option}</span>
-              {isAnswer && (
-                <FiCheckCircle
-                  aria-label="সঠিক উত্তর"
-                  className="mt-0.5 size-4 shrink-0"
+                <input
+                  type="radio"
+                  name={`question-${question.id}`}
+                  value={index}
+                  checked={isSelected}
+                  disabled={disabled || isReviewMode}
+                  onChange={() =>
+                    onAnswerSelect(question.id, index)
+                  }
+                  className="sr-only"
                 />
-              )}
-            </li>
-          );
-        })}
-      </ol>
 
-      <div className="mt-auto max-h-36 overflow-y-auto overscroll-contain rounded-xl bg-emerald-50/70 p-3 dark:bg-emerald-950/20 sm:max-h-40">
-        <p className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
-          <FiHelpCircle aria-hidden="true" />
-          সঠিক উত্তর
-        </p>
-        <p className="mt-1 text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-          {question.options[question.answerIndex]}
-        </p>
-        <p className="mt-2 text-xs leading-5 text-zinc-600 dark:text-zinc-400">
-          {question.explanation}
-        </p>
-      </div>
+                <span
+                  aria-hidden="true"
+                  className={`grid size-5 shrink-0 place-items-center rounded-full text-[10px] font-bold ${showAsCorrect
+                      ? "bg-emerald-600 text-white"
+                      : showAsUserWrong
+                      ? "bg-rose-600 text-white"
+                      : isSelected
+                      ? "bg-emerald-600 text-white"
+                      : "bg-zinc-200 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"
+                    }`}
+                >
+                  {String.fromCharCode(65 + index)}
+                </span>
+
+                <span className="min-w-0 flex-1 break-words">
+                  {option.text}
+                </span>
+
+                {(showAsCorrect || (isSelected && isReviewMode)) && (
+                  <FiCheckCircle
+                    aria-hidden="true"
+                    className={`mt-0.5 size-4 shrink-0 ${showAsCorrect
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "text-rose-600 dark:text-rose-400"
+                      }`}
+                  />
+                )}
+
+                {showAsUserWrong && (
+                  <FiXCircle
+                    aria-hidden="true"
+                    className="mt-0.5 size-4 shrink-0 text-rose-600 dark:text-rose-400"
+                  />
+                )}
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      {/* Result review section (shown after submission or in practice mode) */}
+      {isReviewMode && correctOption && (
+        <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+          {/* User's answer */}
+          {isSubmitted && (
+            <p className="mb-2 flex items-center gap-1.5 text-xs font-medium">
+              <span className={`inline-flex items-center gap-1 ${userIsCorrect
+                  ? "text-emerald-700 dark:text-emerald-300"
+                  : "text-rose-700 dark:text-rose-300"
+                }`}>
+                {userIsCorrect ? (
+                  <FiCheckCircle className="size-3" />
+                ) : (
+                  <FiXCircle className="size-3" />
+                )}
+                আপনার উত্তর:{" "}
+                <span className="font-mono">
+                  {userSelectedIndex != null
+                    ? String.fromCharCode(65 + userSelectedIndex)
+                    : "উত্তর দেয়া হয়নি"}
+                </span>
+              </span>
+            </p>
+          )}
+
+          {/* Correct answer */}
+          <p className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300">
+            <FiCheckCircle aria-hidden="true" className="size-3" />
+            সঠিক উত্তর:
+            <span className="font-mono font-semibold text-sm">
+              {String.fromCharCode(65 + correctOptionIndex)}
+            </span>
+            {correctOption.text}
+          </p>
+
+          {/* Explanation */}
+          {question.explanation && (
+            <p className="mt-2 text-xs leading-5 text-zinc-600 dark:text-zinc-400">
+              <span className="font-medium text-zinc-900 dark:text-white">ব্যাখ্যা: </span>
+              {question.explanation}
+            </p>
+          )}
+        </div>
+      )}
     </article>
   );
 }

@@ -55,10 +55,17 @@ const assignQuestionsToTest = async ({
 };
 
 
+const getquestions = async (params: string) => {
+    const res = await axiosApi.get(`/api/v1/questions?${params}`)
+    return res.data
+}
+
+
 export const questionsApi = {
     addQuestionToTopic,
     getQuestionsByTopic,
     getTestQuestions,
     removeQuestionFromTest,
     assignQuestionsToTest,
+    getquestions
 }

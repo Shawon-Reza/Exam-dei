@@ -9,7 +9,6 @@ import type { ExamSubject } from "@/src/components/exams/exam-data";
 import { subjectsApi } from "@/src/apis/subjects/subjects.api";
 import { topicsApi } from "@/src/apis/topics/topics.api";
 import { exams } from "@/src/components/exams/exam-data";
-import { getTopicNote } from "@/src/components/topics/topic-notes";
 
 type TopicRouteProps = {
   params: Promise<{ topic: string }>;
@@ -102,11 +101,8 @@ async function TopicPageContent({
     )
     .reduce((total, exam) => total + exam.questionCount, 0);
 
-
   const topicID = topicDetails?.topic?.id
   console.log("Found topic ID:", topicID);
-
-
 
 
   return (
@@ -119,7 +115,6 @@ async function TopicPageContent({
       }}
       topic={topicDetails.topic}
       mcqCount={mcqCount}
-      note={getTopicNote()}
     />
   );
 }

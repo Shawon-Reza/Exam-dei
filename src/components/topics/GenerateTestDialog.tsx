@@ -2,13 +2,26 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { FiCheckCircle, FiClock, FiEdit3, FiX } from "react-icons/fi";
+import {
+  FiCheckCircle,
+  FiClock,
+  FiEdit3,
+  FiRefreshCw,
+  FiX,
+} from "react-icons/fi";
 
 type GenerateTestDialogProps = {
   subjectId: string;
   topicId: string;
   topicLabel: string;
 };
+
+const difficultyValues = {
+  easy: 1,
+  medium: 3,
+  hard: 4,
+} as const;
+type Difficulty = keyof typeof difficultyValues;
 
 const difficultyOptions = [
   {
@@ -26,7 +39,7 @@ const difficultyOptions = [
     label: "কঠিন · Hard",
     description: "চ্যালেঞ্জিং প্রশ্ন · Advanced questions",
   },
-];
+] as const;
 
 export default function GenerateTestDialog({
   subjectId,
@@ -35,17 +48,29 @@ export default function GenerateTestDialog({
 }: GenerateTestDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [questionCount, setQuestionCount] = useState("20");
-  const [difficulty, setDifficulty] = useState("medium");
+  const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isReady, setIsReady] = useState(false);
+  const [generatedTest, setGeneratedTest] = useState<{
+    limit: number;
+    difficulty: number;
+  } | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const limit = Number.parseInt(questionCount, 10);
+
+    if (!Number.isInteger(limit) || limit < 5 || limit > 100) {
+      return;
+    }
+
     setIsGenerating(true);
 
     window.setTimeout(() => {
       setIsGenerating(false);
-      setIsReady(true);
+      setGeneratedTest({
+        limit,
+        difficulty: difficultyValues[difficulty],
+      });
       setIsOpen(false);
     }, 700);
   }
@@ -60,58 +85,70 @@ export default function GenerateTestDialog({
 
   return (
     <>
-      {isReady ? (
-        <Link
-          href={`/topics/${encodeURIComponent(topicId)}/practice?subject=${encodeURIComponent(subjectId)}&test=generated`}
-          className="mt-2 flex w-full items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/80 px-3 py-3 text-left transition hover:border-emerald-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 dark:border-emerald-900 dark:bg-emerald-950/25"
+      {generatedTest ? (
+        <div className="mt-2 space-y-2">
+          <Link
+            href={`/topics/${encodeURIComponent(topicId)}/practice?subject=${encodeURIComponent(
+              subjectId
+            )}&topicID=${encodeURIComponent(topicId)}&difficulty=${generatedTest.difficulty}&limit=${generatedTest.limit}&type=RANDOM`}
+            className="flex w-full items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/80 px-3 py-3 text-left transition hover:border-emerald-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 dark:border-emerald-900 dark:bg-emerald-950/25"
+          >
+            <span className="flex min-w-0 items-center gap-2.5">
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+                <FiCheckCircle aria-hidden="true" />
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-xs font-bold text-zinc-900 dark:text-white">
+                  Test ready · টেস্ট প্রস্তুত
+                </span>
+                <span className="mt-0.5 block truncate text-[10px] text-zinc-500 dark:text-zinc-400">
+                  {generatedTest.limit}টি MCQ · Start quiz / কুইজ শুরু করুন
+                </span>
+              </span>
+            </span>
+            <FiClock
+              aria-hidden="true"
+              className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400"
+            />
+          </Link>
+          <button
+            type="button"
+            onClick={openDialog}
+            className="flex min-h-9 w-full items-center justify-center gap-2 rounded-lg border border-zinc-200 px-3 text-xs font-bold text-zinc-600 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/30 dark:hover:text-emerald-300"
+          >
+            <FiRefreshCw aria-hidden="true" />
+            আবার তৈরি করুন · Regenerate
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={openDialog}
+          className="mt-2 flex w-full items-center justify-between rounded-xl border border-dashed border-zinc-300 bg-zinc-50/70 px-3 py-3 text-left transition hover:border-emerald-300 hover:bg-emerald-50/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 dark:border-zinc-700 dark:bg-zinc-950/40 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/20"
         >
           <span className="flex min-w-0 items-center gap-2.5">
             <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
-              <FiCheckCircle aria-hidden="true" />
+              {generatedTest ? (
+                <FiCheckCircle aria-hidden="true" />
+              ) : (
+                <FiEdit3 aria-hidden="true" />
+              )}
             </span>
             <span className="min-w-0">
               <span className="block truncate text-xs font-bold text-zinc-900 dark:text-white">
-                Test ready · টেস্ট প্রস্তুত
+                নিজের test তৈরি করুন · Create your test
               </span>
               <span className="mt-0.5 block truncate text-[10px] text-zinc-500 dark:text-zinc-400">
-                {questionCount}টি MCQ · Start quiz / কুইজ শুরু করুন
+                {generatedTest
+                  ? `${questionCount}টি MCQ · আবার customize করতে ক্লিক করুন`
+                  : "প্রশ্ন সংখ্যা ও level বেছে নিন · Choose your preferences"}
               </span>
             </span>
           </span>
           <FiClock
             aria-hidden="true"
-            className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400"
+            className="size-4 shrink-0 text-zinc-400"
           />
-        </Link>
-      ) : (
-        <button
-          type="button"
-          onClick={openDialog}
-          className={`mt-2 flex w-full items-center justify-between rounded-xl border px-3 py-3 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 ${
-          isReady
-            ? "border-emerald-200 bg-emerald-50/80 hover:border-emerald-400 dark:border-emerald-900 dark:bg-emerald-950/25"
-            : "border-dashed border-zinc-300 bg-zinc-50/70 hover:border-emerald-300 hover:bg-emerald-50/70 dark:border-zinc-700 dark:bg-zinc-950/40 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/20"
-          }`}
-        >
-        <span className="flex min-w-0 items-center gap-2.5">
-          <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
-            {isReady ? <FiCheckCircle aria-hidden="true" /> : <FiEdit3 aria-hidden="true" />}
-          </span>
-          <span className="min-w-0">
-            <span className="block truncate text-xs font-bold text-zinc-900 dark:text-white">
-              নিজের test তৈরি করুন · Create your test
-            </span>
-            <span className="mt-0.5 block truncate text-[10px] text-zinc-500 dark:text-zinc-400">
-              {isReady
-                ? `${questionCount}টি MCQ · আবার customize করতে ক্লিক করুন`
-                : "প্রশ্ন সংখ্যা ও level বেছে নিন · Choose your preferences"}
-            </span>
-          </span>
-        </span>
-        <FiClock
-          aria-hidden="true"
-          className="size-4 shrink-0 text-zinc-400"
-        />
         </button>
       )}
 
@@ -180,18 +217,17 @@ export default function GenerateTestDialog({
                   {difficultyOptions.map((option) => (
                     <label
                       key={option.value}
-                      className={`cursor-pointer rounded-xl border p-3 transition ${
-                        difficulty === option.value
-                          ? "border-emerald-500 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/30"
-                          : "border-zinc-200 bg-zinc-50 hover:border-emerald-300 dark:border-zinc-700 dark:bg-zinc-950/40"
-                      }`}
+                      className={`cursor-pointer rounded-xl border p-3 transition ${difficulty === option.value
+                        ? "border-emerald-500 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950/30"
+                        : "border-zinc-200 bg-zinc-50 hover:border-emerald-300 dark:border-zinc-700 dark:bg-zinc-950/40"
+                        }`}
                     >
                       <input
                         type="radio"
                         name="difficulty"
                         value={option.value}
                         checked={difficulty === option.value}
-                        onChange={(event) => setDifficulty(event.target.value)}
+                        onChange={() => setDifficulty(option.value)}
                         className="sr-only"
                       />
                       <span className="block text-xs font-bold text-zinc-900 dark:text-white">

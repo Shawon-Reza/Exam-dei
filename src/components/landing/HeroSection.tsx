@@ -19,7 +19,7 @@ export default function HeroSection() {
   return (
     <section
       id="home"
-      className="relative isolate overflow-hidden bg-zinc-50 dark:bg-zinc-950"
+      className="relative isolate overflow-hidden bg-zinc-50 dark:bg-zinc-950 pt-5 pb-5"
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -left-40 top-0 size-[30rem] rounded-full bg-emerald-300/25 blur-3xl dark:bg-emerald-500/10" />

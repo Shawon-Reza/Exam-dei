@@ -2,13 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
-import { FiBookOpen } from "react-icons/fi";
 import TopicMcqPractice from "@/src/components/topics/TopicMcqPractice";
 import TopicRouteFallback from "@/src/components/topics/TopicRouteFallback";
 import type { ExamSubject } from "@/src/components/exams/exam-data";
 import { subjectsApi } from "@/src/apis/subjects/subjects.api";
 import { topicsApi } from "@/src/apis/topics/topics.api";
-import { getTopicQuestions } from "@/src/components/topics/topic-questions";
 
 type TopicPracticePageProps = {
   params: Promise<{ topic: string }>;
@@ -44,7 +42,7 @@ async function findTopic(topicId: string, subjectId?: string) {
           iconUrl: topic.icon,
           subjectId: topic.subjectId,
         };
-        const mappedSubject: ExamSubject = {
+        const mappedSubject = {
           id: subject.id,
           slug: subject.slug,
           label: subject.banglaName,
@@ -54,7 +52,7 @@ async function findTopic(topicId: string, subjectId?: string) {
           sortOrder: subject.sortOrder,
           isActive: subject.isActive,
           questionCount: "—",
-          icon: FiBookOpen,
+          icon: null as any,
           color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
           topics: [mappedTopic],
         };
@@ -95,7 +93,6 @@ async function TopicPracticePageContent({
     <TopicMcqPractice
       subject={topicDetails.subject}
       topic={topicDetails.topic}
-      questionSet={getTopicQuestions(topicDetails.subject, topicDetails.topic)}
     />
   );
 }
