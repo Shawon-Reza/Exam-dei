@@ -1,11 +1,13 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useSearchParams } from "next/navigation";
 import DemoAuthForm from "../../../components/auth/DemoAuthForm";
 
-export const metadata: Metadata = {
-  title: "Login",
-  description: "Chakriova-তে login করে আপনার exam preparation চালিয়ে যান।",
-};
-
 export default function LoginPage() {
-  return <DemoAuthForm mode="login" />;
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("callbackUrl") ?? "/";
+
+
+
+  return <DemoAuthForm mode="login" redirectUrl={redirect} />;
 }

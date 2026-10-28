@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useSearchParams } from "next/navigation";
 import DemoAuthForm from "../../../components/auth/DemoAuthForm";
 
-export const metadata: Metadata = {
-  title: "Register",
-  description: "Chakriova-তে account তৈরি করে আপনার exam preparation শুরু করুন।",
-};
-
 export default function RegisterPage() {
-  return <DemoAuthForm mode="register" />;
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") ?? "/";
+
+  return <DemoAuthForm mode="register" redirectUrl={redirect} />;
 }

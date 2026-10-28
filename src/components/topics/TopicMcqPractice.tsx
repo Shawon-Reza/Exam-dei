@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   FiArrowLeft,
   FiAlertCircle,
@@ -10,12 +10,15 @@ import {
   FiAward,
   FiCheckCircle,
   FiXCircle,
+  FiLock,
+  FiUser,
 } from "react-icons/fi";
 
 import type { ExamSubject, ExamTopic } from "../exams/exam-data";
 import McqQuestionCard from "./McqQuestionCard";
 import { useGetQuestions } from "@/src/apis/questions/question.useHooks";
 import { useSubmitResult } from "@/src/apis/results/results.hooks";
+import { useAuth } from "@/src/apis/auth/useAuth";
 
 type TopicMcqPracticeProps = {
   subject: Omit<ExamSubject, "icon"> & {
@@ -43,6 +46,7 @@ export default function TopicMcqPractice({
   topic,
 }: TopicMcqPracticeProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const testId = searchParams.get("testID");
   const topicID = searchParams.get("topicID") ?? topic.id;
   const difficulty = searchParams.get("difficulty");
@@ -50,9 +54,36 @@ export default function TopicMcqPractice({
   const type = searchParams.get("type");
   const isPracticeMode = type === "practice";
 
+  // Authentication
+  const { data: user, isLoading: authLoading } = useAuth();
+  const isAuthenticated = !!user;
+
+  // Storage key for persisting answers
+  const storageKey = `mcq_answers_${testId ?? topicID}`;
+
+  // Load answers from localStorage on mount
   const [selectedAnswers, setSelectedAnswers] = useState<
     Record<string, number>
-  >({});
+  >(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch {
+          return {};
+        }
+      }
+    }
+    return {};
+  });
+
+  // Persist answers to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(storageKey, JSON.stringify(selectedAnswers));
+    }
+  }, [storageKey, selectedAnswers]);
 
   const [submittedAnswers, setSubmittedAnswers] = useState<
     Record<string, { selectedIndex: number | null; isCorrect: boolean }>
@@ -72,6 +103,12 @@ export default function TopicMcqPractice({
   const submitResultMutation = useSubmitResult();
   const isSubmitting = submitResultMutation.isPending;
   const submitError = submitResultMutation.isError;
+
+  // Handle login redirect
+  const handleLoginRedirect = () => {
+    const currentPath = window.location.pathname + window.location.search;
+    router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+  };
 
   const params = new URLSearchParams({});
 
@@ -107,9 +144,18 @@ export default function TopicMcqPractice({
     setSubmittedAnswers({});
     setIsSubmitted(false);
     setResultData(null);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(storageKey);
+    }
   };
 
   const handleSubmitAnswers = async () => {
+    // Check authentication before submitting
+    if (!isAuthenticated) {
+      handleLoginRedirect();
+      return;
+    }
+
     const results = questions.map((question, index) => {
       const selectedOptionIndex = selectedAnswers[question.id];
 
@@ -188,6 +234,10 @@ export default function TopicMcqPractice({
           skippedAnswers: response.data.skippedAnswers,
           accuracy: response.data.accuracy,
         });
+        // Clear stored answers after successful submission
+        if (typeof window !== "undefined") {
+          localStorage.removeItem(storageKey);
+        }
       }
     } catch (error) {
       console.error("Failed to submit result:", error);
@@ -337,6 +387,7 @@ export default function TopicMcqPractice({
                       isPracticeMode={isPracticeMode}
                       isSubmitted={isSubmitted}
                       submittedAnswer={submittedAnswers[question.id] ?? null}
+                      isAuthenticated={isAuthenticated}
                     />
                   ))}
                 </div>
@@ -353,6 +404,13 @@ export default function TopicMcqPractice({
                       </p>
                     </div>
 
+                    {!isAuthenticated && (
+                      <div className="w-full sm:w-auto mb-2 p-3 rounded-lg bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 text-sm flex items-center gap-2">
+                        <FiLock className="size-4" />
+                        <span>লগইন না থাকায় ফলাফল জমা দেওয়া যাবে না।</span>
+                      </div>
+                    )}
+
                     {submitError && (
                       <div className="w-full sm:w-auto mb-2 p-3 rounded-lg bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 text-sm">
                         {submitResultMutation.error instanceof Error
@@ -364,7 +422,7 @@ export default function TopicMcqPractice({
                     <button
                       type="button"
                       onClick={handleSubmitAnswers}
-                      disabled={isSubmitting || isSubmitted}
+                      disabled={isSubmitting || isSubmitted || !isAuthenticated}
                       className="w-full rounded-xl bg-emerald-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isSubmitting ? (
@@ -376,6 +434,11 @@ export default function TopicMcqPractice({
                         <>
                           <FiCheckCircle className="mr-2 size-4" />
                           ইতিমধ্যে জমা দেওয়া হয়েছে
+                        </>
+                      ) : !isAuthenticated ? (
+                        <>
+                          <FiLock className="mr-2 size-4" />
+                          লগইন করুন
                         </>
                       ) : (
                         "Submit Answers"

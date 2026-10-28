@@ -17,6 +17,7 @@ import { BASE_URL } from "@/src/config/config";
 
 type DemoAuthFormProps = {
   mode: "login" | "register";
+  redirectUrl?: string;
 };
 
 const socialProviders = [
@@ -32,7 +33,7 @@ function getLoginErrorMessage(error: Error) {
   return error.message;
 }
 
-export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
+export default function DemoAuthForm({ mode, redirectUrl = "/" }: DemoAuthFormProps) {
   const [socialMessage, setSocialMessage] = useState<string | null>(null);
   const [registrationEmail, setRegistrationEmail] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
@@ -43,7 +44,7 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
   const registerMutation = useRegister();
   const verifyOtpMutation = useVerifyOtp();
   const resendOtpMutation = useResendVerificationOtp();
-  
+
   const loginNeedsOtp =
     isLogin &&
     loginMutation.isError &&
@@ -51,7 +52,9 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
   const isOtpStep =
     (!isLogin && registerMutation.data?.success === true) || loginNeedsOtp;
   const googleLoginUrl = new URL("/api/v1/auth/google-login", BASE_URL);
-  googleLoginUrl.searchParams.set("redirectUrl", "/profile");
+  googleLoginUrl.searchParams.set("redirectUrl", redirectUrl);
+
+  console.log("Redirect URL:--------------------------------", redirectUrl);
 
   useEffect(() => {
     if (resendCooldown <= 0) return;
@@ -82,7 +85,7 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
       },
         {
           onSuccess: () => {
-           router.push('/')
+            router.push(redirectUrl)
           }
         });
     } else if (isLogin) {
@@ -96,7 +99,7 @@ export default function DemoAuthForm({ mode }: DemoAuthFormProps) {
             console.log("Login successful:", data);
             formData.delete("email");
             formData.delete("password");
-            router.push('/')
+            router.push(redirectUrl)
           },
 
           onError: (error) => {

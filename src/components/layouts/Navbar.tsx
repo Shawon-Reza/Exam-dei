@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { IconType } from "react-icons";
 import {
@@ -81,6 +81,14 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
   const logoutMutation = useLogout();
 
   const { data: user } = useAuth(initialUser);
+
+
+  const searchParams = useSearchParams();
+
+  const currentUrl = `${pathname}?${searchParams.toString()}`;
+
+  // console.log("From Navbar:SearchParams:--------->", searchParams.toString());
+  // console.log("From Navbar:Current URL:--------->", currentUrl);
 
   useEffect(() => {
     function updateActiveHash() {
@@ -176,8 +184,8 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
                 className={`rounded-full px-4 py-2 text-sm font-medium transition ${isActive
-                    ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
-                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
+                  ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
                   }`}
               >
                 <span>{item.label}</span>
@@ -203,28 +211,26 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
               aria-expanded={resourcesOpen}
               aria-current={
                 pathname.startsWith("/notes") ||
-                pathname === "/books" ||
-                pathname === "/question-bank"
+                  pathname === "/books" ||
+                  pathname === "/question-bank"
                   ? "page"
                   : undefined
               }
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                pathname.startsWith("/notes") ||
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${pathname.startsWith("/notes") ||
                 pathname === "/books" ||
                 pathname === "/question-bank"
-                  ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
-                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
-              }`}
+                ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
+                }`}
             >
               <span>শিক্ষা উপকরণ</span>
               <span
-                className={`ml-1.5 text-xs ${
-                  pathname.startsWith("/notes") ||
+                className={`ml-1.5 text-xs ${pathname.startsWith("/notes") ||
                   pathname === "/books" ||
                   pathname === "/question-bank"
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : "text-zinc-400"
-                }`}
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-zinc-400"
+                  }`}
               >
                 Resources
               </span>
@@ -239,44 +245,44 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                 className="absolute right-0 top-full z-50 w-[min(680px,calc(100vw-2rem))] pt-2"
               >
                 <div className="grid max-h-[min(70vh,520px)] gap-4 overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-4 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] sm:gap-5 sm:p-5">
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                        প্রস্তুতির উপকরণ
-                      </p>
-                      <p className="mt-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
-                        আপনার প্রয়োজন অনুযায়ী প্রশ্ন, নোট ও বই বেছে নিয়ে প্রস্তুতি আরও গুছিয়ে নিন।
-                      </p>
-                      <div className="mt-4 space-y-2">
-                        {resourceLinks.map(({ title, description, href, icon: Icon }) => (
-                          <Link key={href} href={href} onClick={closeMenu} className="flex items-center gap-2 rounded-lg p-2 transition hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                            <Icon className="size-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
-                            <span>
-                              <span className="block font-bold text-zinc-900 dark:text-white">{title}</span>
-                              <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">{description}</span>
-                            </span>
-                          </Link>
-                        ))}
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                      প্রস্তুতির উপকরণ
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
+                      আপনার প্রয়োজন অনুযায়ী প্রশ্ন, নোট ও বই বেছে নিয়ে প্রস্তুতি আরও গুছিয়ে নিন।
+                    </p>
+                    <div className="mt-4 space-y-2">
+                      {resourceLinks.map(({ title, description, href, icon: Icon }) => (
+                        <Link key={href} href={href} onClick={closeMenu} className="flex items-center gap-2 rounded-lg p-2 transition hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                          <Icon className="size-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+                          <span>
+                            <span className="block font-bold text-zinc-900 dark:text-white">{title}</span>
+                            <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">{description}</span>
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="rounded-2xl bg-zinc-50 p-4 dark:bg-zinc-950">
+                    <div className="flex items-center gap-2">
+                      <FiFileText className="size-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+                      <div>
+                        <h2 className="text-sm font-bold text-zinc-900 dark:text-white">বিষয়ভিত্তিক নোট</h2>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400">যে বিষয়ের নোট পড়তে চান বেছে নিন</p>
                       </div>
                     </div>
-                    <div className="rounded-2xl bg-zinc-50 p-4 dark:bg-zinc-950">
-                      <div className="flex items-center gap-2">
-                        <FiFileText className="size-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
-                        <div>
-                          <h2 className="text-sm font-bold text-zinc-900 dark:text-white">বিষয়ভিত্তিক নোট</h2>
-                          <p className="text-xs text-zinc-500 dark:text-zinc-400">যে বিষয়ের নোট পড়তে চান বেছে নিন</p>
-                        </div>
-                      </div>
-                      <div className="mt-3 grid grid-cols-2 gap-2">
-                        {noteLinks.map((note) => (
-                          <Link key={note.href} href={note.href} onClick={closeMenu} className="block rounded-lg border border-zinc-200 bg-white p-2 transition hover:bg-emerald-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-emerald-950/30">
-                            <span>
-                              <span className="block text-sm font-bold text-zinc-800 dark:text-zinc-100">{note.label}</span>
-                              <span className="block text-[11px] text-zinc-500 dark:text-zinc-400">{note.englishLabel}</span>
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      {noteLinks.map((note) => (
+                        <Link key={note.href} href={note.href} onClick={closeMenu} className="block rounded-lg border border-zinc-200 bg-white p-2 transition hover:bg-emerald-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-emerald-950/30">
+                          <span>
+                            <span className="block text-sm font-bold text-zinc-800 dark:text-zinc-100">{note.label}</span>
+                            <span className="block text-[11px] text-zinc-500 dark:text-zinc-400">{note.englishLabel}</span>
+                          </span>
+                        </Link>
+                      ))}
                     </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -294,11 +300,10 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
               aria-haspopup="dialog"
               aria-expanded={aboutOpen}
               aria-current={pathname === "/about" ? "page" : undefined}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                pathname === "/about"
-                  ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
-                  : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
-              }`}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${pathname === "/about"
+                ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
+                }`}
             >
               <span>আমাদের সম্পর্কে</span>
               <span className={`ml-1.5 text-xs ${pathname === "/about" ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400"}`}>
@@ -385,7 +390,7 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
           ) : (
             <div className="hidden items-center gap-2 sm:flex">
               <Link
-                href="/login"
+                href={`/login?callbackUrl=${encodeURIComponent(currentUrl)}`}
                 className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-600"
               >
                 <FiUserPlus aria-hidden="true" />
@@ -433,8 +438,8 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                   onClick={closeMenu}
                   aria-current={isActive ? "page" : undefined}
                   className={`flex items-center justify-between rounded-xl px-3 py-3 text-sm font-medium transition ${isActive
-                      ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
-                      : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                    ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                    : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                     }`}
                 >
                   {item.label}
@@ -458,30 +463,30 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
               </button>
               {resourcesOpen && (
                 <div className="mt-1">
-                {resourceLinks.map(({ title, description, href }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={closeMenu}
-                    className="flex items-center justify-between rounded-xl px-2 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                  >
-                    <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">{title}</span>
-                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{description}</span>
-                  </Link>
-                ))}
-                <p className="px-2 pt-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400">নোটের বিষয়</p>
-                <div className="mt-1 grid grid-cols-2 gap-1">
-                  {noteLinks.map((note) => (
+                  {resourceLinks.map(({ title, description, href }) => (
                     <Link
-                      key={note.href}
-                      href={note.href}
+                      key={href}
+                      href={href}
                       onClick={closeMenu}
-                      className="rounded-lg px-2 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                      className="flex items-center justify-between rounded-xl px-2 py-2.5 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                     >
-                      {note.label}
+                      <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">{title}</span>
+                      <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{description}</span>
                     </Link>
                   ))}
-                </div>
+                  <p className="px-2 pt-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400">নোটের বিষয়</p>
+                  <div className="mt-1 grid grid-cols-2 gap-1">
+                    {noteLinks.map((note) => (
+                      <Link
+                        key={note.href}
+                        href={note.href}
+                        onClick={closeMenu}
+                        className="rounded-lg px-2 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                      >
+                        {note.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

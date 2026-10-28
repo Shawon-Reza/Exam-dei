@@ -1,6 +1,6 @@
 "use client";
 
-import { FiCheckCircle, FiXCircle } from "react-icons/fi";
+import { FiCheckCircle, FiXCircle, FiLock } from "react-icons/fi";
 
 type QuestionOption = {
   text: string;
@@ -33,6 +33,7 @@ type McqQuestionCardProps = {
   isPracticeMode?: boolean;
   isSubmitted?: boolean;
   submittedAnswer?: SubmittedAnswer;
+  isAuthenticated?: boolean;
 };
 
 export default function McqQuestionCard({
@@ -44,6 +45,7 @@ export default function McqQuestionCard({
   isPracticeMode = false,
   isSubmitted = false,
   submittedAnswer = null,
+  isAuthenticated = true,
 }: McqQuestionCardProps) {
   const correctOption = question.options.find(
     (option) => option.isCorrect
@@ -52,7 +54,7 @@ export default function McqQuestionCard({
     (option) => option.isCorrect
   );
 
-  const isReviewMode = isSubmitted || isPracticeMode;
+  const isReviewMode = (isSubmitted || isPracticeMode) && isAuthenticated;
   const userSelectedIndex = isSubmitted ? submittedAnswer?.selectedIndex : selectedOptionIndex;
   const userIsCorrect = isSubmitted ? submittedAnswer?.isCorrect : false;
 
@@ -149,7 +151,7 @@ export default function McqQuestionCard({
         </div>
       </fieldset>
 
-      {/* Result review section (shown after submission or in practice mode) */}
+      {/* Result review section (shown after submission or in practice mode, only for authenticated users) */}
       {isReviewMode && correctOption && (
         <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
           {/* User's answer */}
@@ -191,6 +193,16 @@ export default function McqQuestionCard({
               {question.explanation}
             </p>
           )}
+        </div>
+      )}
+
+      {/* Login prompt for unauthenticated users */}
+      {!isAuthenticated && (isSubmitted || isPracticeMode) && (
+        <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+          <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900">
+            <FiLock className="size-4" />
+            <span>উত্তর ও ব্যাখ্যা দেখতে <a href="/login" className="text-emerald-600 hover:underline font-medium">লগইন করুন</a></span>
+          </div>
         </div>
       )}
     </article>
