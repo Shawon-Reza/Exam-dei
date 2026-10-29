@@ -3,14 +3,17 @@
 import { useState } from "react";
 import { X, Plus, Loader2 } from "lucide-react";
 import { useCreateTest } from "@/src/apis/test/test.useHooks";
+import { toast } from "@/src/components/ui/toast";
 
 type CreateTestModalProps = {
     topicId: string;
+    subjectId: string;
     onClose: () => void;
 };
 
 export default function CreateTestModal({
     topicId,
+    subjectId,
     onClose,
 }: CreateTestModalProps) {
     const [name, setName] = useState("");
@@ -19,6 +22,7 @@ export default function CreateTestModal({
     const [duration, setDuration] = useState(30);
     const [totalQuestions, setTotalQuestions] = useState(25);
     const [isActive, setIsActive] = useState(true);
+    const [status, setStatus] = useState<"UPCOMING" | "LIVE">("LIVE");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -55,17 +59,32 @@ export default function CreateTestModal({
                 totalQuestions: Number(totalQuestions),
                 isActive,
                 topicId,
+                subjectId,
+                status,
             };
 
             const result = await createTestMutation.mutateAsync(testData);
 
-            console.log("Test created successfully:", result);
-
-            // সফল হলে modal বন্ধ করতে চাইলে
-            onClose();
+            if (result.success) {
+                toast.add({
+                    title: "সফল",
+                    description: result.message || "Test created successfully",
+                    type: "success",
+                });
+                console.log("Test created successfully:", result);
+                onClose();
+            } else {
+                throw new Error(result.message || "Failed to create test");
+            }
         } catch (err) {
             console.error("Failed to create test:", err);
-            setError("Failed to create test. Please try again.");
+            const errorMessage = err instanceof Error ? err.message : "Failed to create test. Please try again.";
+            setError(errorMessage);
+            toast.add({
+                title: "ত্রুটি",
+                description: errorMessage,
+                type: "error",
+            });
         } finally {
             setLoading(false);
         }
@@ -218,6 +237,27 @@ export default function CreateTestModal({
                                 className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
                             />
                         </div>
+                    </div>
+
+                    {/* Status */}
+                    <div>
+                        <label
+                            htmlFor="test-status"
+                            className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200"
+                        >
+                            Status <span className="text-red-500">*</span>
+                        </label>
+
+                        <select
+                            id="test-status"
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value as "UPCOMING" | "LIVE")}
+                            required
+                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                        >
+                            <option value="UPCOMING">Upcoming</option>
+                            <option value="LIVE">Live</option>
+                        </select>
                     </div>
 
                     {/* Active Status */}

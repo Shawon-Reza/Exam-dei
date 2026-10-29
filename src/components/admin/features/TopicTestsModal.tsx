@@ -86,6 +86,7 @@ export default function TopicTestsModal({
         {createModalOpen && (
           <CreateTestModal
             topicId={topicId}
+            subjectId={subjectId}
             onClose={() => setCreateModalOpen(false)}
           // onSubmit={handleCreateTest}
           />

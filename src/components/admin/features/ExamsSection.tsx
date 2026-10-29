@@ -8,19 +8,19 @@ import type { ExamDraft } from "../types";
 import { EmptyTable, Panel, PrimaryButton, SearchBox, SectionHeading, TableFooter } from "../ui/AdminPrimitives";
 
 const statusClass: Record<ExamStatus, string> = {
-  live: "bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300",
-  running: "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
-  upcoming: "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300",
-  practice: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
+  LIVE: "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
+  UPCOMING: "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300",
+  PRACTICE: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
 };
 
 const emptyDraft: ExamDraft = {
-  title: "",
-  subtitle: "",
-  subjectId: "bangla",
-  status: "practice" as ExamStatus,
-  questionCount: "20",
-  durationMinutes: "20",
+  name: "",
+  slug: "",
+  description: "",
+  duration: 30,
+  totalQuestions: 20,
+  isActive: true,
+  status: "LIVE" as ExamStatus,
 };
 
 export default function ExamsSection({
@@ -38,7 +38,7 @@ export default function ExamsSection({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [draft, setDraft] = useState(emptyDraft);
   const filtered = useMemo(() => exams.filter((exam) =>
-    `${exam.title} ${exam.subtitle}`.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()) &&
+    `${exam.name} ${exam.description}`.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()) &&
     (statusFilter === "all" || exam.status === statusFilter),
   ), [exams, search, statusFilter]);
 
@@ -46,33 +46,37 @@ export default function ExamsSection({
     setEditingId(exam?.id ?? null);
     setDialogOpen(true);
     setDraft(exam ? {
-      title: exam.title,
-      subtitle: exam.subtitle,
-      subjectId: exam.subjectId ?? "bangla",
+      name: exam.name,
+      slug: exam.slug,
+      description: exam.description,
+      duration: exam.duration,
+      totalQuestions: exam.totalQuestions,
+      isActive: exam.isActive,
       status: exam.status,
-      questionCount: String(exam.questionCount),
-      durationMinutes: String(exam.durationMinutes),
     } : emptyDraft);
   }
 
   function saveExam(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const subject = examSubjects.find((item) => item.id === draft.subjectId);
-    if (!subject || !draft.title.trim()) return;
     const details = {
-      title: draft.title.trim(),
-      subtitle: draft.subtitle.trim() || subject.label,
-      subjectId: subject.id,
-      categoryId: undefined,
+      name: draft.name.trim(),
+      slug: draft.slug.trim(),
+      description: draft.description.trim(),
+      duration: Number(draft.duration),
+      totalQuestions: Number(draft.totalQuestions),
+      isActive: draft.isActive,
       status: draft.status,
-      questionCount: Math.max(1, Number(draft.questionCount) || 1),
-      durationMinutes: Math.max(1, Number(draft.durationMinutes) || 1),
     };
+    if (!details.name.trim()) return;
+
+    // Log the user-given data when creating a new exam
+    console.log("User submitted exam data:", details);
+
     if (editingId) {
       onChange(exams.map((exam) => exam.id === editingId ? { ...exam, ...details } : exam));
       onNotice("পরীক্ষার তথ্য আপডেট হয়েছে");
     } else {
-      const newExam: Exam = { ...details, id: `admin-exam-${Date.now()}`, participants: 0, questions: exams[0]?.questions ?? [] };
+      const newExam: Exam = { ...details, id: `admin-exam-${Date.now()}`, questions: exams[0]?.questions ?? [] };
       onChange([newExam, ...exams]);
       onNotice("নতুন পরীক্ষা তৈরি হয়েছে");
     }
@@ -119,7 +123,6 @@ export default function ExamsSection({
                 <th className="px-4 py-3 font-bold">Status</th>
                 <th className="px-4 py-3 font-bold">প্রশ্ন</th>
                 <th className="px-4 py-3 font-bold">সময়</th>
-                <th className="px-4 py-3 font-bold">অংশগ্রহণকারী</th>
                 <th className="px-4 py-3 text-right font-bold">Action</th>
               </tr>
             </thead>
@@ -127,32 +130,29 @@ export default function ExamsSection({
               {filtered.map((exam) => (
                 <tr key={exam.id} className="transition hover:bg-zinc-50/70 dark:hover:bg-zinc-800/30">
                   <td className="px-5 py-4">
-                    <p className="font-bold text-zinc-900 dark:text-white">{exam.title}</p>
-                    <p className="mt-1 text-xs text-zinc-500">{exam.subtitle}</p>
+                    <p className="font-bold text-zinc-900 dark:text-white">{exam.name}</p>
+                    <p className="mt-1 text-xs text-zinc-500">{exam.description}</p>
                   </td>
                   <td className="px-4 py-4">
                     <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${statusClass[exam.status]}`}>
                       {statusLabels[exam.status]}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-zinc-600 dark:text-zinc-300">{exam.questionCount}</td>
-                  <td className="px-4 py-4 text-zinc-600 dark:text-zinc-300">{exam.durationMinutes} মিনিট</td>
-                  <td className="px-4 py-4 text-zinc-600 dark:text-zinc-300">
-                    {exam.participants.toLocaleString("bn-BD")}
-                  </td>
+                  <td className="px-4 py-4 text-zinc-600 dark:text-zinc-300">{exam.totalQuestions}</td>
+                  <td className="px-4 py-4 text-zinc-600 dark:text-zinc-300">{exam.duration} মিনিট</td>
                   <td className="px-4 py-4">
                     <div className="flex justify-end gap-1">
-                      <button type="button" onClick={() => openDialog(exam)} aria-label={`${exam.title} সম্পাদনা`} className="grid size-9 place-items-center rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                      <button type="button" onClick={() => openDialog(exam)} aria-label={`${exam.name} সম্পাদনা`} className="grid size-9 place-items-center rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800">
                         <FiEdit2 aria-hidden="true" />
                       </button>
-                      <button type="button" onClick={() => removeExam(exam.id)} aria-label={`${exam.title} মুছুন`} className="grid size-9 place-items-center rounded-lg text-zinc-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40">
+                      <button type="button" onClick={() => removeExam(exam.id)} aria-label={`${exam.name} মুছুন`} className="grid size-9 place-items-center rounded-lg text-zinc-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40">
                         <FiTrash2 aria-hidden="true" />
                       </button>
                     </div>
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && <EmptyTable colSpan={6} text="কোনো পরীক্ষা পাওয়া যায়নি।" />}
+              {filtered.length === 0 && <EmptyTable colSpan={5} text="কোনো পরীক্ষা পাওয়া যায়নি।" />}
             </tbody>
           </table>
         </div>

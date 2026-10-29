@@ -52,12 +52,11 @@ export default function ExamSubjectBrowser({
               key={subject.id}
               type="button"
               aria-pressed={isSelected}
-              onClick={() => onSelectSubject(subject.id)}
-              className={`group flex min-h-32 flex-col rounded-xl border p-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg ${
-                isSelected
-                  ? "border-emerald-500 bg-emerald-50 shadow-md shadow-emerald-950/5 dark:bg-emerald-950/30"
-                  : "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
-              }`}
+              // onClick={() => onSelectSubject(subject.id)}
+              className={`group flex min-h-32 flex-col rounded-xl border p-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg ${isSelected
+                ? "border-emerald-500 bg-emerald-50 shadow-md shadow-emerald-950/5 dark:bg-emerald-950/30"
+                : "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+                }`}
             >
               <span className="flex items-center justify-between gap-3">
                 <span className={`grid size-8 place-items-center rounded-lg ${subject.color}`}>
@@ -82,12 +81,12 @@ export default function ExamSubjectBrowser({
         })}
       </div>
 
-      <ExamSubjectTopicsModal
+      {/* <ExamSubjectTopicsModal
         subject={selectedSubject ?? null}
         selectedTopicId={selectedTopicId}
         onSelectTopic={onSelectTopic}
         onClose={onClose}
-      />
+      /> */}
     </div>
   );
 }

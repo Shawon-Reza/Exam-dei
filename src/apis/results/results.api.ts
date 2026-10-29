@@ -28,6 +28,9 @@ export type ResultResponse = {
   testType: "PREDEFINED" | "PRACTICE";
   createdAt: string;
   updatedAt: string;
+  point?: {
+    points: number;
+  };
 };
 
 export type SubmitResultResponse = {

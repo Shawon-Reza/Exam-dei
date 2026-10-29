@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { testsApi } from "./test.api"
-
+import { testsApi, type CreateTestPayload, type CreateTestResponse } from "./test.api"
 
 
 export const useTests = (topicId: string) => {
@@ -14,7 +13,7 @@ export const useTests = (topicId: string) => {
 
 export const useCreateTest = () => {
     const queryClient = useQueryClient();
-    return useMutation({
+    return useMutation<CreateTestResponse, Error, CreateTestPayload>({
         mutationFn: testsApi.createTest,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["tests"] })

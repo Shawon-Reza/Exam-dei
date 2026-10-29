@@ -58,22 +58,19 @@ export type ExamQuestion = {
   explanation: string;
 };
 
-export type ExamStatus = "live" | "running" | "upcoming" | "practice";
+export type ExamStatus = "LIVE" | "UPCOMING" | "PRACTICE";
 
 export type Exam = {
   id: string;
-  title: string;
-  subtitle: string;
+  name: string;
+  slug: string;
+  description: string;
+  duration: number;
+  totalQuestions: number;
+  isActive: boolean;
   status: ExamStatus;
-  subjectId?: string;
-  topicId?: string;
-  categoryId?: string;
-  questionCount: number;
-  durationMinutes: number;
-  participants: number;
   startsAt?: string;
   endsAt?: string;
-  featured?: boolean;
   questions: ExamQuestion[];
 };
 
@@ -210,86 +207,86 @@ export const examCategories: ExamCategory[] = [
 
 const questionSets: Record<string, ExamQuestion[]> = {
   bangla: [
-  {
-    prompt: "‘রাজপুত্র’ কোন সমাসের উদাহরণ?",
-    options: ["কর্মধারয়", "ষষ্ঠী তৎপুরুষ", "দ্বন্দ্ব", "বহুব্রীহি"],
-    answerIndex: 1,
-    explanation: "‘রাজার পুত্র’—ব্যাসবাক্যে ষষ্ঠী বিভক্তি থাকে, তাই এটি ষষ্ঠী তৎপুরুষ সমাস।",
-  },
-  {
-    prompt: "নিচের কোনটি সঠিক বানান?",
-    options: ["মুমূর্ষু", "মুমুর্ষু", "মুমূর্ষূ", "মুমুর্ষূ"],
-    answerIndex: 0,
-    explanation: "সঠিক বানান ‘মুমূর্ষু’।",
-  },
-  {
-    prompt: "‘আকাশ-কুসুম’ বাগধারাটির অর্থ কী?",
-    options: ["খুব সুন্দর ফুল", "অলীক কল্পনা", "আকাশের তারা", "অপ্রত্যাশিত ঘটনা"],
-    answerIndex: 1,
-    explanation: "‘আকাশ-কুসুম’ বলতে অবাস্তব বা অলীক কল্পনাকে বোঝায়।",
-  },
+    {
+      prompt: "‘রাজপুত্র’ কোন সমাসের উদাহরণ?",
+      options: ["কর্মধারয়", "ষষ্ঠী তৎপুরুষ", "দ্বন্দ্ব", "বহুব্রীহি"],
+      answerIndex: 1,
+      explanation: "‘রাজার পুত্র’—ব্যাসবাক্যে ষষ্ঠী বিভক্তি থাকে, তাই এটি ষষ্ঠী তৎপুরুষ সমাস।",
+    },
+    {
+      prompt: "নিচের কোনটি সঠিক বানান?",
+      options: ["মুমূর্ষু", "মুমুর্ষু", "মুমূর্ষূ", "মুমুর্ষূ"],
+      answerIndex: 0,
+      explanation: "সঠিক বানান ‘মুমূর্ষু’।",
+    },
+    {
+      prompt: "‘আকাশ-কুসুম’ বাগধারাটির অর্থ কী?",
+      options: ["খুব সুন্দর ফুল", "অলীক কল্পনা", "আকাশের তারা", "অপ্রত্যাশিত ঘটনা"],
+      answerIndex: 1,
+      explanation: "‘আকাশ-কুসুম’ বলতে অবাস্তব বা অলীক কল্পনাকে বোঝায়।",
+    },
   ],
   shomash: [
     {
-  prompt: "‘নীলকমল’ কোন সমাসের উদাহরণ?",
-  options: ["দ্বন্দ্ব", "কর্মধারয়", "ষষ্ঠী তৎপুরুষ", "বহুব্রীহি"],
-  answerIndex: 1,
-  explanation: "নীল যে কমল—এখানে বিশেষণ ও বিশেষ্য মিলে কর্মধারয় সমাস হয়েছে।",
-},
-{
-  prompt: "‘দশানন’ কোন সমাসের উদাহরণ?",
-  options: ["দ্বিগু", "দ্বন্দ্ব", "বহুব্রীহি", "অব্যয়ীভাব"],
-  answerIndex: 2,
-  explanation: "দশ আনন (মুখ) যার—অর্থাৎ রাবণ। এখানে সমাসবদ্ধ পদটি অন্য ব্যক্তিকে বোঝায়, তাই বহুব্রীহি সমাস।",
-},
-{
-  prompt: "নিচের কোনটি শুদ্ধ বানান?",
-  options: ["মুহুর্ত", "মুহূর্ত", "মূহুর্ত", "মূহূর্ত"],
-  answerIndex: 1,
-  explanation: "শুদ্ধ বানান ‘মুহূর্ত’।",
-},
-{
-  prompt: "‘অরণ্যে রোদন’ বাগধারাটির অর্থ কী?",
-  options: ["বনে কান্না করা", "নির্জনে থাকা", "নিষ্ফল আবেদন", "বিপদে পড়া"],
-  answerIndex: 2,
-  explanation: "‘অরণ্যে রোদন’ অর্থ এমন আবেদন বা কান্না, যা কেউ শোনে না বা যার কোনো ফল হয় না।",
-},
-{
-  prompt: "‘যে উপকারীর উপকার স্বীকার করে’—এক কথায় কী?",
-  options: ["কৃতঘ্ন", "কৃতজ্ঞ", "পরোপকারী", "উদার"],
-  answerIndex: 1,
-  explanation: "যে অন্যের উপকার স্বীকার করে, তাকে কৃতজ্ঞ বলে।",
-},
-{
-  prompt: "‘বিদ্যালয়’ শব্দের সন্ধিবিচ্ছেদ কোনটি?",
-  options: ["বিদ্যা + লয়", "বিদ্যা + আলয়", "বিদ্য + আলয়", "বিদি + আলয়"],
-  answerIndex: 1,
-  explanation: "বিদ্যা + আলয় = বিদ্যালয়। আ + আ মিলে আ হয়েছে।",
-},
-{
-  prompt: "‘গড্ডলিকা প্রবাহ’ বাগধারাটির অর্থ কী?",
-  options: ["দ্রুত গতিতে চলা", "অন্ধ অনুকরণ", "দলবদ্ধভাবে কাজ করা", "প্রবল স্রোত"],
-  answerIndex: 1,
-  explanation: "‘গড্ডলিকা প্রবাহ’ অর্থ বিচার-বিবেচনা না করে অন্যদের অনুসরণ করা।",
-},
-{
-  prompt: "‘যিনি বক্তৃতা দিতে পারদর্শী’—এক কথায় কী?",
-  options: ["বাচাল", "বক্তা", "বাগ্মী", "বক্তৃতাকার"],
-  answerIndex: 2,
-  explanation: "যিনি সুন্দর ও প্রভাবশালীভাবে কথা বলতে পারেন, তাঁকে বাগ্মী বলা হয়।",
-},
-{
-  prompt: "‘কাঁটা দিয়ে কাঁটা তোলা’ বাগধারাটির অর্থ কী?",
-  options: ["কষ্ট সহ্য করা", "এক বিপদ দিয়ে অন্য বিপদ দূর করা", "এক উপায়ে অন্য উপায় ব্যর্থ করা", "শত্রুকে সাহায্য করা"],
-  answerIndex: 1,
-  explanation: "‘কাঁটা দিয়ে কাঁটা তোলা’ অর্থ একটি সমস্যার সাহায্যে অন্য একটি সমস্যা দূর করা।",
-},
-{
-  prompt: "‘যে ভবিষ্যৎ চিন্তা করে কাজ করে’—এক কথায় কী?",
-  options: ["দূরদর্শী", "স্বার্থপর", "কল্পনাপ্রবণ", "ক্ষণস্থায়ী"],
-  answerIndex: 0,
-  explanation: "যিনি ভবিষ্যতের ফলাফল বিবেচনা করে সিদ্ধান্ত নেন, তাঁকে দূরদর্শী বলা হয়।",
-},
+      prompt: "‘নীলকমল’ কোন সমাসের উদাহরণ?",
+      options: ["দ্বন্দ্ব", "কর্মধারয়", "ষষ্ঠী তৎপুরুষ", "বহুব্রীহি"],
+      answerIndex: 1,
+      explanation: "নীল যে কমল—এখানে বিশেষণ ও বিশেষ্য মিলে কর্মধারয় সমাস হয়েছে।",
+    },
+    {
+      prompt: "‘দশানন’ কোন সমাসের উদাহরণ?",
+      options: ["দ্বিগু", "দ্বন্দ্ব", "বহুব্রীহি", "অব্যয়ীভাব"],
+      answerIndex: 2,
+      explanation: "দশ আনন (মুখ) যার—অর্থাৎ রাবণ। এখানে সমাসবদ্ধ পদটি অন্য ব্যক্তিকে বোঝায়, তাই বহুব্রীহি সমাস।",
+    },
+    {
+      prompt: "নিচের কোনটি শুদ্ধ বানান?",
+      options: ["মুহুর্ত", "মুহূর্ত", "মূহুর্ত", "মূহূর্ত"],
+      answerIndex: 1,
+      explanation: "শুদ্ধ বানান ‘মুহূর্ত’।",
+    },
+    {
+      prompt: "‘অরণ্যে রোদন’ বাগধারাটির অর্থ কী?",
+      options: ["বনে কান্না করা", "নির্জনে থাকা", "নিষ্ফল আবেদন", "বিপদে পড়া"],
+      answerIndex: 2,
+      explanation: "‘অরণ্যে রোদন’ অর্থ এমন আবেদন বা কান্না, যা কেউ শোনে না বা যার কোনো ফল হয় না।",
+    },
+    {
+      prompt: "‘যে উপকারীর উপকার স্বীকার করে’—এক কথায় কী?",
+      options: ["কৃতঘ্ন", "কৃতজ্ঞ", "পরোপকারী", "উদার"],
+      answerIndex: 1,
+      explanation: "যে অন্যের উপকার স্বীকার করে, তাকে কৃতজ্ঞ বলে।",
+    },
+    {
+      prompt: "‘বিদ্যালয়’ শব্দের সন্ধিবিচ্ছেদ কোনটি?",
+      options: ["বিদ্যা + লয়", "বিদ্যা + আলয়", "বিদ্য + আলয়", "বিদি + আলয়"],
+      answerIndex: 1,
+      explanation: "বিদ্যা + আলয় = বিদ্যালয়। আ + আ মিলে আ হয়েছে।",
+    },
+    {
+      prompt: "‘গড্ডলিকা প্রবাহ’ বাগধারাটির অর্থ কী?",
+      options: ["দ্রুত গতিতে চলা", "অন্ধ অনুকরণ", "দলবদ্ধভাবে কাজ করা", "প্রবল স্রোত"],
+      answerIndex: 1,
+      explanation: "‘গড্ডলিকা প্রবাহ’ অর্থ বিচার-বিবেচনা না করে অন্যদের অনুসরণ করা।",
+    },
+    {
+      prompt: "‘যিনি বক্তৃতা দিতে পারদর্শী’—এক কথায় কী?",
+      options: ["বাচাল", "বক্তা", "বাগ্মী", "বক্তৃতাকার"],
+      answerIndex: 2,
+      explanation: "যিনি সুন্দর ও প্রভাবশালীভাবে কথা বলতে পারেন, তাঁকে বাগ্মী বলা হয়।",
+    },
+    {
+      prompt: "‘কাঁটা দিয়ে কাঁটা তোলা’ বাগধারাটির অর্থ কী?",
+      options: ["কষ্ট সহ্য করা", "এক বিপদ দিয়ে অন্য বিপদ দূর করা", "এক উপায়ে অন্য উপায় ব্যর্থ করা", "শত্রুকে সাহায্য করা"],
+      answerIndex: 1,
+      explanation: "‘কাঁটা দিয়ে কাঁটা তোলা’ অর্থ একটি সমস্যার সাহায্যে অন্য একটি সমস্যা দূর করা।",
+    },
+    {
+      prompt: "‘যে ভবিষ্যৎ চিন্তা করে কাজ করে’—এক কথায় কী?",
+      options: ["দূরদর্শী", "স্বার্থপর", "কল্পনাপ্রবণ", "ক্ষণস্থায়ী"],
+      answerIndex: 0,
+      explanation: "যিনি ভবিষ্যতের ফলাফল বিবেচনা করে সিদ্ধান্ত নেন, তাঁকে দূরদর্শী বলা হয়।",
+    },
   ],
   english: [
     {
@@ -456,175 +453,78 @@ const questionSets: Record<string, ExamQuestion[]> = {
 export const exams: Exam[] = [
   {
     id: "full-bangla-practice",
-    title: "বাংলা Full Subject Practice",
-    subtitle: "বাংলা · Full Subject",
-    status: "practice",
-    subjectId: "bangla",
-    questionCount: 50,
-    durationMinutes: 40,
-    participants: 112,
+    name: "বাংলা Full Subject Practice",
+    slug: "bangla-full-subject-practice",
+    description: "বাংলা · Full Subject",
+    status: "PRACTICE",
+    duration: 40,
+    totalQuestions: 50,
+    isActive: true,
     questions: questionSets.bangla,
   },
   {
     id: "bangla-shomash-live",
-    title: "সমাস: দ্রুত অনুশীলন",
-    subtitle: "বাংলা · সমাস",
-    status: "live",
-    subjectId: "bangla",
-    topicId: "shomash",
-    questionCount: 20,
-    durationMinutes: 15,
-    participants: 128,
+    name: "সমাস: দ্রুত অনুশীলন",
+    slug: "shomash-drut-o-shikkhon",
+    description: "বাংলা · সমাস",
+    status: "LIVE",
+    duration: 15,
+    totalQuestions: 20,
+    isActive: true,
     endsAt: "আরও ১৮ মিনিট",
-    featured: true,
     questions: questionSets.shomash,
   },
   {
     id: "daily-bcs-running",
-    title: "Daily BCS Model Test #24",
-    subtitle: "বিসিএস · Preliminary",
-    status: "running",
-    categoryId: "bcs",
-    questionCount: 100,
-    durationMinutes: 60,
-    participants: 342,
+    name: "Daily BCS Model Test #24",
+    slug: "daily-bcs-model-test-24",
+    description: "বিসিএস · Preliminary",
+    status: "LIVE",
+    duration: 60,
+    totalQuestions: 100,
+    isActive: true,
     endsAt: "আজ রাত ১০:০০",
     questions: questionSets.mixed,
   },
   {
     id: "full-english-practice",
-    title: "English Full Subject Practice",
-    subtitle: "ইংরেজি · Full Subject",
-    status: "practice",
-    subjectId: "english",
-    questionCount: 50,
-    durationMinutes: 40,
-    participants: 98,
+    name: "English Full Subject Practice",
+    slug: "english-full-subject-practice",
+    description: "ইংরেজি · Full Subject",
+    status: "PRACTICE",
+    duration: 40,
+    totalQuestions: 50,
+    isActive: true,
     questions: questionSets.english,
   },
   {
     id: "english-tense-practice",
-    title: "Tense & Sentence Practice",
-    subtitle: "ইংরেজি · Tense",
-    status: "practice",
-    subjectId: "english",
-    topicId: "tense",
-    questionCount: 25,
-    durationMinutes: 20,
-    participants: 86,
+    name: "Tense & Sentence Practice",
+    slug: "tense-sentence-practice",
+    description: "ইংরেজি · Tense",
+    status: "PRACTICE",
+    duration: 20,
+    totalQuestions: 25,
+    isActive: true,
     questions: questionSets.tense,
   },
   {
     id: "primary-upcoming",
-    title: "প্রাথমিক শিক্ষক নিয়োগ প্রস্তুতি",
-    subtitle: "প্রাথমিক শিক্ষক · Full Mock",
-    status: "upcoming",
-    categoryId: "primary",
-    questionCount: 80,
-    durationMinutes: 60,
-    participants: 210,
+    name: "প্রাথমিক শিক্ষক নিয়োগ প্রস্তুতি",
+    slug: "primary-teacher-preparation",
+    description: "প্রাথমিক শিক্ষক · Full Mock",
+    status: "UPCOMING",
+    duration: 60,
+    totalQuestions: 80,
+    isActive: true,
     startsAt: "আজ, সন্ধ্যা ৭:৩০",
     questions: questionSets.mixed,
   },
-  {
-    id: "full-math-practice",
-    title: "গণিত Full Subject Practice",
-    subtitle: "গণিত · Full Subject",
-    status: "practice",
-    subjectId: "math",
-    questionCount: 50,
-    durationMinutes: 45,
-    participants: 73,
-    questions: questionSets.math,
-  },
-  {
-    id: "math-percentage-practice",
-    title: "শতকরা: Basic to Advanced",
-    subtitle: "গণিত · শতকরা",
-    status: "practice",
-    subjectId: "math",
-    topicId: "percentage",
-    questionCount: 30,
-    durationMinutes: 25,
-    participants: 64,
-    questions: questionSets.percentage,
-  },
-  {
-    id: "ntrca-scheduled",
-    title: "NTRCA শিক্ষক নিবন্ধন Model Test",
-    subtitle: "NTRCA · School Level",
-    status: "upcoming",
-    categoryId: "ntrca",
-    questionCount: 100,
-    durationMinutes: 60,
-    participants: 176,
-    startsAt: "আগামীকাল, সকাল ১১:০০",
-    questions: questionSets.mixed,
-  },
-  {
-    id: "full-gk-practice",
-    title: "সাধারণ জ্ঞান Full Subject Practice",
-    subtitle: "সাধারণ জ্ঞান · Full Subject",
-    status: "practice",
-    subjectId: "gk",
-    questionCount: 50,
-    durationMinutes: 40,
-    participants: 105,
-    questions: questionSets.gk,
-  },
-  {
-    id: "gk-bangladesh-practice",
-    title: "বাংলাদেশ বিষয়াবলি: সাপ্তাহিক কুইজ",
-    subtitle: "সাধারণ জ্ঞান · বাংলাদেশ",
-    status: "practice",
-    subjectId: "gk",
-    topicId: "bangladesh",
-    questionCount: 20,
-    durationMinutes: 15,
-    participants: 92,
-    questions: questionSets.bangladesh,
-  },
-  {
-    id: "science-ict-practice",
-    title: "বিজ্ঞান ও ICT Full Subject Practice",
-    subtitle: "বিজ্ঞান ও ICT · Full Subject",
-    status: "practice",
-    subjectId: "science",
-    questionCount: 40,
-    durationMinutes: 35,
-    participants: 52,
-    questions: questionSets.science,
-  },
-  {
-    id: "govt-job-scheduled",
-    title: "সরকারি চাকরি প্রস্তুতি Mock Test",
-    subtitle: "সরকারি চাকরি · Mixed",
-    status: "upcoming",
-    categoryId: "govt",
-    questionCount: 80,
-    durationMinutes: 60,
-    participants: 134,
-    startsAt: "আগামীকাল, বিকাল ৪:০০",
-    questions: questionSets.mixed,
-  },
-  {
-    id: "bank-live-english",
-    title: "Bank Job English Sprint",
-    subtitle: "ব্যাংক জব · English",
-    status: "live",
-    subjectId: "english",
-    categoryId: "bank",
-    questionCount: 30,
-    durationMinutes: 20,
-    participants: 74,
-    endsAt: "আরও ২৫ মিনিট",
-    questions: questionSets.english,
-  },
+
 ];
 
 export const statusLabels: Record<ExamStatus, string> = {
-  live: "লাইভ",
-  running: "চলছে",
-  upcoming: "নির্ধারিত",
-  practice: "Practice",
+  LIVE: "লাইভ",
+  UPCOMING: "নির্ধারিত",
+  PRACTICE: "Practice",
 };

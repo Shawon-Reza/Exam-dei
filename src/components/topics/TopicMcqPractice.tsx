@@ -98,6 +98,7 @@ export default function TopicMcqPractice({
     incorrectAnswers: number;
     skippedAnswers: number;
     accuracy: number;
+    point: number;
   } | null>(null);
 
   const submitResultMutation = useSubmitResult();
@@ -197,7 +198,7 @@ export default function TopicMcqPractice({
     const accuracy = totalQuestions > 0 ? Number(((correct / totalQuestions) * 100).toFixed(2)) : 0;
 
     const submissionResult = {
-      testId: testId ?? topic.id,
+      testId: testId as string,
       topicId: topic.id,
       score: correct,
       negativeScore,
@@ -233,6 +234,7 @@ export default function TopicMcqPractice({
           incorrectAnswers: response.data.incorrectAnswers,
           skippedAnswers: response.data.skippedAnswers,
           accuracy: response.data.accuracy,
+          point: response.data.point?.points ?? 0,
         });
         // Clear stored answers after successful submission
         if (typeof window !== "undefined") {
@@ -369,6 +371,16 @@ export default function TopicMcqPractice({
                           <p className="text-xs text-zinc-500 dark:text-zinc-400">নেগেটিভ স্কোর</p>
                         </div>
                       </div>
+                      {resultData.point !== undefined && resultData.point > 0 && (
+                        <div className="col-span-2 sm:col-span-4 grid grid-cols-1 gap-3 mt-2">
+                          <div className="rounded-xl bg-amber-50 p-3 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
+                            <p className="text-2xl font-extrabold text-amber-600 dark:text-amber-400">
+                              {resultData.point}
+                            </p>
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400">অর্জিত পয়েন্ট</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400 text-center">
                       মোট প্রশ্ন: {resultData.totalQuestions}

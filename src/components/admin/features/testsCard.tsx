@@ -28,6 +28,7 @@ type TestData = {
     totalQuestions: number;
     createdAt: string;
     topicId: string;
+    subjectId: string;
     _count?: {
         testQuestions: number;
     };

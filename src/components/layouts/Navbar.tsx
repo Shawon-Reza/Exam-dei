@@ -32,7 +32,7 @@ const navigationLinks = [
   { label: "ফিচার", englishLabel: "Features", href: "/#features" },
   { label: "বিষয়সমূহ", englishLabel: "Topics", href: "/topics" },
   { label: "পরীক্ষা", englishLabel: "Exams", href: "/exams" },
-  { label: "ব্লগ", englishLabel: "Blog", href: "/blogs" },
+  // { label: "ব্লগ", englishLabel: "Blog", href: "/blogs" },
   // { label: "প্রশ্ন ব্যাংক", englishLabel: "Question Bank", href: "/question-bank" },
 ];
 

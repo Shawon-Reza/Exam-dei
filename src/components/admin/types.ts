@@ -59,12 +59,13 @@ export type AdminSettings = {
 };
 
 export type ExamDraft = {
-  title: string;
-  subtitle: string;
-  subjectId: string;
+  name: string;
+  slug: string;
+  description: string;
+  duration: number;
+  totalQuestions: number;
+  isActive: boolean;
   status: ExamStatus;
-  questionCount: string;
-  durationMinutes: string;
 };
 
 export type QuestionDraft = {

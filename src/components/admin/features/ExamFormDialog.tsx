@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { examSubjects, statusLabels, type ExamStatus } from "../../exams/exam-data";
+import { statusLabels, type ExamStatus } from "../../exams/exam-data";
 import type { ExamDraft } from "../types";
 import { AdminDialog, DialogActions, Field, inputClass } from "../ui/AdminPrimitives";
 
@@ -29,28 +29,62 @@ export default function ExamFormDialog({
             required
             maxLength={120}
             autoFocus
-            value={draft.title}
-            onChange={(event) => setDraft({ ...draft, title: event.target.value })}
-            placeholder="যেমন: BCS Model Test"
+            value={draft.name}
+            onChange={(event) => setDraft({ ...draft, name: event.target.value })}
+            placeholder="যেমন: বাংলা ব্যাকরণ মডেল টেস্ট - ১"
             className={inputClass}
           />
         </Field>
-        <Field label="Subtitle">
+        <Field label="Slug">
           <input
-            value={draft.subtitle}
-            onChange={(event) => setDraft({ ...draft, subtitle: event.target.value })}
-            placeholder="যেমন: বিসিএস · Preliminary"
+            required
+            maxLength={120}
+            value={draft.slug}
+            onChange={(event) => setDraft({ ...draft, slug: event.target.value })}
+            placeholder="bangla-bakaron-model-test-1"
+            className={inputClass}
+          />
+        </Field>
+        <Field label="Description">
+          <textarea
+            value={draft.description}
+            onChange={(event) => setDraft({ ...draft, description: event.target.value })}
+            placeholder="Describe this exam..."
+            rows={3}
             className={inputClass}
           />
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="বিষয়">
+          <Field label="Duration (minutes)">
+            <input
+              required
+              type="number"
+              min="1"
+              max="360"
+              value={draft.duration}
+              onChange={(event) => setDraft({ ...draft, duration: Number(event.target.value) })}
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Total Questions">
+            <input
+              required
+              type="number"
+              min="1"
+              max="500"
+              value={draft.totalQuestions}
+              onChange={(event) => setDraft({ ...draft, totalQuestions: Number(event.target.value) })}
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Is Active">
             <select
-              value={draft.subjectId}
-              onChange={(event) => setDraft({ ...draft, subjectId: event.target.value })}
+              value={String(draft.isActive)}
+              onChange={(event) => setDraft({ ...draft, isActive: event.target.value === "true" })}
               className={inputClass}
             >
-              {examSubjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.label}</option>)}
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
             </select>
           </Field>
           <Field label="Status">
@@ -61,28 +95,6 @@ export default function ExamFormDialog({
             >
               {Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select>
-          </Field>
-          <Field label="প্রশ্ন সংখ্যা">
-            <input
-              required
-              type="number"
-              min="1"
-              max="500"
-              value={draft.questionCount}
-              onChange={(event) => setDraft({ ...draft, questionCount: event.target.value })}
-              className={inputClass}
-            />
-          </Field>
-          <Field label="সময় (মিনিট)">
-            <input
-              required
-              type="number"
-              min="1"
-              max="360"
-              value={draft.durationMinutes}
-              onChange={(event) => setDraft({ ...draft, durationMinutes: event.target.value })}
-              className={inputClass}
-            />
           </Field>
         </div>
         <DialogActions

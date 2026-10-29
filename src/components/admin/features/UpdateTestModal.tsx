@@ -14,6 +14,7 @@ type TestData = {
     isActive: boolean;
     totalQuestions: number;
     topicId: string;
+    subjectId: string;
 };
 
 type UpdateTestModalProps = {
@@ -85,6 +86,8 @@ export default function UpdateTestModal({
                 totalQuestions: Number(totalQuestions),
                 isActive,
                 topicId: testData.topicId,
+                subjectId: testData.subjectId,
+                status: "PRACTICE",
             };
 
             await updateTestMutation.mutateAsync({ id: testId, payload: testPayload });
