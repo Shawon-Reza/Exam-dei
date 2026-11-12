@@ -79,7 +79,7 @@ export default function AdminShell({
             </div>
             <div className="flex items-center gap-2 sm:gap-4"><button type="button" aria-label="Notifications" className="relative grid size-9 place-items-center rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"><FiActivity aria-hidden="true" /></button><div className="grid size-9 place-items-center rounded-full bg-emerald-100 text-xs font-extrabold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">SA</div></div>
           </header>
-          <main className="mx-auto max-w-[1500px] p-4 sm:p-7 lg:p-9">
+          <main className="mx-auto max-w-[1500px] px-4 sm:px-7 lg:px-9 py-1">
             {notice && <div role="status" className="mb-5 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300"><span aria-hidden="true">✓</span>{notice}<button type="button" onClick={onDismissNotice} aria-label="বার্তা বন্ধ করুন" className="ml-auto"><FiX aria-hidden="true" /></button></div>}
             {children}
             <p className="mt-8 text-center text-[11px] text-zinc-400">Chakriova Admin</p>

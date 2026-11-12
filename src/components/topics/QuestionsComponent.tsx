@@ -9,9 +9,7 @@ import {
   FiLoader,
   FiAward,
   FiCheckCircle,
-  FiXCircle,
   FiLock,
-  FiUser,
 } from "react-icons/fi";
 
 import type { ExamSubject, ExamTopic } from "../exams/exam-data";
@@ -20,7 +18,7 @@ import { useGetQuestions } from "@/src/apis/questions/question.useHooks";
 import { useSubmitResult } from "@/src/apis/results/results.hooks";
 import { useAuth } from "@/src/apis/auth/useAuth";
 
-type TopicMcqPracticeProps = {
+type QuestionsComponentProps = {
   subject: Omit<ExamSubject, "icon"> & {
     icon?: ExamSubject["icon"];
   };
@@ -28,8 +26,8 @@ type TopicMcqPracticeProps = {
 };
 
 type QuestionOption = {
+  id: string;
   text: string;
-  isCorrect: boolean;
 };
 
 type McqQuestion = {
@@ -37,29 +35,29 @@ type McqQuestion = {
   question: string;
   type: string;
   difficulty: number;
+  correctAnswer: string;
   explanation: string;
   options: QuestionOption[];
 };
 
-export default function TopicMcqPractice({
+export default function QuestionsComponent({
   subject,
   topic,
-}: TopicMcqPracticeProps) {
+}: QuestionsComponentProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const testId = searchParams.get("testID");
-  const topicID = searchParams.get("topicID") ?? topic.id;
-  const difficulty = searchParams.get("difficulty");
-  const limit = searchParams.get("limit");
+  const testID = searchParams.get("testID");
+  const topicID = searchParams.get("topicID");
+  const subjectID = searchParams.get("subjectID");
   const type = searchParams.get("type");
-  const isPracticeMode = type === "practice";
+  const isPracticeMode = type === "practice" || Boolean(topicID && !testID);
 
   // Authentication
-  const { data: user, isLoading: authLoading } = useAuth();
+  const { data: user } = useAuth();
   const isAuthenticated = !!user;
 
   // Storage key for persisting answers
-  const storageKey = `mcq_answers_${testId ?? topicID}`;
+  const storageKey = `mcq_answers_${testID ?? topicID}`;
 
   // Load answers from localStorage on mount
   const [selectedAnswers, setSelectedAnswers] = useState<
@@ -113,22 +111,19 @@ export default function TopicMcqPractice({
 
   const params = new URLSearchParams({});
 
-  if (testId) {
-    params.set("testID", testId);
-  }
-  if (!testId && topicID) {
+  if (topicID) {
     params.set("topicID", topicID);
   }
-  if (!testId && difficulty && Number.isInteger(Number(difficulty))) {
-    params.set("difficulty", difficulty);
+  if (testID) {
+    params.set("testID", testID);
   }
-  if (!testId && limit && Number.isInteger(Number(limit))) {
-    params.set("limit", limit);
+  if (subjectID) {
+    params.set("subjectID", subjectID);
   }
-
   const questionsList = useGetQuestions(params.toString());
 
-  const questions: McqQuestion[] = questionsList.data?.data ?? [];
+  const questions: McqQuestion[] =
+    questionsList.data?.data?.questions ?? questionsList.data?.data ?? [];
 
   const handleAnswerSelect = (
     questionId: string,
@@ -167,11 +162,12 @@ export default function TopicMcqPractice({
         : null;
 
       const correctOption = question.options.find(
-        (option) => option.isCorrect,
+        (option) => option.id.toLowerCase() === question.correctAnswer.toLowerCase(),
       );
 
       const isCorrect =
-        isAnswered && selectedOption?.isCorrect === true;
+        isAnswered &&
+        selectedOption?.id.toLowerCase() === question.correctAnswer.toLowerCase();
 
       return {
         questionNumber: index + 1,
@@ -185,29 +181,19 @@ export default function TopicMcqPractice({
       };
     });
 
-    const totalQuestions = questions.length;
-    const answered = results.filter(
-      (result) => result.isAnswered,
-    ).length;
-    const skipped = totalQuestions - answered;
-    const correct = results.filter(
-      (result) => result.isCorrect,
-    ).length;
-    const incorrect = answered - correct;
-    const negativeScore = incorrect;
-    const accuracy = totalQuestions > 0 ? Number(((correct / totalQuestions) * 100).toFixed(2)) : 0;
-
     const submissionResult = {
-      testId: testId as string,
-      topicId: topic.id,
-      score: correct,
-      negativeScore,
-      totalQuestions,
-      correctAnswers: correct,
-      incorrectAnswers: incorrect,
-      skippedAnswers: skipped,
-      accuracy,
-      testType: testId ? ("PREDEFINED" as const) : ("PRACTICE" as const),
+      testId: testID as string,
+      answers: questions.map((question) => {
+        const selectedIndex = selectedAnswers[question.id];
+
+        return {
+          questionId: question.id,
+          selectedAnswer:
+            selectedIndex === undefined
+              ? null
+              : String.fromCharCode(65 + selectedIndex),
+        };
+      }),
     };
 
     console.log("Test Submission Result:", submissionResult);
@@ -296,7 +282,7 @@ export default function TopicMcqPractice({
                 <FiAlertCircle className="text-amber-500" size={28} aria-hidden="true" />
                 <h2 className="font-semibold text-zinc-900 dark:text-white">কোনো প্রশ্ন পাওয়া যায়নি</h2>
                 <p className="text-sm text-zinc-500">
-                  এই topic, difficulty এবং question limit-এর জন্য প্রশ্ন নেই।
+                  এই topic, subject বা test-এর জন্য কোনো প্রশ্ন নেই।
                 </p>
               </div>
             )}
@@ -400,6 +386,7 @@ export default function TopicMcqPractice({
                       isSubmitted={isSubmitted}
                       submittedAnswer={submittedAnswers[question.id] ?? null}
                       isAuthenticated={isAuthenticated}
+                      canViewExplanation={Boolean(topicID && !testID)}
                     />
                   ))}
                 </div>
@@ -424,10 +411,9 @@ export default function TopicMcqPractice({
                     )}
 
                     {submitError && (
-                      <div className="w-full sm:w-auto mb-2 p-3 rounded-lg bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 text-sm">
-                        {submitResultMutation.error instanceof Error
-                          ? submitResultMutation.error.message
-                          : "ফলাফল জমা দিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।"}
+                      <div className="w-full rounded-lg bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 sm:w-auto">
+                        ফলাফল জমা দেওয়া যায়নি, তাই আপনার test point যোগ হয়নি।
+                        তবে শেখা চালিয়ে যান—আপনার learning journey-এর জন্য শুভকামনা।
                       </div>
                     )}
 

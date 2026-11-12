@@ -63,7 +63,7 @@ export default function TopicTestsModal({
         <div className="mt-3 grid grid-cols-1 gap-2">
           {testList?.data?.data?.length > 0 ? (
             testList.data.data.map((test: any) => (
-              <TestsCard key={test.id ?? test._id} data={test} subjectId={subjectId} topicId={topicId} />
+              <TestsCard key={test.id ?? test._id} data={test} />
             ))
           ) : (
             <p className="col-span-full py-8 text-center text-sm text-gray-500">

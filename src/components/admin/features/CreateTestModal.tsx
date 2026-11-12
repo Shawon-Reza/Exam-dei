@@ -22,7 +22,6 @@ export default function CreateTestModal({
     const [duration, setDuration] = useState(30);
     const [totalQuestions, setTotalQuestions] = useState(25);
     const [isActive, setIsActive] = useState(true);
-    const [status, setStatus] = useState<"UPCOMING" | "LIVE">("LIVE");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -54,14 +53,17 @@ export default function CreateTestModal({
             const testData = {
                 name: name.trim(),
                 slug: slug.trim(),
-                description: description.trim(),
+                ...(description.trim() ? { description: description.trim() } : {}),
                 duration: Number(duration),
                 totalQuestions: Number(totalQuestions),
                 isActive,
                 topicId,
                 subjectId,
-                status,
+                status: "PRACTICE" as const,
+                type: "SUBJECT" as const,
             };
+
+            console.log("Creating test:", testData);
 
             const result = await createTestMutation.mutateAsync(testData);
 
@@ -239,25 +241,27 @@ export default function CreateTestModal({
                         </div>
                     </div>
 
-                    {/* Status */}
-                    <div>
-                        <label
-                            htmlFor="test-status"
-                            className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200"
-                        >
-                            Status <span className="text-red-500">*</span>
-                        </label>
-
-                        <select
-                            id="test-status"
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value as "UPCOMING" | "LIVE")}
-                            required
-                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
-                        >
-                            <option value="UPCOMING">Upcoming</option>
-                            <option value="LIVE">Live</option>
-                        </select>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                            <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                Status
+                            </label>
+                            <input
+                                value="PRACTICE"
+                                readOnly
+                                className="w-full cursor-not-allowed rounded-lg border border-gray-200 bg-gray-100 px-3 py-2.5 text-sm text-gray-500 dark:border-gray-800 dark:bg-gray-900"
+                            />
+                        </div>
+                        <div>
+                            <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                Test Type
+                            </label>
+                            <input
+                                value="SUBJECT"
+                                readOnly
+                                className="w-full cursor-not-allowed rounded-lg border border-gray-200 bg-gray-100 px-3 py-2.5 text-sm text-gray-500 dark:border-gray-800 dark:bg-gray-900"
+                            />
+                        </div>
                     </div>
 
                     {/* Active Status */}

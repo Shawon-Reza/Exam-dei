@@ -66,6 +66,7 @@ export type ExamDraft = {
   totalQuestions: number;
   isActive: boolean;
   status: ExamStatus;
+  subjectId?: string;
 };
 
 export type QuestionDraft = {

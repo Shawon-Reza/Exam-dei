@@ -21,7 +21,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const section = getAdminSectionFromPath(pathname);
   const [notice, setNotice] = useState("");
-  const [exams, setExams] = useState<Exam[]>([]);
+  const [exams] = useState<Exam[]>([]);
   const [subjects, setSubjects] = useState<AdminSubject[]>([]);
   const [questions, setQuestions] = useState<QuestionRow[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
           />
         );
       case "exams":
-        return <ExamsSection exams={exams} onChange={setExams} onNotice={setNotice} />;
+        return <ExamsSection onNotice={setNotice} />;
       case "subjects":
         return <SubjectsTopicsSection subjects={subjects} onChange={changeSubjects} onNotice={setNotice} />;
       case "questions":

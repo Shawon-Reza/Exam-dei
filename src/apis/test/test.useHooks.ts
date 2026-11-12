@@ -3,10 +3,16 @@ import { testsApi, type CreateTestPayload, type CreateTestResponse } from "./tes
 
 
 export const useTests = (topicId: string) => {
-    const queryClient = useQueryClient();
     return useQuery({
         queryKey: ["tests", topicId],
         queryFn: () => testsApi.getAllTestByTopic(topicId)
+    })
+}
+
+export const useTestsByQuery = (params: string) => {
+    return useQuery({
+        queryKey: ["tests", params],
+        queryFn: () => testsApi.getTest(params)
     })
 }
 

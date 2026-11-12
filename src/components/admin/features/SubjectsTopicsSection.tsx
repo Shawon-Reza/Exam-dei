@@ -13,20 +13,20 @@ import type { AdminSubject, NoticeHandler } from "../types";
 import { toast } from "../../ui/toast";
 import {
   emptySubject,
-  emptyTopic,
   initialSubjectObject,
-  initialQuestionsObject,
-  QuestionsDialog,
-  initialTopicObject,
-  SubjectDialog,
-  TopicDialog,
   type SubjectDraft,
+} from "./subject/subject-types";
+import SubjectDialog from "./subject/SubjectDialog";
+import {
+  emptyTopic,
+  initialTopicObject,
   type TopicDraft,
-} from "./SubjectsTopicsDialogs";
+} from "./topic/topic-types";
+import TopicDialog from "./topic/TopicDialog";
+import QuestionsDialog, { initialQuestionsObject } from "./topic/QuestionsDialog";
 import { SubjectsTopicsPanel } from "./SubjectsTopicsPanels";
 import { TopicPdfsModal } from "./TopicPdfsModal";
 import { PrimaryButton, SectionHeading, SmallStat } from "../ui/AdminPrimitives";
-import { useAddQuestionToTopic } from "@/src/apis/questions/question.useHooks";
 
 type TopicObjectDraft = {
   slug: string;
@@ -142,7 +142,6 @@ export default function SubjectsTopicsSection({
   const createTopicMutation = useCreateTopic();
   const updateTopicMutation = useUpdateTopic();
   const deleteTopicMutation = useDeleteTopic();
-  const addQuestionToTopicMutation = useAddQuestionToTopic();
 
   useEffect(() => {
     if (subjectsQuery.data) {
@@ -325,52 +324,6 @@ export default function SubjectsTopicsSection({
     setPdfModal(true);
   }
 
-  async function submitQuestions(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!selectedSubject || !selectedTopic) return;
-
-    try {
-      const questions = JSON.parse(questionsObject);
-      if (!Array.isArray(questions)) throw new Error("Questions must be an array.");
-      console.log({
-        subjectId: selectedSubject.id,
-        topicId: selectedTopic.id,
-        questions,
-      });
-      onNotice("Questions console-এ পাঠানো হয়েছে");
-
-      const response = await addQuestionToTopicMutation.mutateAsync({
-        subjectId: selectedSubject.id,
-        topicId: selectedTopic.id,
-        questions,
-      });
-
-
-      toast.add(
-        {
-          title: `${response?.message}`,
-          description: `${response?.data?.count} টি question যোগ হয়েছে`
-        }
-      );
-
-      console.log("===================", response)
-      setQuestionsDialog(false);
-
-
-
-    } catch (error) {
-      showEndpointError("Questions JSON সঠিক নয়", error, "একটি valid JSON array দিন।");
-    }
-  }
-
-  function submitPdf(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!selectedSubject || !selectedTopic) return;
-
-    onNotice("PDF console-এ পাঠানো হয়েছে");
-    setPdfModal(false);
-  }
-
   async function saveTopic(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const label = topicDraft.label.trim();
@@ -475,7 +428,7 @@ export default function SubjectsTopicsSection({
 
       {subjectDialog && <SubjectDialog editingId={editingSubjectId} draft={subjectDraft} inputMode={subjectInputMode} objectValue={subjectObject} saving={createSubjectMutation.isPending || updateSubjectMutation.isPending} onDraftChange={setSubjectDraft} onInputModeChange={setSubjectInputMode} onObjectChange={setSubjectObject} onSubmit={saveSubject} onClose={() => setSubjectDialog(false)} />}
       {topicDialog && <TopicDialog subjectLabel={selectedSubject?.label} editingId={editingTopicId} draft={topicDraft} inputMode={topicInputMode} objectValue={topicObject} saving={createTopicMutation.isPending || updateTopicMutation.isPending} onDraftChange={setTopicDraft} onInputModeChange={setTopicInputMode} onObjectChange={setTopicObject} onSubmit={saveTopic} onClose={() => setTopicDialog(false)} />}
-      {questionsDialog && selectedSubject && selectedTopic && <QuestionsDialog subjectId={selectedSubject.id} topicId={selectedTopic.id} topicLabel={selectedTopic.label} value={questionsObject} onChange={setQuestionsObject} onSubmit={submitQuestions} onClose={() => setQuestionsDialog(false)} />}
+      {questionsDialog && selectedSubject && selectedTopic && <QuestionsDialog subjectId={selectedSubject.id} topicId={selectedTopic.id} topicLabel={selectedTopic.label} value={questionsObject} onChange={setQuestionsObject} onClose={() => setQuestionsDialog(false)} />}
       {pdfModal && selectedSubject && selectedTopic && (
         <TopicPdfsModal
           topicId={selectedTopic.id}

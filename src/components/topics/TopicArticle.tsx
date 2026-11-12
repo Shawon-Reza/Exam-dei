@@ -1,21 +1,43 @@
 "use client";
 
-import { FiBookOpen, FiHelpCircle, FiClock } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import {
+  FiBookOpen,
+  FiHelpCircle,
+  FiClock,
+  FiMaximize2,
+  FiMinimize2,
+} from "react-icons/fi";
 import { TopicNotesContent } from "./TopicNotesContent";
+import type { JSONContent } from "@tiptap/react";
 import type { TopicDeepDetailNote, TopicDeepDetailsData } from "./topic-deep-details";
 
 type TopicArticleProps = {
   subject: { label: string; englishLabel: string };
   topic: { label: string };
   topicDeepDetails: TopicDeepDetailsData | undefined;
-  note: any
+  note: TopicDeepDetailNote | null | undefined;
 };
 
 export function TopicArticle({ subject, topic, topicDeepDetails, note }: TopicArticleProps) {
-  const notes = topicDeepDetails?.notes;
-
-
   const mcqCount = topicDeepDetails?.tests?.length ?? 0;
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    if (!isFullscreen) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsFullscreen(false);
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
+    };
+  }, [isFullscreen]);
 
   return (
     <article className="min-w-0 px-4 pb-8 sm:px-6 sm:pb-10 lg:h-full lg:overflow-y-auto lg:px-8 lg:pb-12">
@@ -47,8 +69,26 @@ export function TopicArticle({ subject, topic, topicDeepDetails, note }: TopicAr
       </header>
 
       <section aria-labelledby="notes-heading" id="notes-content" className="py-2 sm:py-4">
-        <article className="mx-auto max-w-4xl rounded-2xl border border-zinc-200 bg-white px-4 py-6 shadow-sm shadow-zinc-950/[0.03] dark:border-zinc-800 dark:bg-zinc-900 sm:px-9 sm:py-10 lg:px-12">
-          <header className="border-b border-zinc-100 pb-5 text-center dark:border-zinc-800 sm:pb-7">
+        <article
+          role={isFullscreen ? "dialog" : undefined}
+          aria-modal={isFullscreen ? true : undefined}
+          aria-label={isFullscreen ? `${topic.label} নোট preview` : undefined}
+          className={`mx-auto rounded-2xl border border-zinc-200 bg-white px-4 py-6 shadow-sm shadow-zinc-950/[0.03] transition-[border-radius] dark:border-zinc-800 dark:bg-zinc-900 sm:px-9 sm:py-10 lg:px-12 ${
+            isFullscreen
+              ? "fixed inset-0 z-[70] max-w-none overflow-y-auto rounded-none border-0 shadow-2xl"
+              : "max-w-4xl"
+          }`}
+        >
+          <header className="relative border-b border-zinc-100 pb-5 text-center dark:border-zinc-800 sm:pb-7">
+            <button
+              type="button"
+              onClick={() => setIsFullscreen((current) => !current)}
+              aria-label={isFullscreen ? "Exit fullscreen preview" : "Open fullscreen preview"}
+              title={isFullscreen ? "Exit fullscreen preview" : "Open fullscreen preview"}
+              className="absolute right-0 top-0 grid size-9 place-items-center rounded-lg border border-zinc-200 text-zinc-500 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 dark:border-zinc-700 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/30 dark:hover:text-emerald-300"
+            >
+              {isFullscreen ? <FiMinimize2 aria-hidden="true" /> : <FiMaximize2 aria-hidden="true" />}
+            </button>
             <p className="text-xs font-semibold tracking-wide text-emerald-700 dark:text-emerald-400">
               {subject.label} · {subject.englishLabel}
             </p>
@@ -62,7 +102,7 @@ export function TopicArticle({ subject, topic, topicDeepDetails, note }: TopicAr
 
           <div className="mx-auto max-w-3xl pt-6 sm:pt-8 overflow-auto">
             {note ? (
-              <TopicNotesContent content={note?.content as any} />
+              <TopicNotesContent content={note.content as JSONContent} />
             ) : (
               <div className="text-center py-12 text-zinc-500 dark:text-zinc-400">
                 <p className="text-lg font-medium mb-2">এই টপিকের জন্য এখনো কোনো নোট নেই</p>
@@ -72,10 +112,9 @@ export function TopicArticle({ subject, topic, topicDeepDetails, note }: TopicAr
           </div>
 
 
-
-
         </article>
       </section>
+
     </article>
   );
 }

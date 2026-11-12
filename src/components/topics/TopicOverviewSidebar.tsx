@@ -10,13 +10,27 @@ import {
   FiSidebar,
 } from "react-icons/fi";
 import type { ExamSubject, ExamTopic } from "../exams/exam-data";
-import GenerateTestDialog from "./GenerateTestDialog";
+
+type SidebarTest = {
+  id: string;
+  name: string;
+  totalQuestions: number;
+  duration: number;
+};
+
+type SidebarPdf = {
+  id: string;
+  url: string;
+  name?: string;
+  banglaName?: string;
+  description?: string;
+};
 
 type TopicOverviewSidebarProps = {
   subject: Pick<ExamSubject, "id" | "slug" | "label">;
   topic: Pick<ExamTopic, "id" | "slug" | "label">;
-  tests: any;
-  pdfs: any;
+  tests: SidebarTest[];
+  pdfs: SidebarPdf[];
   className?: string;
   isCollapsed: boolean;
   onToggle: () => void;
@@ -67,14 +81,12 @@ export default function TopicOverviewSidebar({
 
                 <div className="space-y-2">
                   {tests?.length > 0 ? (
-                    tests.map((test: any, index: number) => (
+                    tests.map((test, index) => (
                       <Link
                         key={test.id}
                         href={`/topics/${encodeURIComponent(
                           topic.slug ?? topic.id
-                        )}/practice?subject=${encodeURIComponent(
-                          subject.slug ?? subject.id
-                        )}&testID=${encodeURIComponent(test.id)}&type=PREDEFINED`}
+                        )}/practice?testID=${encodeURIComponent(test.id)}`}
                         className="group flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50/70 px-3 py-2.5 transition hover:border-emerald-300 hover:bg-emerald-50/70 dark:border-zinc-700 dark:bg-zinc-950/40 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/20"
                       >
                         <span className="flex min-w-0 items-center gap-2">
@@ -114,26 +126,8 @@ export default function TopicOverviewSidebar({
                 </div>
               </section>
 
-              {/* ---------- Generate Test Section (Middle) ---------- */}
-              <section className="flex-shrink-0 py-4 border-y border-zinc-100 dark:border-zinc-800">
-                <div className="flex items-center justify-between gap-3 mb-3">
-                  <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
-                    Generate test
-                  </h3>
-                  <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-[10px] font-bold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
-                    customize
-                  </span>
-                </div>
-
-                <GenerateTestDialog
-                  subjectId={subject.id}
-                  topicId={topic.id}
-                  topicLabel={topic.label}
-                />
-              </section>
-
               {/* ---------- PDF/Link Section (Bottom Scrollable) ---------- */}
-              <section className="flex-shrink-0">
+              <section className="flex-shrink-0 mt-5">
                 <div className="flex items-center justify-between gap-3 mb-3">
                   <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
                     PDF নোট
@@ -145,7 +139,7 @@ export default function TopicOverviewSidebar({
 
                 <div className="space-y-2 grid lg:grid-cols-2">
                   {pdfs?.length > 0 ? (
-                    pdfs.map((pdf: any) => (
+                    pdfs.map((pdf) => (
                       <a
                         key={pdf.id}
                         href={pdf.url}
@@ -191,9 +185,9 @@ export default function TopicOverviewSidebar({
               <Link
                 href={`/topics/${encodeURIComponent(
                   topic.slug ?? topic.id
-                )}/practice?subject=${encodeURIComponent(
-                  subject.slug ?? subject.id
-                )}&topicID=${encodeURIComponent(topic.id)}&type=practice`}
+                )}/practice?topicID=${encodeURIComponent(
+                  topic.id
+                )}`}
 
                 className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
               >

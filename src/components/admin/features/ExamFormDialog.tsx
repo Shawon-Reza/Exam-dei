@@ -3,6 +3,7 @@
 import type { FormEvent } from "react";
 import { statusLabels, type ExamStatus } from "../../exams/exam-data";
 import type { ExamDraft } from "../types";
+import type { SubjectApiItem } from "@/src/apis/subjects/subjects.api";
 import { AdminDialog, DialogActions, Field, inputClass } from "../ui/AdminPrimitives";
 
 export default function ExamFormDialog({
@@ -11,12 +12,14 @@ export default function ExamFormDialog({
   editing,
   onClose,
   onSubmit,
+  subjects,
 }: {
   draft: ExamDraft;
   setDraft: (draft: ExamDraft) => void;
   editing: boolean;
   onClose: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  subjects: SubjectApiItem[];
 }) {
   return (
     <AdminDialog
@@ -53,6 +56,20 @@ export default function ExamFormDialog({
             rows={3}
             className={inputClass}
           />
+        </Field>
+        <Field label="Subject (optional)">
+          <select
+            value={draft.subjectId ?? ""}
+            onChange={(event) => setDraft({ ...draft, subjectId: event.target.value || undefined })}
+            className={inputClass}
+          >
+            <option value="">কোনো subject নয়</option>
+            {subjects.map((subject) => (
+              <option key={subject.id} value={subject.id}>
+                {subject.banglaName || subject.name}
+              </option>
+            ))}
+          </select>
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Duration (minutes)">

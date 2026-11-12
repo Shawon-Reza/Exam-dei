@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
-import TopicMcqPractice from "@/src/components/topics/TopicMcqPractice";
+import QuestionsComponent from "@/src/components/topics/QuestionsComponent";
 import TopicRouteFallback from "@/src/components/topics/TopicRouteFallback";
-import type { ExamSubject } from "@/src/components/exams/exam-data";
 import { subjectsApi } from "@/src/apis/subjects/subjects.api";
 import { topicsApi } from "@/src/apis/topics/topics.api";
 
@@ -52,7 +51,7 @@ async function findTopic(topicId: string, subjectId?: string) {
           sortOrder: subject.sortOrder,
           isActive: subject.isActive,
           questionCount: "—",
-          icon: null as any,
+          icon: undefined,
           color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
           topics: [mappedTopic],
         };
@@ -68,13 +67,16 @@ async function findTopic(topicId: string, subjectId?: string) {
   return null;
 }
 
-export default function TopicPracticePage({
+export default async function QuestionsPage({
   params,
   searchParams,
 }: TopicPracticePageProps) {
   return (
     <Suspense fallback={<TopicRouteFallback />}>
-      <TopicPracticePageContent params={params} searchParams={searchParams} />
+      <TopicPracticePageContent
+        params={params}
+        searchParams={searchParams}
+      />
     </Suspense>
   );
 }
@@ -90,7 +92,7 @@ async function TopicPracticePageContent({
   if (!topicDetails) notFound();
 
   return (
-    <TopicMcqPractice
+    <QuestionsComponent
       subject={topicDetails.subject}
       topic={topicDetails.topic}
     />

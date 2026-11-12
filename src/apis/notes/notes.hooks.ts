@@ -26,5 +26,6 @@ export const useGetNoteByTopicId = (topicId: string) => {
     queryKey: ["notes", topicId],
     queryFn: () => notesApi.getNoteByTopicId(topicId),
     enabled: !!topicId,
+    retry: false
   });
 };

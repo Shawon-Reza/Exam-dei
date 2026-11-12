@@ -22,7 +22,7 @@ export default function TopicsCard({
       <button
         type="button"
         onClick={() => onSelect(subject.id)}
-        className="flex w-full flex-col p-4 text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-500 sm:p-5"
+        className="flex w-full flex-col p-4 text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-500 sm:p-5 cursor-pointer"
       >
         <span className="flex w-full items-center justify-between gap-3">
           <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${subject.color}`}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X, Loader2, Edit2 } from "lucide-react";
 import { useUpdateTest } from "@/src/apis/test/test.useHooks";
 
@@ -28,12 +28,12 @@ export default function UpdateTestModal({
     onClose,
     isOpen,
 }: UpdateTestModalProps) {
-    const [name, setName] = useState("");
-    const [slug, setSlug] = useState("");
-    const [description, setDescription] = useState("");
-    const [duration, setDuration] = useState(30);
-    const [totalQuestions, setTotalQuestions] = useState(25);
-    const [isActive, setIsActive] = useState(true);
+    const [name, setName] = useState(testData.name);
+    const [slug, setSlug] = useState(testData.slug);
+    const [description, setDescription] = useState(testData.description ?? "");
+    const [duration, setDuration] = useState(testData.duration);
+    const [totalQuestions, setTotalQuestions] = useState(testData.totalQuestions);
+    const [isActive, setIsActive] = useState(testData.isActive);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -47,17 +47,6 @@ export default function UpdateTestModal({
             .trim()
             .replace(/[^a-z0-9]+/g, "-")
             .replace(/^-+|-+$/g, "");
-
-    useEffect(() => {
-        if (testData) {
-            setName(testData.name);
-            setSlug(testData.slug);
-            setDescription(testData.description || "");
-            setDuration(testData.duration);
-            setTotalQuestions(testData.totalQuestions);
-            setIsActive(testData.isActive);
-        }
-    }, [testData]);
 
     const handleNameChange = (value: string) => {
         setName(value);

@@ -36,11 +36,9 @@ type TestData = {
 
 type TestsCardProps = {
     data: TestData;
-    subjectId: string;
-    topicId: string;
 };
 
-const TestsCard = ({ data, subjectId, topicId }: TestsCardProps) => {
+const TestsCard = ({ data }: TestsCardProps) => {
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
     const [isSeeModalOpen, setIsSeeModalOpen] = useState(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -65,10 +63,6 @@ const TestsCard = ({ data, subjectId, topicId }: TestsCardProps) => {
             year: "numeric",
         }).format(new Date(createdAt))
         : "N/A";
-
-    const handleAssignQuestions = () => {
-        console.log("Assign questions to test:", data);
-    };
 
     const handleSeeQuestions = () => {
         setIsSeeModalOpen(true);
@@ -221,8 +215,6 @@ const TestsCard = ({ data, subjectId, topicId }: TestsCardProps) => {
                 onClose={() => setIsAssignModalOpen(false)}
                 testName={name}
                 testId={id as string}
-                subjectId={subjectId}
-                topicId={topicId}
             />
 
             <SeeTestQuestionsModal
@@ -233,6 +225,7 @@ const TestsCard = ({ data, subjectId, topicId }: TestsCardProps) => {
             />
 
             <UpdateTestModal
+                key={data.id ?? data._id}
                 isOpen={isUpdateModalOpen}
                 onClose={() => setIsUpdateModalOpen(false)}
                 testData={data}

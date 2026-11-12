@@ -1,10 +1,7 @@
 "use client";
 
-import { CircleHelp, ClipboardList, LoaderCircle, X } from "lucide-react";
-import { useGetTestQuestions, useRemoveQuestionFromTest } from "@/src/apis/questions/question.useHooks";
-import TestQuestionItem, { type AssignedQuestion } from "./TestQuestionItem";
-
-// ── Types ─────────────────────────────────────────────────────────────────────
+import { CircleHelp, ClipboardList, LoaderCircle, Trash2, X } from "lucide-react";
+import { useDeleteQuestion, useGetTestQuestions } from "@/src/apis/questions/question.useHooks";
 
 type SeeTestQuestionsModalProps = {
     isOpen: boolean;
@@ -13,7 +10,12 @@ type SeeTestQuestionsModalProps = {
     testName: string;
 };
 
-// ── Component ─────────────────────────────────────────────────────────────────
+type TestQuestion = {
+    id: string;
+    question: string;
+    banglaQuestion?: string;
+    options?: { id: string; text: string }[];
+};
 
 export default function SeeTestQuestionsModal({
     isOpen,
@@ -22,21 +24,9 @@ export default function SeeTestQuestionsModal({
     testName,
 }: SeeTestQuestionsModalProps) {
     const questionsQuery = useGetTestQuestions(testId, isOpen && Boolean(testId));
-    const removeMutation = useRemoveQuestionFromTest(testId);
-
-    // API shape: { success, statusCode, message, data: AssignedQuestion[] }
-    const questions: AssignedQuestion[] = questionsQuery.data?.data ?? [];
-
-    const handleRemove = (questionId: string, testId: string) => {
-        removeMutation.mutate(
-            { testId, questionId },
-            {
-                onError: (error) => {
-                    console.error("Failed to remove question:", error);
-                },
-            }
-        );
-    };
+    const deleteMutation = useDeleteQuestion(testId);
+    const questions: TestQuestion[] =
+        questionsQuery.data?.data?.questions ?? questionsQuery.data?.data ?? [];
 
     if (!isOpen) return null;
 
@@ -127,25 +117,53 @@ export default function SeeTestQuestionsModal({
                                 No questions assigned yet
                             </p>
                             <p className="text-xs text-gray-500">
-                                Use "Assign Questions" to add MCQs to this test.
+                                Use &quot;Assign Questions&quot; to add MCQs to this test.
                             </p>
                         </div>
                     )}
 
                     {/* Question list */}
                     {!questionsQuery.isPending && !questionsQuery.isError && questions.length > 0 && (
-                        <div className="space-y-3">
+                        <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
                             {questions.map((entry, index) => (
-                                <TestQuestionItem
+                                <article
                                     key={entry.id}
-                                    entry={entry}
-                                    index={index}
-                                    onRemove={handleRemove}
-                                    isRemoving={
-                                        removeMutation.isPending &&
-                                        removeMutation.variables?.questionId === entry.questionId
-                                    }
-                                />
+                                    className="rounded-xl border border-gray-200 p-3 dark:border-gray-800"
+                                >
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="min-w-0">
+                                            <p className="text-xs font-semibold text-gray-500">
+                                                Question {index + 1}
+                                            </p>
+                                            <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+                                                {entry.question}
+                                            </p>
+                                            {entry.banglaQuestion && (
+                                                <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                                    {entry.banglaQuestion}
+                                                </p>
+                                            )}
+                                            {entry.options && (
+                                                <div className="mt-2 grid grid-cols-1 gap-1 text-xs text-gray-600 sm:grid-cols-2 dark:text-gray-400">
+                                                    {entry.options.map((option) => (
+                                                        <span key={option.id}>
+                                                            {option.id}. {option.text}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            aria-label={`Delete question ${entry.id}`}
+                                            disabled={deleteMutation.isPending}
+                                            onClick={() => deleteMutation.mutate(entry.id)}
+                                            className="shrink-0 rounded-lg p-2 text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-red-950/30"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                </article>
                             ))}
                         </div>
                     )}

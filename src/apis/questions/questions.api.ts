@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axiosApi from "@/src/lib/axios_instance"
 
 
@@ -18,38 +19,27 @@ const getQuestionsByTopic = async (params: string) => {
 
 
 const getTestQuestions = async (testId: string) => {
-    const res = await axiosApi.get(`/api/v1/questions/assign_to_test?testID=${testId}`)
+    const res = await axiosApi.get(`/api/v1/questions/test_questions?testId=${testId}`)
     return res.data
 }
 
 
-const removeQuestionFromTest = async ({
-    testId,
-    questionId,
-}: {
-    testId: string;
-    questionId: string;
-}) => {
-    const res = await axiosApi.delete(
-        `/api/v1/questions/assign_to_test?testID=${testId}&questionID=${questionId}`
-    );
+const deleteQuestion = async (questionId: string) => {
+    const res = await axiosApi.delete(`/api/v1/questions/${questionId}`);
     return res.data;
 };
 
 
 const assignQuestionsToTest = async ({
-    topicId,
     testId,
-    questionIds,
+    questions,
 }: {
-    topicId: string;
     testId: string;
-    questionIds: string[];
+    questions: unknown[];
 }) => {
-    const res = await axiosApi.post("/api/v1/questions/assign_to_test", {
-        topicID: topicId,
+    const res = await axiosApi.post("/api/v1/questions/assign_question_to_test", {
         testID: testId,
-        questionIds,
+        questions,
     });
     return res.data;
 };
@@ -65,7 +55,7 @@ export const questionsApi = {
     addQuestionToTopic,
     getQuestionsByTopic,
     getTestQuestions,
-    removeQuestionFromTest,
+    deleteQuestion,
     assignQuestionsToTest,
     getquestions
 }

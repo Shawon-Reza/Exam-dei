@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { questionsApi } from "./questions.api";
+import { topicsQueryKey } from "../topics/topics.hooks";
 
 
 export const useAddQuestionToTopic = () => {
@@ -8,7 +9,7 @@ export const useAddQuestionToTopic = () => {
     return useMutation({
         mutationFn: questionsApi.addQuestionToTopic,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["questions"] })
+            queryClient.invalidateQueries({ queryKey: topicsQueryKey })
         }
     })
 }
@@ -34,13 +35,12 @@ export const useGetTestQuestions = (testId: string, enabled = true) => {
     });
 };
 
-export const useRemoveQuestionFromTest = (testId: string) => {
+export const useDeleteQuestion = (testId: string) => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: questionsApi.removeQuestionFromTest,
+        mutationFn: questionsApi.deleteQuestion,
         onSuccess: () => {
-            // Refresh the question list for this specific test
             queryClient.invalidateQueries({ queryKey: ["questions", "test", testId] });
         },
     });

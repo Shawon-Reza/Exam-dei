@@ -2,15 +2,10 @@ import axiosApi from "@/src/lib/axios_instance";
 
 export type SubmitResultPayload = {
   testId: string;
-  topicId: string;
-  score: number;
-  negativeScore: number;
-  totalQuestions: number;
-  correctAnswers: number;
-  incorrectAnswers: number;
-  skippedAnswers: number;
-  accuracy: number;
-  testType: "PREDEFINED" | "PRACTICE";
+  answers: {
+    questionId: string;
+    selectedAnswer: string | null;
+  }[];
 };
 
 export type ResultResponse = {
