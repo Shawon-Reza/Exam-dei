@@ -99,7 +99,7 @@ async function TopicPageContent({
         exam.subjectId === topicDetails.subject.id &&
         exam.topicId === topicDetails.topic.id,
     )
-    .reduce((total, exam) => total + exam.questionCount, 0);
+    .reduce((total, exam) => total + (exam.questionCount ?? exam.totalQuestions), 0);
 
   const topicID = topicDetails?.topic?.id
   console.log("Found topic ID:", topicID);

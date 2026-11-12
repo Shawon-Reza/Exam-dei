@@ -8,20 +8,19 @@ type ExamCardProps = {
 };
 
 const statusStyles = {
-  live: "bg-rose-500/10 text-rose-600 dark:text-rose-300",
-  running: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
-  upcoming: "bg-blue-500/10 text-blue-600 dark:text-blue-300",
-  practice: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
+  LIVE: "bg-rose-500/10 text-rose-600 dark:text-rose-300",
+  UPCOMING: "bg-blue-500/10 text-blue-600 dark:text-blue-300",
+  PRACTICE: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
 };
 
 export default function ExamCard({ exam, onStart, compact = false }: ExamCardProps) {
-  const isUpcoming = exam.status === "upcoming";
+  const isUpcoming = exam.status === "UPCOMING";
 
   return (
     <article className="flex h-full flex-col rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm shadow-zinc-950/[0.02] transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-950/5 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-emerald-900 sm:p-6">
       <div className="flex items-start justify-between gap-3">
         <span className={`rounded-full px-3 py-1 text-xs font-bold ${statusStyles[exam.status]}`}>
-          {exam.status === "live" && (
+          {exam.status === "LIVE" && (
             <span className="mr-1.5 inline-block size-1.5 animate-pulse rounded-full bg-current align-middle" />
           )}
           {statusLabels[exam.status]}
@@ -35,26 +34,26 @@ export default function ExamCard({ exam, onStart, compact = false }: ExamCardPro
 
       <div className="mt-5">
         <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-          {exam.subtitle}
+          {exam.subtitle ?? exam.description}
         </p>
         <h3 className="mt-1.5 text-lg font-bold text-zinc-950 dark:text-white">
-          {exam.title}
+          {exam.title ?? exam.name}
         </h3>
       </div>
 
       <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-xs text-zinc-500 dark:text-zinc-400">
         <span className="inline-flex items-center gap-1.5">
           <FiLayers aria-hidden="true" />
-          {exam.questionCount} প্রশ্ন
+          {exam.questionCount ?? exam.totalQuestions} প্রশ্ন
         </span>
         <span className="inline-flex items-center gap-1.5">
           <FiClock aria-hidden="true" />
-          {exam.durationMinutes} মিনিট
+          {exam.durationMinutes ?? exam.duration} মিনিট
         </span>
         {!compact && (
           <span className="inline-flex items-center gap-1.5">
             <FiUsers aria-hidden="true" />
-            {exam.participants} জন
+            {exam.participants ?? 0} জন
           </span>
         )}
       </div>

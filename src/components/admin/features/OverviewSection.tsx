@@ -4,13 +4,12 @@ import type { AdminSection, Student } from "../types";
 import { Panel, SectionHeading } from "../ui/AdminPrimitives";
 
 const statusClass = {
-  live: "bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300",
-  running: "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
-  upcoming: "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300",
-  practice: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
+  LIVE: "bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300",
+  UPCOMING: "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300",
+  PRACTICE: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
 };
 
-const statusLabels = { live: "লাইভ", running: "চলছে", upcoming: "নির্ধারিত", practice: "Practice" };
+const statusLabels = { LIVE: "লাইভ", UPCOMING: "নির্ধারিত", PRACTICE: "Practice" };
 
 export default function OverviewSection({
   exams,
@@ -25,8 +24,8 @@ export default function OverviewSection({
   postsCount: number;
   onNavigate: (section: AdminSection) => void;
 }) {
-  const activeExams = exams.filter((exam) => exam.status === "live" || exam.status === "running");
-  const participants = exams.reduce((total, exam) => total + exam.participants, 0);
+  const activeExams = exams.filter((exam) => exam.status === "LIVE");
+  const participants = exams.reduce((total, exam) => total + (exam.participants ?? 0), 0);
   const metrics = [
     { label: "মোট শিক্ষার্থী", value: students.length.toLocaleString("bn-BD"), icon: <FiUsers />, tone: "emerald" },
     { label: "মোট পরীক্ষা", value: exams.length.toLocaleString("bn-BD"), icon: <FiBookOpen />, tone: "blue" },
@@ -75,7 +74,7 @@ export default function OverviewSection({
       <Panel className="mt-5 overflow-hidden">
         <div className="flex items-center justify-between gap-3 border-b border-zinc-100 px-5 py-4 dark:border-zinc-800"><div><h2 className="font-extrabold">সাম্প্রতিক পরীক্ষা</h2><p className="mt-1 text-xs text-zinc-500">আপনার প্ল্যাটফর্মের সর্বশেষ পরীক্ষা</p></div><button type="button" onClick={() => onNavigate("exams")} className="text-xs font-bold text-emerald-700 hover:text-emerald-800 dark:text-emerald-300">সব দেখুন →</button></div>
         <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-          {exams.length === 0 ? <p className="p-10 text-center text-sm text-zinc-500">এখনো কোনো পরীক্ষা যোগ করা হয়নি।</p> : exams.slice(0, 4).map((exam) => <div key={exam.id} className="flex items-center gap-3 px-5 py-3.5"><span className="grid size-9 shrink-0 place-items-center rounded-xl bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"><FiBookOpen aria-hidden="true" /></span><div className="min-w-0 flex-1"><p className="truncate text-sm font-bold">{exam.title}</p><p className="truncate text-xs text-zinc-500">{exam.subtitle}</p></div><span className={`hidden rounded-full px-2.5 py-1 text-[10px] font-bold sm:inline-flex ${statusClass[exam.status]}`}>{statusLabels[exam.status]}</span><span className="hidden text-xs text-zinc-500 md:inline-flex"><FiUsers aria-hidden="true" /> {exam.participants}</span></div>)}
+          {exams.length === 0 ? <p className="p-10 text-center text-sm text-zinc-500">এখনো কোনো পরীক্ষা যোগ করা হয়নি।</p> : exams.slice(0, 4).map((exam) => <div key={exam.id} className="flex items-center gap-3 px-5 py-3.5"><span className="grid size-9 shrink-0 place-items-center rounded-xl bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"><FiBookOpen aria-hidden="true" /></span><div className="min-w-0 flex-1"><p className="truncate text-sm font-bold">{exam.title ?? exam.name}</p><p className="truncate text-xs text-zinc-500">{exam.subtitle ?? exam.description}</p></div><span className={`hidden rounded-full px-2.5 py-1 text-[10px] font-bold sm:inline-flex ${statusClass[exam.status]}`}>{statusLabels[exam.status]}</span><span className="hidden text-xs text-zinc-500 md:inline-flex"><FiUsers aria-hidden="true" /> {exam.participants ?? 0}</span></div>)}
         </div>
       </Panel>
     </>

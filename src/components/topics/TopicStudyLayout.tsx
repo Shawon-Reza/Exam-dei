@@ -96,7 +96,6 @@ export default function TopicStudyLayout({
         />
 
         <TopicOverviewSidebar
-          subject={{ id: subject.id, slug: subject.slug, label: subject.label }}
           topic={{ id: topic.id, slug: topic.slug, label: topic.label }}
           tests={tests}
           pdfs={pdfs}

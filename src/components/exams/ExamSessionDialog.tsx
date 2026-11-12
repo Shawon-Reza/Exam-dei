@@ -63,13 +63,13 @@ export default function ExamSessionDialog({ exam, onClose }: ExamSessionDialogPr
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-              {exam.subtitle}
+              {exam.subtitle ?? exam.description}
             </p>
             <h2
               id="exam-dialog-title"
               className="mt-1 text-xl font-extrabold text-zinc-950 dark:text-white sm:text-2xl"
             >
-              {isComplete ? "আপনার demo result" : exam.title}
+              {isComplete ? "আপনার demo result" : exam.title ?? exam.name}
             </h2>
           </div>
           <button
@@ -92,7 +92,7 @@ export default function ExamSessionDialog({ exam, onClose }: ExamSessionDialogPr
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               {[
                 { label: "Demo প্রশ্ন", value: `${exam.questions.length}টি` },
-                { label: "পরীক্ষার সময়", value: `${exam.durationMinutes} মিনিট` },
+                { label: "পরীক্ষার সময়", value: `${exam.durationMinutes ?? exam.duration} মিনিট` },
                 { label: "পরীক্ষার ধরন", value: "MCQ" },
               ].map((item) => (
                 <div key={item.label} className="rounded-2xl bg-zinc-50 p-4 dark:bg-zinc-800">
@@ -101,7 +101,7 @@ export default function ExamSessionDialog({ exam, onClose }: ExamSessionDialogPr
                 </div>
               ))}
             </div>
-            {exam.status === "upcoming" ? (
+            {exam.status === "UPCOMING" ? (
               <p className="mt-5 rounded-2xl bg-blue-500/10 p-4 text-sm text-blue-700 dark:text-blue-300">
                 এই পরীক্ষা {exam.startsAt} শুরু হবে। নির্ধারিত সময়ের আগে demo
                 session শুরু করা যাবে না।

@@ -38,11 +38,12 @@ export function TopicsPanel({
   onAddQuestions,
   onAddPdf,
 }: TopicsPanelProps) {
-  if (!subject) return <div className="p-10 text-center text-sm text-zinc-500">Topic দেখতে একটি বিষয় নির্বাচন করুন।</div>;
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(
     null
   );
   const [notesTopic, setNotesTopic] = useState<ExamTopic | null>(null);
+
+  if (!subject) return <div className="p-10 text-center text-sm text-zinc-500">Topic দেখতে একটি বিষয় নির্বাচন করুন।</div>;
 
   return (
     <>

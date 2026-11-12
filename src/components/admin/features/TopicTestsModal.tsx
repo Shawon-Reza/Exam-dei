@@ -14,6 +14,20 @@ type TopicTestsModalProps = {
   onClose: () => void;
 };
 
+type TopicTest = {
+  id?: string;
+  _id?: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  duration: number;
+  isActive: boolean;
+  totalQuestions: number;
+  createdAt: string;
+  topicId: string;
+  subjectId: string;
+};
+
 export default function TopicTestsModal({
   topicId,
   subjectId,
@@ -62,7 +76,7 @@ export default function TopicTestsModal({
 
         <div className="mt-3 grid grid-cols-1 gap-2">
           {testList?.data?.data?.length > 0 ? (
-            testList.data.data.map((test: any) => (
+            testList.data.data.map((test: TopicTest) => (
               <TestsCard key={test.id ?? test._id} data={test} />
             ))
           ) : (

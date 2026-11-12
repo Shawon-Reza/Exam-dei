@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Loader2, Save, Edit2, Plus } from "lucide-react";
+import { X, Loader2, Edit2, Plus } from "lucide-react";
 import { RichTextEditor } from "../../blogs/RichTextEditor";
 import type { ExamTopic } from "../../exams/exam-data";
 import type { JSONContent } from "@tiptap/react";
@@ -25,19 +25,23 @@ export default function TopicNotesModal({
   const [error, setError] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
-  const { data: existingNote, isLoading: isFetching, refetch } = useGetNoteByTopicId(topic.id);
+  const { data: existingNote, isLoading: isFetching } = useGetNoteByTopicId(topic.id);
   const createNoteMutation = useCreateNote();
   const updateNoteMutation = useUpdateNote();
 
   useEffect(() => {
     if (existingNote?.content) {
-      setIsEditing(true);
-      setContent(existingNote.content as JSONContent);
-      setTextContent(existingNote.textContent ?? "");
+      window.setTimeout(() => {
+        setIsEditing(true);
+        setContent(existingNote.content as JSONContent);
+        setTextContent(existingNote.textContent ?? "");
+      }, 0);
     } else {
-      setIsEditing(false);
-      setContent({ type: "doc", content: [{ type: "paragraph" }] });
-      setTextContent("");
+      window.setTimeout(() => {
+        setIsEditing(false);
+        setContent({ type: "doc", content: [{ type: "paragraph" }] });
+        setTextContent("");
+      }, 0);
     }
   }, [existingNote]);
 

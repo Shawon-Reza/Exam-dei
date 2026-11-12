@@ -72,6 +72,15 @@ export type Exam = {
   startsAt?: string;
   endsAt?: string;
   questions: ExamQuestion[];
+  title?: string;
+  subtitle?: string;
+  subjectId?: string;
+  topicId?: string;
+  categoryId?: string;
+  questionCount?: number;
+  durationMinutes?: number;
+  participants?: number;
+  featured?: boolean;
 };
 
 export const examSubjects: ExamSubject[] = [

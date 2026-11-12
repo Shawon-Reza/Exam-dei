@@ -9,7 +9,7 @@ import {
   FiLayers,
   FiSidebar,
 } from "react-icons/fi";
-import type { ExamSubject, ExamTopic } from "../exams/exam-data";
+import type { ExamTopic } from "../exams/exam-data";
 
 type SidebarTest = {
   id: string;
@@ -27,7 +27,6 @@ type SidebarPdf = {
 };
 
 type TopicOverviewSidebarProps = {
-  subject: Pick<ExamSubject, "id" | "slug" | "label">;
   topic: Pick<ExamTopic, "id" | "slug" | "label">;
   tests: SidebarTest[];
   pdfs: SidebarPdf[];
@@ -37,7 +36,6 @@ type TopicOverviewSidebarProps = {
 };
 
 export default function TopicOverviewSidebar({
-  subject,
   topic,
   tests,
   pdfs,

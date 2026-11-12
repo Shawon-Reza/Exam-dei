@@ -29,8 +29,9 @@ const statusFilters: { id: StatusFilter; label: string }[] = [
 
 const statusMatchesFilter = (status: ExamStatus, filter: StatusFilter) => {
   if (filter === "all") return true;
-  if (filter === "live") return status === "live" || status === "running";
-  return status === filter;
+  if (filter === "live") return status === "LIVE";
+  if (filter === "upcoming") return status === "UPCOMING";
+  return status === "PRACTICE";
 };
 
 function ExamDashboardContent() {
@@ -60,7 +61,7 @@ function ExamDashboardContent() {
   const requestedExam =
     isAuthenticated && requestedExamId
       ? exams.find(
-          (exam) => exam.id === requestedExamId && exam.status !== "upcoming",
+          (exam) => exam.id === requestedExamId && exam.status !== "UPCOMING",
         ) ?? null
       : null;
   const activeDialogExam = examToStart ?? requestedExam;
@@ -85,7 +86,7 @@ function ExamDashboardContent() {
       const matchesStatus = statusMatchesFilter(exam.status, statusFilter);
       const matchesSearch =
         !normalizedSearch ||
-        `${exam.title} ${exam.subtitle}`
+        `${exam.title ?? exam.name} ${exam.subtitle ?? exam.description}`
           .toLocaleLowerCase()
           .includes(normalizedSearch);
 
@@ -101,9 +102,9 @@ function ExamDashboardContent() {
   ]);
 
   const activeExams = exams.filter(
-    (exam) => exam.status === "live" || exam.status === "running",
+    (exam) => exam.status === "LIVE",
   );
-  const scheduledExams = exams.filter((exam) => exam.status === "upcoming");
+  const scheduledExams = exams.filter((exam) => exam.status === "UPCOMING");
 
   function selectMode(mode: BrowseMode) {
     setBrowseMode(mode);
@@ -150,7 +151,7 @@ function ExamDashboardContent() {
   }
 
   function startOrInspectExam(exam: Exam) {
-    if (exam.status !== "upcoming" && !isAuthenticated) {
+    if (exam.status !== "UPCOMING" && !isAuthenticated) {
       const returnPath = `${pathname}?start=${encodeURIComponent(exam.id)}`;
       router.push(`/login?next=${encodeURIComponent(returnPath)}`);
       return;
