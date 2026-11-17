@@ -2,12 +2,12 @@
 
 import { useState, type FormEvent } from "react";
 import { FiEdit2, FiFilter, FiPlus, FiTrash2 } from "react-icons/fi";
-import { statusLabels, type Exam, type ExamStatus } from "../../exams/exam-data";
+import { statusLabels, type Exam } from "../../exams/exam-data";
 import ExamFormDialog from "./ExamFormDialog";
+import AssignQuestionsModal from "./questionAssignToTestModal";
 import type { ExamDraft } from "../types";
 import { EmptyTable, Panel, PrimaryButton, SearchBox, SectionHeading, TableFooter } from "../ui/AdminPrimitives";
 import { useCreateTest, useDeleteTestByID, useTestsByQuery } from "@/src/apis/test/test.useHooks";
-import { useSubjects } from "@/src/apis/subjects/subjects.hooks";
 
 const statusClass: Record<string, string> = {
   LIVE: "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
@@ -22,8 +22,8 @@ const emptyDraft: ExamDraft = {
   duration: 30,
   totalQuestions: 20,
   isActive: true,
-  status: "LIVE" as ExamStatus,
-  subjectId: "",
+  status: "UPCOMING",
+  type: "CATEGORY",
 };
 
 export default function ExamsSection({
@@ -33,8 +33,8 @@ export default function ExamsSection({
 }) {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
-  const [subjectId, setSubjectId] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [assignExam, setAssignExam] = useState<Exam | null>(null);
   const [draft, setDraft] = useState(emptyDraft);
   const createTestMutation = useCreateTest();
   const deleteTestMutation = useDeleteTestByID();
@@ -42,13 +42,9 @@ export default function ExamsSection({
 
   if (search.trim()) query.set("search", search.trim());
   if (status) query.set("status", status);
-  if (subjectId) query.set("subjectId", subjectId);
 
   const testsQuery = useTestsByQuery(query.toString());
   const testList = testsQuery.data?.data ?? [];
-
-  const subjectList = useSubjects();
-  const subjects = subjectList.data ?? [];
 
   function openDialog() {
     setDialogOpen(true);
@@ -65,11 +61,12 @@ export default function ExamsSection({
       totalQuestions: Number(draft.totalQuestions),
       isActive: draft.isActive,
       status: draft.status,
-      ...(draft.subjectId ? { subjectId: draft.subjectId } : {}),
+      type: draft.type,
     };
     if (!details.name.trim()) return;
 
     try {
+      console.log("Creating test:", details);
       const result = await createTestMutation.mutateAsync(details);
 
       if (!result.success) {
@@ -113,19 +110,6 @@ export default function ExamsSection({
               ))}
             </select>
           </label>
-          <select
-            value={subjectId}
-            onChange={(event) => setSubjectId(event.target.value)}
-            aria-label="বিষয় দিয়ে পরীক্ষা filter"
-            className="h-10 rounded-xl border border-zinc-200 bg-white px-3 text-sm text-zinc-700 outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200"
-          >
-            <option value="">সব বিষয়</option>
-            {subjects.map((subject) => (
-              <option key={subject.id} value={subject.id}>
-                {subject.banglaName || subject.name}
-              </option>
-            ))}
-          </select>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] text-left text-sm">
@@ -150,10 +134,24 @@ export default function ExamsSection({
                       {statusLabels[exam.status]}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-zinc-600 dark:text-zinc-300">{exam.totalQuestions}</td>
+                  <td className="px-4 py-4 text-zinc-600 dark:text-zinc-300">
+                    <span className="block">{exam.totalQuestions}</span>
+                    <span className="mt-1 block text-xs text-teal-600 dark:text-teal-400">
+                      যুক্ত: {exam._count?.testQuestions ?? 0}
+                    </span>
+                  </td>
                   <td className="px-4 py-4 text-zinc-600 dark:text-zinc-300">{exam.duration} মিনিট</td>
                   <td className="px-4 py-4">
                     <div className="flex justify-end gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setAssignExam(exam)}
+                        aria-label={`${exam.name}-এ প্রশ্ন assign করুন`}
+                        title="প্রশ্ন assign করুন"
+                        className="grid size-9 place-items-center rounded-lg text-zinc-500 hover:bg-teal-50 hover:text-teal-600 dark:hover:bg-teal-950/40"
+                      >
+                        <FiPlus aria-hidden="true" />
+                      </button>
                       <button type="button" onClick={() => console.log("Update test:", exam.id)} aria-label={`${exam.name} সম্পাদনা`} className="grid size-9 place-items-center rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800">
                         <FiEdit2 aria-hidden="true" />
                       </button>
@@ -185,12 +183,20 @@ export default function ExamsSection({
         <TableFooter count={testList.length} label="টি পরীক্ষা" />
       </Panel>
 
+      {assignExam && (
+        <AssignQuestionsModal
+          isOpen
+          onClose={() => setAssignExam(null)}
+          testName={assignExam.name}
+          testId={assignExam.id}
+        />
+      )}
+
       {dialogOpen && (
         <ExamFormDialog
           draft={draft}
           setDraft={setDraft}
           editing={false}
-          subjects={subjects}
           onClose={() => {
             setDraft(emptyDraft);
             setDialogOpen(false);

@@ -59,7 +59,7 @@ export default function CreateTestModal({
                 isActive,
                 topicId,
                 subjectId,
-                status: "PRACTICE" as const,
+                status: "UPCOMING" as const,
                 type: "SUBJECT" as const,
             };
 

@@ -26,6 +26,7 @@ import { useLogout } from "@/src/apis/auth/auth.mutations";
 import type { CurrentUser } from "@/src/apis/auth/auth.types";
 import logo from "@/src/app/icon.jpg";
 import ProfileDrawer from "./ProfileDrawer";
+import NotificationCenter from "./NotificationCenter";
 import { aboutSections } from "@/src/components/about/about-data";
 
 const navigationLinks = [
@@ -242,46 +243,77 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
               <div
                 role="dialog"
                 aria-label="শিক্ষা উপকরণ"
-                className="absolute right-0 top-full z-50 w-[min(680px,calc(100vw-2rem))] pt-2"
+                className="absolute right-0 top-full z-50 w-[min(700px,calc(100vw-2rem))] pt-3"
               >
-                <div className="grid max-h-[min(70vh,520px)] gap-4 overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-4 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] sm:gap-5 sm:p-5">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                      প্রস্তুতির উপকরণ
-                    </p>
-                    <p className="mt-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
-                      আপনার প্রয়োজন অনুযায়ী প্রশ্ন, নোট ও বই বেছে নিয়ে প্রস্তুতি আরও গুছিয়ে নিন।
-                    </p>
-                    <div className="mt-4 space-y-2">
-                      {resourceLinks.map(({ title, description, href, icon: Icon }) => (
-                        <Link key={href} href={href} onClick={closeMenu} className="flex items-center gap-2 rounded-lg p-2 transition hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                          <Icon className="size-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
-                          <span>
-                            <span className="block font-bold text-zinc-900 dark:text-white">{title}</span>
-                            <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">{description}</span>
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="rounded-2xl bg-zinc-50 p-4 dark:bg-zinc-950">
-                    <div className="flex items-center gap-2">
-                      <FiFileText className="size-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
-                      <div>
-                        <h2 className="text-sm font-bold text-zinc-900 dark:text-white">বিষয়ভিত্তিক নোট</h2>
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400">যে বিষয়ের নোট পড়তে চান বেছে নিন</p>
+                <div className="relative overflow-hidden rounded-[1.9rem] border border-white/80 bg-[#fbfcf9]/95 p-2.5 shadow-[0_28px_80px_-24px_rgba(20,45,38,0.48)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#17201c]/95 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.82)]">
+                  <div className="pointer-events-none absolute -right-24 -top-24 size-56 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-700/10" />
+                  <div className="pointer-events-none absolute left-[14.5rem] top-0 h-px w-40 bg-gradient-to-r from-transparent via-amber-300/70 to-transparent" />
+                  <div className="relative grid gap-2 sm:grid-cols-[205px_minmax(0,1fr)]">
+                    <div className="relative flex min-h-[252px] flex-col overflow-hidden rounded-[1.45rem] bg-[linear-gradient(145deg,#173e34_0%,#102d27_100%)] p-4 text-white">
+                      <div className="pointer-events-none absolute -right-14 -top-14 size-36 rounded-full border-[20px] border-white/[0.045]" />
+                      <div className="pointer-events-none absolute bottom-14 right-4 size-24 rounded-full border border-amber-200/10" />
+                      <div className="pointer-events-none absolute bottom-10 right-8 size-16 rounded-full border border-emerald-200/10" />
+                      <div className="relative">
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.07] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-200">
+                          <span className="size-1.5 rounded-full bg-amber-200 shadow-[0_0_12px_rgba(253,230,138,0.7)]" />
+                          Study library
+                        </span>
+                        <h2 className="mt-5 text-[1.35rem] font-black leading-[1.12] tracking-tight">
+                          প্রস্তুতির
+                          <br />
+                          পূর্ণ সংগ্রহ
+                        </h2>
+                        <p className="mt-2.5 text-[11px] leading-5 text-emerald-50/65">
+                          নোট, প্রশ্ন ব্যাংক ও নির্বাচিত গাইড এক জায়গায়।
+                        </p>
+                      </div>
+                      <div className="relative mt-auto">
+                        {resourceLinks.map(({ href, title, icon: Icon }, index) => (
+                          <Link
+                            key={href}
+                            href={href}
+                            onClick={closeMenu}
+                            className="mt-1.5 flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.06] px-2.5 py-2 text-[10px] font-bold text-white transition duration-300 hover:border-amber-100/20 hover:bg-[#f8f5ea] hover:text-[#15382f]"
+                          >
+                            <Icon aria-hidden="true" className="size-3.5" />
+                            <span className="truncate">{title}</span>
+                            <span className="ml-auto text-[8px] text-emerald-200/50">{String(index + 1).padStart(2, "0")}</span>
+                          </Link>
+                        ))}
                       </div>
                     </div>
-                    <div className="mt-3 grid grid-cols-2 gap-2">
-                      {noteLinks.map((note) => (
-                        <Link key={note.href} href={note.href} onClick={closeMenu} className="block rounded-lg border border-zinc-200 bg-white p-2 transition hover:bg-emerald-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-emerald-950/30">
-                          <span>
-                            <span className="block text-sm font-bold text-zinc-800 dark:text-zinc-100">{note.label}</span>
-                            <span className="block text-[11px] text-zinc-500 dark:text-zinc-400">{note.englishLabel}</span>
+                    <nav
+                      aria-label="Subject notes"
+                      className="grid max-h-[min(60vh,252px)] content-start gap-1.5 overflow-y-auto p-0.5 sm:grid-cols-2"
+                    >
+                      <div className="col-span-full flex items-end justify-between px-1 pb-0.5">
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-600 dark:text-emerald-400">Subject notes</p>
+                          <h3 className="mt-0.5 text-sm font-black text-zinc-900 dark:text-white">বিষয়ভিত্তিক নোট</h3>
+                        </div>
+                        <p className="text-[9px] font-bold tabular-nums text-zinc-400">{String(noteLinks.length).padStart(2, "0")} বিষয়</p>
+                      </div>
+                      {noteLinks.map((note, index) => (
+                        <Link
+                          key={note.href}
+                          href={note.href}
+                          onClick={closeMenu}
+                          className="group relative flex min-h-[76px] min-w-0 items-center gap-3 overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-2.5 transition duration-300 hover:-translate-y-0.5 hover:border-emerald-200/90 hover:bg-emerald-50/70 hover:shadow-[0_14px_30px_-18px_rgba(6,78,59,0.45)] dark:border-white/[0.07] dark:bg-white/[0.025] dark:hover:border-emerald-700/40 dark:hover:bg-emerald-950/30"
+                        >
+                          <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-emerald-100/80 bg-emerald-50 text-emerald-700 shadow-sm transition duration-300 group-hover:rotate-3 group-hover:border-emerald-500 group-hover:bg-emerald-500 group-hover:text-white group-hover:shadow-emerald-500/20 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300 dark:group-hover:border-emerald-500 dark:group-hover:bg-emerald-500 dark:group-hover:text-white">
+                            <FiFileText aria-hidden="true" className="size-4" />
                           </span>
+                          <span className="min-w-0">
+                            <span className="block truncate text-xs font-bold text-zinc-800 dark:text-zinc-100">{note.label}</span>
+                            <span className="mt-1 block truncate text-[10px] leading-4 text-zinc-500 dark:text-zinc-400">{note.englishLabel}</span>
+                          </span>
+                          <span className="absolute bottom-1.5 right-2.5 text-[8px] font-bold tabular-nums tracking-widest text-zinc-300 transition-colors group-hover:text-emerald-300 dark:text-white/15 dark:group-hover:text-emerald-300/70">
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+                          <FiArrowUpRight aria-hidden="true" className="ml-auto hidden size-3.5 shrink-0 text-emerald-600 opacity-0 transition-opacity group-hover:opacity-100 sm:block dark:text-emerald-300" />
                         </Link>
                       ))}
-                    </div>
+                    </nav>
                   </div>
                 </div>
               </div>
@@ -317,39 +349,75 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
               <div
                 role="dialog"
                 aria-label="About Chakriova sections"
-                className="absolute right-0 top-full z-50 w-[min(390px,calc(100vw-2rem))] pt-2"
+                className="absolute right-0 top-full z-50 w-[min(700px,calc(100vw-2rem))] pt-3"
               >
-                <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900">
-                  <p className="px-2 text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                    Chakriova সম্পর্কে
-                  </p>
-                  <p className="px-2 pt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
-                    আমাদের উদ্দেশ্য, মানুষ এবং গল্প সম্পর্কে জানুন।
-                  </p>
-                  <nav aria-label="About page sections" className="mt-3 grid gap-1 sm:grid-cols-2">
-                    {aboutSections.map((section) => {
+                <div className="relative overflow-hidden rounded-[1.9rem] border border-white/80 bg-[#fbfcf9]/95 p-2.5 shadow-[0_28px_80px_-24px_rgba(20,45,38,0.48)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#17201c]/95 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.82)]">
+                  <div className="pointer-events-none absolute -right-24 -top-24 size-56 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-700/10" />
+                  <div className="pointer-events-none absolute left-[14.5rem] top-0 h-px w-40 bg-gradient-to-r from-transparent via-amber-300/70 to-transparent" />
+                  <div className="relative grid gap-2 sm:grid-cols-[205px_minmax(0,1fr)]">
+                    <div className="relative flex min-h-[252px] flex-col overflow-hidden rounded-[1.45rem] bg-[linear-gradient(145deg,#173e34_0%,#102d27_100%)] p-4 text-white">
+                      <div className="pointer-events-none absolute -right-14 -top-14 size-36 rounded-full border-[20px] border-white/[0.045]" />
+                      <div className="pointer-events-none absolute bottom-14 right-4 size-24 rounded-full border border-amber-200/10" />
+                      <div className="pointer-events-none absolute bottom-10 right-8 size-16 rounded-full border border-emerald-200/10" />
+                      <div className="relative">
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.07] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-200">
+                          <span className="size-1.5 rounded-full bg-amber-200 shadow-[0_0_12px_rgba(253,230,138,0.7)]" />
+                          About us
+                        </span>
+                        <h2 className="mt-5 text-[1.35rem] font-black leading-[1.12] tracking-tight">
+                          প্রস্তুতির পথ,
+                          <br />
+                          আপনার গল্প
+                        </h2>
+                        <p className="mt-2.5 text-[11px] leading-5 text-emerald-50/65">
+                          Chakriova-এর উদ্দেশ্য, লক্ষ্য ও আমাদের যাত্রা জানুন।
+                        </p>
+                      </div>
+                      <Link
+                        href="/about"
+                        onClick={closeMenu}
+                        className="relative mt-auto inline-flex w-fit items-center gap-2 rounded-full border border-amber-100/20 bg-[#f8f5ea] px-3.5 py-2 text-[10px] font-bold text-[#15382f] shadow-lg shadow-black/10 transition duration-300 hover:-translate-y-0.5 hover:bg-white"
+                      >
+                        পুরো গল্প পড়ুন
+                        <FiArrowUpRight aria-hidden="true" className="size-3.5" />
+                      </Link>
+                    </div>
+                    <nav
+                      aria-label="About page sections"
+                      className="grid max-h-[min(60vh,252px)] content-start gap-1.5 overflow-y-auto p-0.5 sm:grid-cols-2"
+                    >
+                    {aboutSections.map((section, index) => {
                       const Icon = aboutSectionIcons[section.id];
                       return (
                         <Link
                           key={section.id}
                           href={`/about#${section.id}`}
                           onClick={closeMenu}
-                          className="flex items-start gap-3 rounded-xl p-2.5 transition hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                          className="group relative flex min-h-[76px] min-w-0 items-center gap-3 overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-2.5 transition duration-300 hover:-translate-y-0.5 hover:border-emerald-200/90 hover:bg-emerald-50/70 hover:shadow-[0_14px_30px_-18px_rgba(6,78,59,0.45)] dark:border-white/[0.07] dark:bg-white/[0.025] dark:hover:border-emerald-700/40 dark:hover:bg-emerald-950/30"
                         >
-                          <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                          <span>
-                            <span className="block text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+                          <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-emerald-100/80 bg-emerald-50 text-emerald-700 shadow-sm transition duration-300 group-hover:rotate-3 group-hover:border-emerald-500 group-hover:bg-emerald-500 group-hover:text-white group-hover:shadow-emerald-500/20 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300 dark:group-hover:border-emerald-500 dark:group-hover:bg-emerald-500 dark:group-hover:text-white">
+                            <Icon aria-hidden="true" className="size-4" />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block truncate text-xs font-bold text-zinc-800 dark:text-zinc-100">
                               {section.label}
-                              <span className="ml-1 text-[10px] font-medium text-zinc-400">{section.englishLabel}</span>
+                              <span className="ml-1 text-[9px] font-medium uppercase tracking-wide text-zinc-400">
+                                {section.englishLabel}
+                              </span>
                             </span>
-                            <span className="mt-0.5 block text-[11px] leading-4 text-zinc-500 dark:text-zinc-400">
+                            <span className="mt-1 block truncate text-[10px] leading-4 text-zinc-500 dark:text-zinc-400">
                               {section.description}
                             </span>
                           </span>
+                          <span className="absolute bottom-1.5 right-2.5 text-[8px] font-bold tabular-nums tracking-widest text-zinc-300 transition-colors group-hover:text-emerald-300 dark:text-white/15 dark:group-hover:text-emerald-300/70">
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+                          <FiArrowUpRight aria-hidden="true" className="ml-auto hidden size-3.5 shrink-0 text-emerald-600 opacity-0 transition-opacity group-hover:opacity-100 sm:block dark:text-emerald-300" />
                         </Link>
                       );
                     })}
-                  </nav>
+                    </nav>
+                  </div>
                 </div>
               </div>
             )}
@@ -358,7 +426,7 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
 
         <div className="flex shrink-0 items-center gap-2">
           <ModeToggle />
-
+          <NotificationCenter />
 
           {user ? (
             <div className="flex items-center justify-center">

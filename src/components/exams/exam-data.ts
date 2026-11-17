@@ -77,6 +77,9 @@ export type Exam = {
   subjectId?: string;
   topicId?: string;
   categoryId?: string;
+  _count?: {
+    testQuestions?: number;
+  };
   questionCount?: number;
   durationMinutes?: number;
   participants?: number;

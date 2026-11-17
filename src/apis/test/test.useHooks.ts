@@ -2,17 +2,39 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { testsApi, type CreateTestPayload, type CreateTestResponse } from "./test.api"
 
 
-export const useTests = (topicId: string) => {
+export const useTests = (topicId?: string, search = "") => {
     return useQuery({
-        queryKey: ["tests", topicId],
-        queryFn: () => testsApi.getAllTestByTopic(topicId)
+        queryKey: ["tests", topicId ?? "all", search],
+        queryFn: () => {
+            if (topicId) {
+                return testsApi.getAllTestByTopic(topicId)
+            }
+
+            const params = new URLSearchParams()
+            if (search) {
+                params.set("search", search)
+            }
+
+            return testsApi.getTest(params.toString())
+        },
+        retry: 1,
     })
 }
 
-export const useTestsByQuery = (params: string) => {
+export const useTestsBySubject = (subjectId: string) => {
+    return useQuery({
+        queryKey: ["tests", "subject", subjectId],
+        queryFn: () => testsApi.getAllTestBySubject(subjectId),
+        enabled: Boolean(subjectId),
+    })
+}
+
+
+export const useTestsByQuery = (params: string, enabled = true) => {
     return useQuery({
         queryKey: ["tests", params],
-        queryFn: () => testsApi.getTest(params)
+        queryFn: () => testsApi.getTest(params),
+        enabled,
     })
 }
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   FiArrowLeft,
@@ -89,14 +88,12 @@ export default function QuestionsComponent({
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const [resultData, setResultData] = useState<{
-    score: number;
-    negativeScore: number;
     totalQuestions: number;
     correctAnswers: number;
     incorrectAnswers: number;
     skippedAnswers: number;
     accuracy: number;
-    point: number;
+    earnedPoints: number;
   } | null>(null);
 
   const submitResultMutation = useSubmitResult();
@@ -213,15 +210,14 @@ export default function QuestionsComponent({
       const response = await submitResultMutation.mutateAsync(submissionResult);
       if (response.success && response.data) {
         setResultData({
-          score: response.data.score,
-          negativeScore: response.data.negativeScore,
           totalQuestions: response.data.totalQuestions,
           correctAnswers: response.data.correctAnswers,
           incorrectAnswers: response.data.incorrectAnswers,
           skippedAnswers: response.data.skippedAnswers,
           accuracy: response.data.accuracy,
-          point: response.data.point?.points ?? 0,
+          earnedPoints: response.data.earnedPoints,
         });
+        window.scrollTo({ top: 0, behavior: "smooth" });
         // Clear stored answers after successful submission
         if (typeof window !== "undefined") {
           localStorage.removeItem(storageKey);
@@ -240,13 +236,15 @@ export default function QuestionsComponent({
   return (
     <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
       <div className="mx-auto mb-10 mt-2 max-w-[1600px] px-4 sm:px-6 lg:px-8">
-        <Link
-          href={`/topics/${encodeURIComponent(topic.id)}?subject=${encodeURIComponent(subject.id)}`}
+        <button
+          type="button"
+          onClick={() => router.back()}
+          aria-label={`${topic.label} নোটে ফিরে যান (${subject.label})`}
           className="inline-flex min-h-10 items-center gap-2 rounded-xl px-2 text-sm font-semibold text-zinc-600 transition hover:bg-white hover:text-emerald-700 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-emerald-300"
         >
           <FiArrowLeft aria-hidden="true" />
           {topic.label} নোটে ফিরে যান
-        </Link>
+        </button>
 
         <section className="mx-auto mt-5 max-w-7xl">
           {questionsList.isPending && (
@@ -321,9 +319,9 @@ export default function QuestionsComponent({
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                       <div className="rounded-xl bg-white p-3 dark:bg-zinc-800">
                         <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
-                          {resultData.score}
+                          {resultData.accuracy}%
                         </p>
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400">স্কোর</p>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400">সঠিকতার হার</p>
                       </div>
                       <div className="rounded-xl bg-white p-3 dark:bg-zinc-800">
                         <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
@@ -343,30 +341,14 @@ export default function QuestionsComponent({
                         </p>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400">স্কিপ</p>
                       </div>
-                      <div className="col-span-2 sm:col-span-4 grid grid-cols-2 gap-3 mt-2">
-                        <div className="rounded-xl bg-white p-3 dark:bg-zinc-800">
-                          <p className="text-xl font-extrabold text-zinc-900 dark:text-white">
-                            {resultData.accuracy}%
+                      <div className="col-span-2 sm:col-span-4 grid grid-cols-1 gap-3 mt-2">
+                        <div className="rounded-xl bg-amber-50 p-3 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
+                          <p className="text-2xl font-extrabold text-amber-600 dark:text-amber-400">
+                            {resultData.earnedPoints}
                           </p>
-                          <p className="text-xs text-zinc-500 dark:text-zinc-400">শুদ্ধতা</p>
-                        </div>
-                        <div className="rounded-xl bg-white p-3 dark:bg-zinc-800">
-                          <p className="text-xl font-extrabold text-zinc-900 dark:text-white">
-                            {resultData.negativeScore}
-                          </p>
-                          <p className="text-xs text-zinc-500 dark:text-zinc-400">নেগেটিভ স্কোর</p>
+                          <p className="text-xs text-zinc-500 dark:text-zinc-400">অর্জিত পয়েন্ট</p>
                         </div>
                       </div>
-                      {resultData.point !== undefined && resultData.point > 0 && (
-                        <div className="col-span-2 sm:col-span-4 grid grid-cols-1 gap-3 mt-2">
-                          <div className="rounded-xl bg-amber-50 p-3 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
-                            <p className="text-2xl font-extrabold text-amber-600 dark:text-amber-400">
-                              {resultData.point}
-                            </p>
-                            <p className="text-xs text-zinc-500 dark:text-zinc-400">অর্জিত পয়েন্ট</p>
-                          </div>
-                        </div>
-                      )}
                     </div>
                     <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400 text-center">
                       মোট প্রশ্ন: {resultData.totalQuestions}

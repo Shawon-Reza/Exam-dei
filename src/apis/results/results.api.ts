@@ -9,23 +9,14 @@ export type SubmitResultPayload = {
 };
 
 export type ResultResponse = {
-  id: string;
+  resultId: string;
   testId: string;
-  userId: string;
-  topicId: string;
-  score: number;
-  negativeScore: number;
   totalQuestions: number;
   correctAnswers: number;
   incorrectAnswers: number;
   skippedAnswers: number;
   accuracy: number;
-  testType: "PREDEFINED" | "PRACTICE";
-  createdAt: string;
-  updatedAt: string;
-  point?: {
-    points: number;
-  };
+  earnedPoints: number;
 };
 
 export type SubmitResultResponse = {

@@ -1,10 +1,18 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { statusLabels, type ExamStatus } from "../../exams/exam-data";
 import type { ExamDraft } from "../types";
-import type { SubjectApiItem } from "@/src/apis/subjects/subjects.api";
 import { AdminDialog, DialogActions, Field, inputClass } from "../ui/AdminPrimitives";
+
+const testTypeOptions = [
+  { value: "CATEGORY", label: "Category" },
+  { value: "SUBJECT", label: "Subject" },
+] as const;
+
+const testStatusOptions = [
+  { value: "UPCOMING", label: "নির্ধারিত" },
+  { value: "LIVE", label: "লাইভ" },
+] as const;
 
 export default function ExamFormDialog({
   draft,
@@ -12,14 +20,12 @@ export default function ExamFormDialog({
   editing,
   onClose,
   onSubmit,
-  subjects,
 }: {
   draft: ExamDraft;
   setDraft: (draft: ExamDraft) => void;
   editing: boolean;
   onClose: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  subjects: SubjectApiItem[];
 }) {
   return (
     <AdminDialog
@@ -57,20 +63,6 @@ export default function ExamFormDialog({
             className={inputClass}
           />
         </Field>
-        <Field label="Subject (optional)">
-          <select
-            value={draft.subjectId ?? ""}
-            onChange={(event) => setDraft({ ...draft, subjectId: event.target.value || undefined })}
-            className={inputClass}
-          >
-            <option value="">কোনো subject নয়</option>
-            {subjects.map((subject) => (
-              <option key={subject.id} value={subject.id}>
-                {subject.banglaName || subject.name}
-              </option>
-            ))}
-          </select>
-        </Field>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Duration (minutes)">
             <input
@@ -104,13 +96,40 @@ export default function ExamFormDialog({
               <option value="false">Inactive</option>
             </select>
           </Field>
+          <Field label="Type">
+            <select
+              value={draft.type}
+              onChange={(event) =>
+                setDraft({
+                  ...draft,
+                  type: event.target.value as ExamDraft["type"],
+                })
+              }
+              className={inputClass}
+            >
+              {testTypeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </Field>
           <Field label="Status">
             <select
               value={draft.status}
-              onChange={(event) => setDraft({ ...draft, status: event.target.value as ExamStatus })}
+              onChange={(event) =>
+                setDraft({
+                  ...draft,
+                  status: event.target.value as ExamDraft["status"],
+                })
+              }
               className={inputClass}
             >
-              {Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              {testStatusOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </Field>
         </div>

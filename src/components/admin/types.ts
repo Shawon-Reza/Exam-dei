@@ -1,4 +1,5 @@
-import type { ExamQuestion, ExamStatus, ExamSubject, ExamTopic } from "../exams/exam-data";
+import type { ExamQuestion, ExamSubject, ExamTopic } from "../exams/exam-data";
+import type { TestStatus, TestType } from "@/src/apis/test/test.api";
 
 export type AdminSection =
   | "overview"
@@ -65,8 +66,8 @@ export type ExamDraft = {
   duration: number;
   totalQuestions: number;
   isActive: boolean;
-  status: ExamStatus;
-  subjectId?: string;
+  status: TestStatus;
+  type: TestType;
 };
 
 export type QuestionDraft = {

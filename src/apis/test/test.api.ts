@@ -1,5 +1,7 @@
 import axiosApi from "@/src/lib/axios_instance"
 
+export type TestType = "TOPIC" | "SUBJECT" | "CATEGORY";
+export type TestStatus = "PRACTICE" | "UPCOMING" | "LIVE";
 
 export type CreateTestPayload = {
   name: string;
@@ -8,8 +10,8 @@ export type CreateTestPayload = {
   duration: number;
   totalQuestions: number;
   isActive: boolean;
-  status: "UPCOMING" | "LIVE" | "PRACTICE";
-  type?: "SUBJECT" | "TOPIC";
+  status: TestStatus;
+  type: TestType;
   topicId?: string;
   subjectId?: string;
 };
@@ -22,7 +24,8 @@ export type TestResponse = {
   duration: number;
   totalQuestions: number;
   isActive: boolean;
-  status: "UPCOMING" | "LIVE" | "PRACTICE";
+  status: TestStatus;
+  type: TestType;
   topicId: string | null;
   subjectId: string | null;
   createdAt: string;
@@ -38,6 +41,11 @@ export type CreateTestResponse = {
 
 const getAllTestByTopic = async (topicId: string) => {
     const res = await axiosApi.get(`/api/v1/tests/?topicId=${topicId}`)
+    return res.data
+}
+
+const getAllTestBySubject = async (subjectId: string) => {
+    const res = await axiosApi.get(`/api/v1/tests/?subjectId=${subjectId}`)
     return res.data
 }
 
@@ -65,6 +73,7 @@ const updateTest = async (id: string, payload: Record<string, unknown>) => {
 
 export const testsApi = {
     getAllTestByTopic,
+    getAllTestBySubject,
     getTest,
     createTest,
     deleteTestByID,
