@@ -17,6 +17,7 @@ type McqQuestion = {
   explanation: string;
   banglaExplanation?: string;
   options: QuestionOption[];
+  banglaQuestion: string
 };
 
 type SubmittedAnswer = {
@@ -64,6 +65,7 @@ export default function McqQuestionCard({
   const userSelectedIndex = isSubmitted ? submittedAnswer?.selectedIndex : selectedOptionIndex;
   const userIsCorrect = isSubmitted ? submittedAnswer?.isCorrect : false;
 
+
   return (
     <article className="h-full rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm shadow-zinc-950/[0.03] dark:border-zinc-800 dark:bg-zinc-900 sm:p-4">
       <div className="relative max-h-[560px] overflow-hidden">
@@ -79,7 +81,8 @@ export default function McqQuestionCard({
             </span>
 
             <h2 className="pt-1 text-sm font-bold leading-6 text-zinc-950 dark:text-white">
-              {question.question}
+              {/* {question.question} */}
+              {question?.banglaQuestion}
             </h2>
           </div>
 
@@ -233,8 +236,8 @@ export default function McqQuestionCard({
         {canViewExplanation && question.explanation && (
           <div
             className={`absolute inset-0 flex flex-col rounded-xl bg-emerald-50/90 p-4 transition-all duration-500 ease-in-out dark:bg-emerald-950/40 ${showExplanation
-                ? "translate-x-0 opacity-100"
-                : "translate-x-8 opacity-0 pointer-events-none"
+              ? "translate-x-0 opacity-100"
+              : "translate-x-8 opacity-0 pointer-events-none"
               }`}
             aria-hidden={!showExplanation}
           >

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
+    "@designcodeio/threeui": "^1.2.0",
     "@lexical/clipboard": "^0.52.0",
     "@lexical/extension": "^0.52.0",
     "@lexical/history": "^0.52.0",

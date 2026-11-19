@@ -32,6 +32,7 @@ type QuestionOption = {
 type McqQuestion = {
   id: string;
   question: string;
+  banglaQuestion: string;
   type: string;
   difficulty: number;
   correctAnswer: string;
@@ -55,14 +56,17 @@ export default function QuestionsComponent({
   const { data: user } = useAuth();
   const isAuthenticated = !!user;
 
-  // Storage key for persisting answers
+  // Storage key for persisting answers (only for in-progress, unsubmitted sessions)
   const storageKey = `mcq_answers_${testID ?? topicID}`;
 
-  // Load answers from localStorage on mount
+  // Load answers from localStorage on mount — but only if NOT already submitted
   const [selectedAnswers, setSelectedAnswers] = useState<
     Record<string, number>
   >(() => {
     if (typeof window !== "undefined") {
+      // If a submitted-flag exists for this test, do not restore answers
+      const submittedFlag = localStorage.getItem(`mcq_submitted_${testID ?? topicID}`);
+      if (submittedFlag) return {};
       const stored = localStorage.getItem(storageKey);
       if (stored) {
         try {
@@ -74,13 +78,6 @@ export default function QuestionsComponent({
     }
     return {};
   });
-
-  // Persist answers to localStorage whenever they change
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(storageKey, JSON.stringify(selectedAnswers));
-    }
-  }, [storageKey, selectedAnswers]);
 
   const [submittedAnswers, setSubmittedAnswers] = useState<
     Record<string, { selectedIndex: number | null; isCorrect: boolean }>
@@ -95,6 +92,47 @@ export default function QuestionsComponent({
     accuracy: number;
     earnedPoints: number;
   } | null>(null);
+
+  // Reset ALL state when the test/topic ID changes (e.g. navigating to a different test)
+  useEffect(() => {
+    const submittedFlag =
+      typeof window !== "undefined"
+        ? localStorage.getItem(`mcq_submitted_${testID ?? topicID}`)
+        : null;
+
+    if (submittedFlag) {
+      // Test was already submitted — restore nothing, show clean slate
+      setSelectedAnswers({});
+      setSubmittedAnswers({});
+      setIsSubmitted(false);
+      setResultData(null);
+    } else {
+      // Restore in-progress answers if available
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem(storageKey);
+        if (stored) {
+          try {
+            setSelectedAnswers(JSON.parse(stored));
+          } catch {
+            setSelectedAnswers({});
+          }
+        } else {
+          setSelectedAnswers({});
+        }
+      }
+      setSubmittedAnswers({});
+      setIsSubmitted(false);
+      setResultData(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [testID, topicID]);
+
+  // Persist in-progress answers to localStorage (only while not yet submitted)
+  useEffect(() => {
+    if (typeof window !== "undefined" && !isSubmitted) {
+      localStorage.setItem(storageKey, JSON.stringify(selectedAnswers));
+    }
+  }, [storageKey, selectedAnswers, isSubmitted]);
 
   const submitResultMutation = useSubmitResult();
   const isSubmitting = submitResultMutation.isPending;
@@ -139,6 +177,7 @@ export default function QuestionsComponent({
     setResultData(null);
     if (typeof window !== "undefined") {
       localStorage.removeItem(storageKey);
+      localStorage.removeItem(`mcq_submitted_${testID ?? topicID}`);
     }
   };
 
@@ -206,6 +245,14 @@ export default function QuestionsComponent({
     setSubmittedAnswers(reviewData);
     setIsSubmitted(true);
 
+    // Immediately clear the in-progress answers from localStorage
+    // so that going back never restores a "partially answered" state
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(storageKey);
+      // Write a submitted-flag so revisiting this test shows a clean slate
+      localStorage.setItem(`mcq_submitted_${testID ?? topicID}`, "1");
+    }
+
     try {
       const response = await submitResultMutation.mutateAsync(submissionResult);
       if (response.success && response.data) {
@@ -218,10 +265,6 @@ export default function QuestionsComponent({
           earnedPoints: response.data.earnedPoints,
         });
         window.scrollTo({ top: 0, behavior: "smooth" });
-        // Clear stored answers after successful submission
-        if (typeof window !== "undefined") {
-          localStorage.removeItem(storageKey);
-        }
       }
     } catch (error) {
       console.error("Failed to submit result:", error);
