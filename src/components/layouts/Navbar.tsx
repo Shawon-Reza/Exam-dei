@@ -150,7 +150,7 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
 
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/90 backdrop-blur-xl dark:border-zinc-800/80 dark:bg-zinc-950/90">
+    <header className="sticky top-0 z-[100] border-b border-zinc-200/80 bg-white/90 backdrop-blur-xl dark:border-zinc-800/80 dark:bg-zinc-950/90">
       <nav
         aria-label="Main navigation"
         className="mx-auto flex min-h-[72px] z-30 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
@@ -203,22 +203,22 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
             onMouseEnter={() => setResourcesOpen(true)}
             onMouseLeave={() => setResourcesOpen(false)}
           >
-            <button
-              type="button"
-              onClick={() => setResourcesOpen((open) => !open)}
+            <Link
+              href="/resources"
+              onClick={closeMenu}
               onFocus={() => setResourcesOpen(true)}
-              aria-haspopup="dialog"
-              aria-expanded={resourcesOpen}
               aria-current={
                 pathname.startsWith("/notes") ||
                   pathname === "/books" ||
-                  pathname === "/question-bank"
+                  pathname === "/question-bank" ||
+                  pathname === "/resources"
                   ? "page"
                   : undefined
               }
               className={`rounded-full px-4 py-2 text-sm font-medium transition ${pathname.startsWith("/notes") ||
                 pathname === "/books" ||
-                pathname === "/question-bank"
+                pathname === "/question-bank" ||
+                pathname === "/resources"
                 ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
                 : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white"
                 }`}
@@ -237,12 +237,12 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
               <span className="ml-1 text-xs text-zinc-400 transition-transform" aria-hidden="true">
                 {resourcesOpen ? "⌃" : "⌄"}
               </span>
-            </button>
+            </Link>
             {resourcesOpen && (
               <div
                 role="dialog"
                 aria-label="শিক্ষা উপকরণ"
-                className="absolute right-0 top-full z-50 w-[min(700px,calc(100vw-2rem))] pt-3"
+                className="absolute right-0 top-full z-[110] w-[min(700px,calc(100vw-2rem))] pt-3"
               >
                 <div className="relative overflow-hidden rounded-[1.9rem] border border-white/80 bg-[#fbfcf9]/95 p-2.5 shadow-[0_28px_80px_-24px_rgba(20,45,38,0.48)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#17201c]/95 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.82)]">
                   <div className="pointer-events-none absolute -right-24 -top-24 size-56 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-700/10" />
@@ -324,12 +324,10 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
             onMouseEnter={() => setAboutOpen(true)}
             onMouseLeave={() => setAboutOpen(false)}
           >
-            <button
-              type="button"
-              onClick={() => setAboutOpen((open) => !open)}
+            <Link
+              href="/about"
+              onClick={closeMenu}
               onFocus={() => setAboutOpen(true)}
-              aria-haspopup="dialog"
-              aria-expanded={aboutOpen}
               aria-current={pathname === "/about" ? "page" : undefined}
               className={`rounded-full px-4 py-2 text-sm font-medium transition ${pathname === "/about"
                 ? "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
@@ -343,12 +341,12 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
               <span className="ml-1 text-xs text-zinc-400" aria-hidden="true">
                 {aboutOpen ? "⌃" : "⌄"}
               </span>
-            </button>
+            </Link>
             {aboutOpen && (
               <div
                 role="dialog"
                 aria-label="About Chakriova sections"
-                className="absolute right-0 top-full z-50 w-[min(700px,calc(100vw-2rem))] pt-3"
+                className="absolute right-0 top-full z-[110] w-[min(700px,calc(100vw-2rem))] pt-3"
               >
                 <div className="relative overflow-hidden rounded-[1.9rem] border border-white/80 bg-[#fbfcf9]/95 p-2.5 shadow-[0_28px_80px_-24px_rgba(20,45,38,0.48)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#17201c]/95 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.82)]">
                   <div className="pointer-events-none absolute -right-24 -top-24 size-56 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-700/10" />
@@ -524,15 +522,24 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
               );
             })}
             <div className="mt-2 rounded-2xl border border-zinc-200 p-3 dark:border-zinc-800">
-              <button
-                type="button"
-                onClick={() => setResourcesOpen((open) => !open)}
-                aria-expanded={resourcesOpen}
-                className="flex w-full items-center justify-between px-2 py-1 text-left text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400"
-              >
-                শিক্ষা উপকরণ
-                <span aria-hidden="true">{resourcesOpen ? "⌃" : "⌄"}</span>
-              </button>
+              <div className="flex items-center justify-between gap-2">
+                <Link
+                  href="/resources"
+                  onClick={closeMenu}
+                  className="px-2 py-1 text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400"
+                >
+                  শিক্ষা উপকরণ <span className="ml-1.5 text-zinc-400">Resources</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setResourcesOpen((open) => !open)}
+                  aria-label={resourcesOpen ? "Hide resource shortcuts" : "Show resource shortcuts"}
+                  aria-expanded={resourcesOpen}
+                  className="grid size-8 shrink-0 place-items-center rounded-lg text-emerald-600 hover:bg-zinc-100 dark:text-emerald-400 dark:hover:bg-zinc-800"
+                >
+                  <span aria-hidden="true">{resourcesOpen ? "⌃" : "⌄"}</span>
+                </button>
+              </div>
               {resourcesOpen && (
                 <div className="mt-1">
                   {resourceLinks.map(({ title, description, href }) => (
@@ -563,15 +570,24 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
               )}
             </div>
             <div className="mt-2 rounded-2xl border border-zinc-200 p-3 dark:border-zinc-800">
-              <button
-                type="button"
-                onClick={() => setAboutOpen((open) => !open)}
-                aria-expanded={aboutOpen}
-                className="flex w-full items-center justify-between px-2 py-1 text-left text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400"
-              >
-                আমাদের সম্পর্কে
-                <span aria-hidden="true">{aboutOpen ? "⌃" : "⌄"}</span>
-              </button>
+              <div className="flex items-center justify-between gap-2">
+                <Link
+                  href="/about"
+                  onClick={closeMenu}
+                  className="px-2 py-1 text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400"
+                >
+                  আমাদের সম্পর্কে <span className="ml-1.5 text-zinc-400">About</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setAboutOpen((open) => !open)}
+                  aria-label={aboutOpen ? "Hide about sections" : "Show about sections"}
+                  aria-expanded={aboutOpen}
+                  className="grid size-8 shrink-0 place-items-center rounded-lg text-emerald-600 hover:bg-zinc-100 dark:text-emerald-400 dark:hover:bg-zinc-800"
+                >
+                  <span aria-hidden="true">{aboutOpen ? "⌃" : "⌄"}</span>
+                </button>
+              </div>
               {aboutOpen && (
                 <nav aria-label="About page sections" className="mt-1 grid gap-1">
                   {aboutSections.map((section) => (

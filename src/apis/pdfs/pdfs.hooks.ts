@@ -2,8 +2,19 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { pdfsApi, type CreatePdfPayload } from "./pdfs.api";
+import type { PdfCatalogFilters } from "./pdfs.api";
 
 export const pdfsQueryKey = ["pdfs"] as const;
+
+export const usePdfCatalog = (filters: PdfCatalogFilters) => {
+  return useQuery({
+    queryKey: [...pdfsQueryKey, "catalog", filters],
+    queryFn: () => pdfsApi.getPdfCatalog(filters),
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+};
 
 export const usePdfs = (topicId: string) => {
   return useQuery({

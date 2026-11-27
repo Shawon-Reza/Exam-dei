@@ -13,6 +13,30 @@ export type PdfApiItem = {
   subjectId: string;
 };
 
+export type PdfCatalogItem = PdfApiItem & {
+  title: string;
+  topicName: string;
+  subjectName: string;
+};
+
+export type PdfCatalogFilters = {
+  search: string;
+  subjectId: string;
+  page: number;
+  limit: number;
+};
+
+export type PdfCatalogResponse = {
+  pdfs: PdfCatalogItem[];
+  subjects: Array<{ id: string; name: string }>;
+  pagination: {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+  };
+};
+
 type PdfsResponse = {
   data?: {
     result?: PdfApiItem[];
@@ -22,6 +46,10 @@ type PdfsResponse = {
 
 type PdfResponse = {
   data?: PdfApiItem;
+};
+
+type PdfCatalogApiResponse = {
+  data?: PdfCatalogResponse;
 };
 
 export type CreatePdfPayload = {
@@ -40,6 +68,21 @@ async function getPdfs(topicId: string): Promise<PdfApiItem[]> {
   return response.data.data?.result ?? [];
 }
 
+async function getPdfCatalog(
+  filters: PdfCatalogFilters,
+): Promise<PdfCatalogResponse> {
+  const response = await axiosApi.get<PdfCatalogApiResponse>(
+    "/api/v1/pdfs/catalog",
+    { params: filters },
+  );
+
+  if (!response.data.data) {
+    throw new Error("PDF catalog response did not include the catalog.");
+  }
+
+  return response.data.data;
+}
+
 async function createPdf(payload: CreatePdfPayload): Promise<PdfApiItem> {
   const response = await axiosApi.post<PdfResponse>("/api/v1/pdfs/", payload);
 
@@ -56,6 +99,7 @@ async function deletePdf(pdfId: string): Promise<void> {
 
 export const pdfsApi = {
   getPdfs,
+  getPdfCatalog,
   createPdf,
   deletePdf,
 };

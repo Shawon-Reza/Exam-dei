@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { notesApi, type NotePayload } from "./notes.api";
+import { notesApi } from "./notes.api";
 
 export const useCreateNote = () => {
   const queryClient = useQueryClient();
