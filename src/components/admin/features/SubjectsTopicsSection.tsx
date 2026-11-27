@@ -277,7 +277,7 @@ export default function SubjectsTopicsSection({
   async function removeSubject(subject: AdminSubject) {
     const result = await Swal.fire({
       title: "আপনি কি নিশ্চিত?",
-      text: `“${subject.label}” বিষয়টি মুছে ফেললে এর topic-ও মুছে যাবে।`,
+      text: `“${subject.label}” বিষয়ের অধীনে topic থাকলে বিষয়টি মুছে ফেলা যাবে না। আগে সব topic মুছে ফেলুন।`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",

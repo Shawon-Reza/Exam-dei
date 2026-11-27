@@ -9,6 +9,7 @@ import SiteChrome from "../components/layouts/SiteChrome";
 import { siteUrl } from "../lib/site-config";
 import { QueryProvider } from "../lib/query-provider";
 import { Toaster } from "../components/ui/toast";
+import NavbarLoading from "../components/layouts/NavbarLoading";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -126,7 +127,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Suspense fallback={<div className="min-h-screen" aria-hidden="true" />}>
               <SiteChrome
                 navbar={
-                  <Suspense fallback={<div className="min-h-[72px]" aria-hidden="true" />}>
+                  <Suspense fallback={<NavbarLoading />}>
                     <AuthNavbar />
                   </Suspense>
                 }

@@ -81,7 +81,7 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
   const pathname = usePathname();
   const logoutMutation = useLogout();
 
-  const { data: user } = useAuth(initialUser);
+  const { data: user, isPending: isAuthPending } = useAuth(initialUser);
 
 
   const searchParams = useSearchParams();
@@ -90,7 +90,6 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
 
   // console.log("From Navbar:SearchParams:--------->", searchParams.toString());
   // console.log("From Navbar:Current URL:--------->", currentUrl);
-
   useEffect(() => {
     function updateActiveHash() {
       setActiveHash(window.location.hash);
@@ -428,7 +427,12 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
           <ModeToggle />
           <NotificationCenter />
 
-          {user ? (
+          {isAuthPending ? (
+            <span
+              aria-hidden="true"
+              className="size-9 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800"
+            />
+          ) : user ? (
             <div className="flex items-center justify-center">
               <button
                 type="button"
@@ -587,7 +591,12 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                 </nav>
               )}
             </div>
-            {user ? (
+            {isAuthPending ? (
+              <div
+                aria-hidden="true"
+                className="mt-2 h-11 w-full animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800"
+              />
+            ) : user ? (
               <button
                 type="button"
                 onClick={() => {
