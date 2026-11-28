@@ -336,7 +336,7 @@ export function RichTextEditor({
           <input
             type="color"
             aria-label="Text color"
-            defaultValue="#166534"
+            defaultValue="#475b78"
             onChange={(event) =>
               editor?.chain().focus().setColor(event.target.value).run()
             }

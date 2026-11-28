@@ -36,7 +36,7 @@ export default function GettingStartedSection() {
       </section>
 
       <section className="relative isolate overflow-hidden bg-emerald-600 py-14 text-white sm:py-16">
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.18),transparent_30%),radial-gradient(circle_at_85%_90%,rgba(6,78,59,0.25),transparent_35%)]" />
+        <div aria-hidden="true" className="palette-started-glow absolute inset-0 -z-10" />
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 md:grid-cols-[1fr_auto] lg:px-8">
           <div className="max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-100">Your next chapter starts today</p>

@@ -62,7 +62,7 @@ const ExamsDashboard = () => {
   const totalQuestions = subjects.reduce((total, subject) => total + (subject._count?.questions ?? 0), 0)
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#f5f9f7] py-5 dark:bg-zinc-950 sm:py-8">
+    <main className="relative min-h-screen overflow-hidden bg-zinc-50 py-5 dark:bg-zinc-950 sm:py-8">
       <div aria-hidden="true" className="pointer-events-none absolute -right-32 -top-32 size-[30rem] rounded-full bg-emerald-200/40 blur-3xl dark:bg-emerald-950/20" />
       <div aria-hidden="true" className="pointer-events-none absolute -left-40 top-[28rem] size-80 rounded-full bg-cyan-100/50 blur-3xl dark:bg-cyan-950/10" />
 

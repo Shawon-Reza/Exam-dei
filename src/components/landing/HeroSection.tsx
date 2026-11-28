@@ -24,7 +24,7 @@ export default function HeroSection() {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -left-40 top-0 size-[30rem] rounded-full bg-emerald-300/25 blur-3xl dark:bg-emerald-500/10" />
         <div className="absolute -right-40 top-20 size-[32rem] rounded-full bg-cyan-300/20 blur-3xl dark:bg-cyan-500/10" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(161,161,170,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(161,161,170,0.08)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent_80%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(123,127,138,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(123,127,138,0.1)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent_80%)]" />
       </div>
 
       <div className="mx-auto grid min-h-[680px] max-w-7xl items-center gap-14 px-4  sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 ">

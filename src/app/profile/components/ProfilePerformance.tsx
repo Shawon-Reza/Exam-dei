@@ -11,7 +11,7 @@ export default function ProfilePerformance({ summary }: { summary: TestSummary }
   const [isVisible, setIsVisible] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
   const chartData = [
-    { name: "সঠিক", value: summary.correctAnswers, color: "#10b981" },
+    { name: "সঠিক", value: summary.correctAnswers, color: "#6B7C98" },
     { name: "ভুল", value: summary.incorrectAnswers, color: "#f43f5e" },
     { name: "এড়িয়ে গেছেন", value: summary.skippedAnswers, color: "#f59e0b" },
   ];

@@ -28,6 +28,7 @@ import logo from "@/src/app/icon.jpg";
 import ProfileDrawer from "./ProfileDrawer";
 import NotificationCenter from "./NotificationCenter";
 import { aboutSections } from "@/src/components/about/about-data";
+import { usePdfCatalog } from "@/src/apis/pdfs/pdfs.hooks";
 
 const navigationLinks = [
   { label: "ফিচার", englishLabel: "Features", href: "/#features" },
@@ -35,14 +36,6 @@ const navigationLinks = [
   { label: "পরীক্ষা", englishLabel: "Exams", href: "/exams" },
   // { label: "ব্লগ", englishLabel: "Blog", href: "/blogs" },
   // { label: "প্রশ্ন ব্যাংক", englishLabel: "Question Bank", href: "/question-bank" },
-];
-
-const noteLinks = [
-  { label: "বাংলা", englishLabel: "Bangla", href: "/notes/bangla" },
-  { label: "ইংরেজি", englishLabel: "English", href: "/notes/english" },
-  { label: "সাধারণ জ্ঞান", englishLabel: "General Knowledge", href: "/notes/gk" },
-  { label: "গণিত", englishLabel: "Math", href: "/notes/math" },
-  { label: "ICT", englishLabel: "ICT", href: "/notes/ict" },
 ];
 
 const resourceLinks = [
@@ -82,6 +75,14 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
   const logoutMutation = useLogout();
 
   const { data: user, isPending: isAuthPending } = useAuth(initialUser);
+  const {
+    data: pdfCatalog,
+    isPending: isPdfCatalogPending,
+    isError: isPdfCatalogError,
+  } = usePdfCatalog(
+    { search: "", subjectId: "", page: 1, limit: 12 },
+    resourcesOpen,
+  );
 
 
   const searchParams = useSearchParams();
@@ -244,11 +245,11 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                 aria-label="শিক্ষা উপকরণ"
                 className="absolute right-0 top-full z-[110] w-[min(700px,calc(100vw-2rem))] pt-3"
               >
-                <div className="relative overflow-hidden rounded-[1.9rem] border border-white/80 bg-[#fbfcf9]/95 p-2.5 shadow-[0_28px_80px_-24px_rgba(20,45,38,0.48)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#17201c]/95 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.82)]">
+                <div className="resource-menu-surface relative overflow-hidden rounded-[1.9rem] border border-white/80 p-2.5 shadow-[0_28px_80px_-24px_rgba(20,45,38,0.48)] backdrop-blur-2xl dark:border-white/[0.08] dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.82)]">
                   <div className="pointer-events-none absolute -right-24 -top-24 size-56 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-700/10" />
                   <div className="pointer-events-none absolute left-[14.5rem] top-0 h-px w-40 bg-gradient-to-r from-transparent via-amber-300/70 to-transparent" />
                   <div className="relative grid gap-2 sm:grid-cols-[205px_minmax(0,1fr)]">
-                    <div className="relative flex min-h-[252px] flex-col overflow-hidden rounded-[1.45rem] bg-[linear-gradient(145deg,#173e34_0%,#102d27_100%)] p-4 text-white">
+                    <div className="resource-menu-brand-panel relative flex min-h-[252px] flex-col overflow-hidden rounded-[1.45rem] p-4 text-white">
                       <div className="pointer-events-none absolute -right-14 -top-14 size-36 rounded-full border-[20px] border-white/[0.045]" />
                       <div className="pointer-events-none absolute bottom-14 right-4 size-24 rounded-full border border-amber-200/10" />
                       <div className="pointer-events-none absolute bottom-10 right-8 size-16 rounded-full border border-emerald-200/10" />
@@ -263,7 +264,7 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                           পূর্ণ সংগ্রহ
                         </h2>
                         <p className="mt-2.5 text-[11px] leading-5 text-emerald-50/65">
-                          নোট, প্রশ্ন ব্যাংক ও নির্বাচিত গাইড এক জায়গায়।
+                          বিষয়ভিত্তিক PDF, প্রশ্ন ব্যাংক ও নির্বাচিত গাইড এক জায়গায়।
                         </p>
                       </div>
                       <div className="relative mt-auto">
@@ -272,7 +273,7 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                             key={href}
                             href={href}
                             onClick={closeMenu}
-                            className="mt-1.5 flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.06] px-2.5 py-2 text-[10px] font-bold text-white transition duration-300 hover:border-amber-100/20 hover:bg-[#f8f5ea] hover:text-[#15382f]"
+                            className="resource-menu-shortcut mt-1.5 flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.06] px-2.5 py-2 text-[10px] font-bold text-white transition duration-300 hover:border-amber-100/20"
                           >
                             <Icon aria-hidden="true" className="size-3.5" />
                             <span className="truncate">{title}</span>
@@ -282,29 +283,43 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                       </div>
                     </div>
                     <nav
-                      aria-label="Subject notes"
+                      aria-label="PDF subjects"
                       className="grid max-h-[min(60vh,252px)] content-start gap-1.5 overflow-y-auto p-0.5 sm:grid-cols-2"
                     >
                       <div className="col-span-full flex items-end justify-between px-1 pb-0.5">
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-600 dark:text-emerald-400">Subject notes</p>
-                          <h3 className="mt-0.5 text-sm font-black text-zinc-900 dark:text-white">বিষয়ভিত্তিক নোট</h3>
+                          <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-600 dark:text-emerald-400">PDF subjects</p>
+                          <h3 className="mt-0.5 text-sm font-black text-zinc-900 dark:text-white">বিষয়ভিত্তিক PDF</h3>
                         </div>
-                        <p className="text-[9px] font-bold tabular-nums text-zinc-400">{String(noteLinks.length).padStart(2, "0")} বিষয়</p>
+                        <p className="text-[9px] font-bold tabular-nums text-zinc-400">
+                          {pdfCatalog
+                            ? `${String(pdfCatalog.subjects.length).padStart(2, "0")} বিষয়`
+                            : ""}
+                        </p>
                       </div>
-                      {noteLinks.map((note, index) => (
+                      {isPdfCatalogPending && (
+                        <p className="col-span-full px-2 py-4 text-xs text-zinc-500 dark:text-zinc-400">
+                          বিষয়গুলো লোড হচ্ছে...
+                        </p>
+                      )}
+                      {isPdfCatalogError && (
+                        <p className="col-span-full px-2 py-4 text-xs text-rose-600 dark:text-rose-300">
+                          বিষয়গুলো লোড করা যায়নি।
+                        </p>
+                      )}
+                      {pdfCatalog?.subjects.map((subject, index) => (
                         <Link
-                          key={note.href}
-                          href={note.href}
+                          key={subject.id}
+                          href={`/resources?subjectId=${encodeURIComponent(subject.id)}#available-pdfs`}
                           onClick={closeMenu}
-                          className="group relative flex min-h-[76px] min-w-0 items-center gap-3 overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-2.5 transition duration-300 hover:-translate-y-0.5 hover:border-emerald-200/90 hover:bg-emerald-50/70 hover:shadow-[0_14px_30px_-18px_rgba(6,78,59,0.45)] dark:border-white/[0.07] dark:bg-white/[0.025] dark:hover:border-emerald-700/40 dark:hover:bg-emerald-950/30"
+                          className="resource-menu-subject group relative flex min-h-[76px] min-w-0 items-center gap-3 overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-2.5 transition duration-300 hover:-translate-y-0.5 hover:border-emerald-200/90 hover:bg-emerald-50/70 dark:border-white/[0.07] dark:bg-white/[0.025] dark:hover:border-emerald-700/40 dark:hover:bg-emerald-950/30"
                         >
                           <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-emerald-100/80 bg-emerald-50 text-emerald-700 shadow-sm transition duration-300 group-hover:rotate-3 group-hover:border-emerald-500 group-hover:bg-emerald-500 group-hover:text-white group-hover:shadow-emerald-500/20 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300 dark:group-hover:border-emerald-500 dark:group-hover:bg-emerald-500 dark:group-hover:text-white">
                             <FiFileText aria-hidden="true" className="size-4" />
                           </span>
                           <span className="min-w-0">
-                            <span className="block truncate text-xs font-bold text-zinc-800 dark:text-zinc-100">{note.label}</span>
-                            <span className="mt-1 block truncate text-[10px] leading-4 text-zinc-500 dark:text-zinc-400">{note.englishLabel}</span>
+                            <span className="block truncate text-xs font-bold text-zinc-800 dark:text-zinc-100">{subject.name}</span>
+                            <span className="mt-1 block truncate text-[10px] leading-4 text-zinc-500 dark:text-zinc-400">PDF সংগ্রহ</span>
                           </span>
                           <span className="absolute bottom-1.5 right-2.5 text-[8px] font-bold tabular-nums tracking-widest text-zinc-300 transition-colors group-hover:text-emerald-300 dark:text-white/15 dark:group-hover:text-emerald-300/70">
                             {String(index + 1).padStart(2, "0")}
@@ -348,11 +363,11 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                 aria-label="About Chakriova sections"
                 className="absolute right-0 top-full z-[110] w-[min(700px,calc(100vw-2rem))] pt-3"
               >
-                <div className="relative overflow-hidden rounded-[1.9rem] border border-white/80 bg-[#fbfcf9]/95 p-2.5 shadow-[0_28px_80px_-24px_rgba(20,45,38,0.48)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#17201c]/95 dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.82)]">
+                <div className="resource-menu-surface relative overflow-hidden rounded-[1.9rem] border border-white/80 p-2.5 shadow-[0_28px_80px_-24px_rgba(20,45,38,0.48)] backdrop-blur-2xl dark:border-white/[0.08] dark:shadow-[0_28px_80px_-24px_rgba(0,0,0,0.82)]">
                   <div className="pointer-events-none absolute -right-24 -top-24 size-56 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-700/10" />
                   <div className="pointer-events-none absolute left-[14.5rem] top-0 h-px w-40 bg-gradient-to-r from-transparent via-amber-300/70 to-transparent" />
                   <div className="relative grid gap-2 sm:grid-cols-[205px_minmax(0,1fr)]">
-                    <div className="relative flex min-h-[252px] flex-col overflow-hidden rounded-[1.45rem] bg-[linear-gradient(145deg,#173e34_0%,#102d27_100%)] p-4 text-white">
+                    <div className="resource-menu-brand-panel relative flex min-h-[252px] flex-col overflow-hidden rounded-[1.45rem] p-4 text-white">
                       <div className="pointer-events-none absolute -right-14 -top-14 size-36 rounded-full border-[20px] border-white/[0.045]" />
                       <div className="pointer-events-none absolute bottom-14 right-4 size-24 rounded-full border border-amber-200/10" />
                       <div className="pointer-events-none absolute bottom-10 right-8 size-16 rounded-full border border-emerald-200/10" />
@@ -373,7 +388,7 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                       <Link
                         href="/about"
                         onClick={closeMenu}
-                        className="relative mt-auto inline-flex w-fit items-center gap-2 rounded-full border border-amber-100/20 bg-[#f8f5ea] px-3.5 py-2 text-[10px] font-bold text-[#15382f] shadow-lg shadow-black/10 transition duration-300 hover:-translate-y-0.5 hover:bg-white"
+                        className="resource-menu-cta relative mt-auto inline-flex w-fit items-center gap-2 rounded-full border border-amber-100/20 px-3.5 py-2 text-[10px] font-bold shadow-lg shadow-black/10 transition duration-300 hover:-translate-y-0.5 hover:bg-white"
                       >
                         পুরো গল্প পড়ুন
                         <FiArrowUpRight aria-hidden="true" className="size-3.5" />
@@ -390,7 +405,7 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                           key={section.id}
                           href={`/about#${section.id}`}
                           onClick={closeMenu}
-                          className="group relative flex min-h-[76px] min-w-0 items-center gap-3 overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-2.5 transition duration-300 hover:-translate-y-0.5 hover:border-emerald-200/90 hover:bg-emerald-50/70 hover:shadow-[0_14px_30px_-18px_rgba(6,78,59,0.45)] dark:border-white/[0.07] dark:bg-white/[0.025] dark:hover:border-emerald-700/40 dark:hover:bg-emerald-950/30"
+                          className="resource-menu-subject group relative flex min-h-[76px] min-w-0 items-center gap-3 overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/70 px-3 py-2.5 transition duration-300 hover:-translate-y-0.5 hover:border-emerald-200/90 hover:bg-emerald-50/70 dark:border-white/[0.07] dark:bg-white/[0.025] dark:hover:border-emerald-700/40 dark:hover:bg-emerald-950/30"
                         >
                           <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-emerald-100/80 bg-emerald-50 text-emerald-700 shadow-sm transition duration-300 group-hover:rotate-3 group-hover:border-emerald-500 group-hover:bg-emerald-500 group-hover:text-white group-hover:shadow-emerald-500/20 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300 dark:group-hover:border-emerald-500 dark:group-hover:bg-emerald-500 dark:group-hover:text-white">
                             <Icon aria-hidden="true" className="size-4" />
@@ -553,16 +568,26 @@ export default function Navbar({ initialUser }: { initialUser: CurrentUser | nul
                       <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{description}</span>
                     </Link>
                   ))}
-                  <p className="px-2 pt-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400">নোটের বিষয়</p>
+                  <p className="px-2 pt-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400">PDF-এর বিষয়</p>
                   <div className="mt-1 grid grid-cols-2 gap-1">
-                    {noteLinks.map((note) => (
+                    {isPdfCatalogPending && (
+                      <p className="col-span-2 px-2 py-3 text-xs text-zinc-500 dark:text-zinc-400">
+                        বিষয়গুলো লোড হচ্ছে...
+                      </p>
+                    )}
+                    {isPdfCatalogError && (
+                      <p className="col-span-2 px-2 py-3 text-xs text-rose-600 dark:text-rose-300">
+                        বিষয়গুলো লোড করা যায়নি।
+                      </p>
+                    )}
+                    {pdfCatalog?.subjects.map((subject) => (
                       <Link
-                        key={note.href}
-                        href={note.href}
+                        key={subject.id}
+                        href={`/resources?subjectId=${encodeURIComponent(subject.id)}#available-pdfs`}
                         onClick={closeMenu}
                         className="rounded-lg px-2 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
                       >
-                        {note.label}
+                        {subject.name}
                       </Link>
                     ))}
                   </div>

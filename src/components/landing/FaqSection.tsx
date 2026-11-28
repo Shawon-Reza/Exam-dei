@@ -38,7 +38,7 @@ export function FinalCtaSection() {
   return (
     <section id="get-started" className="scroll-mt-24 bg-zinc-50 px-4 py-14 dark:bg-zinc-950 sm:px-6 sm:py-20">
       <div className="relative isolate mx-auto max-w-5xl overflow-hidden rounded-[2rem] bg-zinc-950 px-6 py-12 text-center text-white dark:bg-emerald-950 sm:px-12 sm:py-16">
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.4),transparent_60%)]" />
+        <div aria-hidden="true" className="palette-faq-glow absolute inset-0 -z-10" />
         <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-emerald-400/15 text-emerald-300">
           <FiCheckCircle aria-hidden="true" className="size-7" />
         </span>

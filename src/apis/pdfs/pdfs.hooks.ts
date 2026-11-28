@@ -6,10 +6,14 @@ import type { PdfCatalogFilters } from "./pdfs.api";
 
 export const pdfsQueryKey = ["pdfs"] as const;
 
-export const usePdfCatalog = (filters: PdfCatalogFilters) => {
+export const usePdfCatalog = (
+  filters: PdfCatalogFilters,
+  enabled = true,
+) => {
   return useQuery({
     queryKey: [...pdfsQueryKey, "catalog", filters],
     queryFn: () => pdfsApi.getPdfCatalog(filters),
+    enabled,
     staleTime: 60 * 1000,
     gcTime: 5 * 60 * 1000,
     retry: 1,

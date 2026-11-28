@@ -17,7 +17,7 @@ export default function ProfileHero({ profile }: { profile: UserProfile }) {
   const accuracy = Math.round(profile.testSummary.averageAccuracy);
 
   return (
-    <section className="group relative overflow-hidden rounded-[2rem] bg-[#102c28] text-white shadow-xl shadow-emerald-950/10 transition duration-500 hover:shadow-2xl hover:shadow-emerald-950/20">
+    <section className="profile-hero-background group relative overflow-hidden rounded-[2rem] text-white shadow-xl shadow-emerald-950/10 transition duration-500 hover:shadow-2xl hover:shadow-emerald-950/20">
       <div className="absolute -right-20 -top-32 size-96 rounded-full border-[3rem] border-emerald-300/10" />
       <div className="absolute bottom-0 right-1/3 size-48 rounded-full bg-cyan-400/10 blur-3xl" />
       <div className="relative grid gap-8 p-5 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
@@ -31,7 +31,7 @@ export default function ProfileHero({ profile }: { profile: UserProfile }) {
               className="size-24 rounded-[1.75rem] border-4 border-white/20 object-cover shadow-2xl sm:size-28"
             />
             {profile.emailVerified && (
-              <span className="absolute -bottom-2 -right-2 grid size-8 place-items-center rounded-full border-4 border-[#102c28] bg-emerald-400 text-[#102c28]" title="Verified email">
+              <span className="profile-hero-foreground absolute -bottom-2 -right-2 grid size-8 place-items-center rounded-full border-4 bg-emerald-400" title="Verified email">
                 <FiCheck aria-hidden="true" className="size-3.5" />
               </span>
             )}
@@ -51,8 +51,8 @@ export default function ProfileHero({ profile }: { profile: UserProfile }) {
           </div>
         </div>
         <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.07] p-4 sm:min-w-64">
-          <div className="relative grid size-20 shrink-0 place-items-center rounded-full" style={{ background: `conic-gradient(#6ee7b7 ${accuracy}%, rgba(255,255,255,.12) ${accuracy}% 100%)` }}>
-            <div className="grid size-[4.25rem] place-items-center rounded-full bg-[#102c28]">
+          <div className="relative grid size-20 shrink-0 place-items-center rounded-full" style={{ background: `conic-gradient(var(--palette-blue) ${accuracy}%, rgba(255,255,255,.12) ${accuracy}% 100%)` }}>
+            <div className="profile-hero-background grid size-[4.25rem] place-items-center rounded-full">
               <span className="text-xl font-black">{accuracy}%</span>
             </div>
           </div>

@@ -33,7 +33,7 @@ export default function ProfilePageContent() {
   const profile = profileQuery.data.data;
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden bg-[#f6f8f7] pb-12 pt-6 dark:bg-zinc-950 sm:pb-16 sm:pt-10">
+    <main className="relative isolate min-h-screen overflow-hidden bg-zinc-50 pb-12 pt-6 dark:bg-zinc-950 sm:pb-16 sm:pt-10">
       <div className="pointer-events-none absolute -top-40 right-0 -z-10 size-[30rem] rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-500/10" />
       <div className="relative mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
         <header className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">

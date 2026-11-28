@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   FiArrowLeft,
   FiArrowRight,
@@ -13,10 +14,32 @@ import { usePdfCatalog } from "@/src/apis/pdfs/pdfs.hooks";
 const PAGE_SIZE = 12;
 
 export default function ResourcesPdfsBrowser() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const routeSubjectId = searchParams.get("subjectId") ?? "";
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const [subjectId, setSubjectId] = useState("");
-  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    subjectId: routeSubjectId,
+    page: 1,
+  });
+  const subjectId = routeSubjectId;
+  const page =
+    pagination.subjectId === subjectId ? pagination.page : 1;
+  const setPage = (nextPage: number | ((currentPage: number) => number)) => {
+    setPagination((current) => {
+      const currentPage =
+        current.subjectId === subjectId ? current.page : 1;
+      return {
+        subjectId,
+        page:
+          typeof nextPage === "function"
+            ? nextPage(currentPage)
+            : nextPage,
+      };
+    });
+  };
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => setSearch(searchInput.trim()), 250);
@@ -32,7 +55,11 @@ export default function ResourcesPdfsBrowser() {
   const catalog = catalogQuery.data;
 
   return (
-    <section aria-labelledby="available-pdfs-heading" className="mt-10">
+    <section
+      id="available-pdfs"
+      aria-labelledby="available-pdfs-heading"
+      className="mt-10 scroll-mt-24"
+    >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600 dark:text-emerald-400">
@@ -60,7 +87,18 @@ export default function ResourcesPdfsBrowser() {
           id="pdf-subject-filter"
           value={subjectId}
           onChange={(event) => {
-            setSubjectId(event.target.value);
+            const params = new URLSearchParams(searchParams.toString());
+            const nextSubjectId = event.target.value;
+            if (nextSubjectId) {
+              params.set("subjectId", nextSubjectId);
+            } else {
+              params.delete("subjectId");
+            }
+            const queryString = params.toString();
+            router.replace(
+              `${pathname}${queryString ? `?${queryString}` : ""}#available-pdfs`,
+              { scroll: false },
+            );
             setPage(1);
           }}
           disabled={!catalog}

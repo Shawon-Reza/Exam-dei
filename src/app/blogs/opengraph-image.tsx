@@ -14,7 +14,7 @@ export default function BlogOpenGraphImage() {
         style={{
           alignItems: "center",
           background:
-            "linear-gradient(135deg, #064e3b 0%, #047857 52%, #0e7490 100%)",
+            "linear-gradient(135deg, #5e5653 0%, #586b88 52%, #ab978c 100%)",
           color: "white",
           display: "flex",
           height: "100%",
@@ -34,13 +34,13 @@ export default function BlogOpenGraphImage() {
             width: "100%",
           }}
         >
-          <div style={{ color: "#a7f3d0", fontSize: 28, fontWeight: 700 }}>
+          <div style={{ color: "#e9e6e7", fontSize: 28, fontWeight: 700 }}>
             CHAKRIOVA COMMUNITY
           </div>
           <div style={{ fontSize: 68, fontWeight: 800, lineHeight: 1.1 }}>
             Community Blog Feed
           </div>
-          <div style={{ color: "#d1fae5", fontSize: 30 }}>
+          <div style={{ color: "#e9e6e7", fontSize: 30 }}>
             Share knowledge, preparation tips, and career experiences.
           </div>
         </div>

@@ -55,7 +55,7 @@ export default function AdminShell({
       <div className="flex min-h-screen">
         <aside className={`fixed inset-y-0 left-0 z-40 flex h-screen max-h-screen w-64 flex-col border-r border-zinc-200 bg-white transition-transform dark:border-zinc-800 dark:bg-zinc-900 lg:sticky lg:top-0 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
           <Link href="/admin" className="flex h-[72px] items-center gap-3 border-b border-zinc-100 px-6 dark:border-[#576E67]">
-            <span className="grid size-10 place-items-center rounded-xl bg-[#576E67] text-white shadow-lg shadow-[#292D1F]/20"><FiActivity aria-hidden="true" size={20} /></span>
+            <span className="admin-brand-accent grid size-10 place-items-center rounded-xl text-white shadow-lg shadow-[#292D1F]/20"><FiActivity aria-hidden="true" size={20} /></span>
             <span><span className="block text-base font-extrabold tracking-tight">Chakriova</span><span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400">Admin console</span></span>
           </Link>
           <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-6">
@@ -65,7 +65,7 @@ export default function AdminShell({
             </nav>
           </div>
           <div className="mt-auto border-t border-zinc-100 p-4 dark:border-zinc-800">
-            <div className="flex items-center gap-3 rounded-xl bg-zinc-50 p-3 dark:bg-[#455045]"><div className="grid size-9 place-items-center rounded-full bg-[#607873] text-xs font-extrabold text-white">SA</div><div className="min-w-0 flex-1"><p className="truncate text-xs font-bold">Shawon Admin</p><p className="truncate text-[10px] text-zinc-500 dark:text-[#afbeb5]">Super administrator</p></div><FiChevronDown aria-hidden="true" className="text-zinc-400" /></div>
+            <div className="flex items-center gap-3 rounded-xl bg-zinc-50 p-3 dark:bg-[#455045]"><div className="admin-brand-accent grid size-9 place-items-center rounded-full text-xs font-extrabold text-white">SA</div><div className="min-w-0 flex-1"><p className="truncate text-xs font-bold">Shawon Admin</p><p className="truncate text-[10px] text-zinc-500 dark:text-[#afbeb5]">Super administrator</p></div><FiChevronDown aria-hidden="true" className="text-zinc-400" /></div>
             <Link href="/" className="mt-2 flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-semibold text-zinc-500 transition hover:bg-zinc-50 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-white"><FiLogOut aria-hidden="true" />সাইটে ফিরে যান</Link>
           </div>
         </aside>

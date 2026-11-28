@@ -34,7 +34,7 @@ export default function ResourcesPage() {
   return (
     <main className="min-h-screen bg-zinc-50 py-8 dark:bg-zinc-950 sm:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <header className="relative overflow-hidden rounded-[2rem] border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-amber-50 p-6 dark:border-emerald-950 dark:from-emerald-950/50 dark:via-zinc-900 dark:to-zinc-900 sm:p-10 lg:p-14">
+        <header className="relative overflow-hidden rounded-[2rem] border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-stone-50 p-6 dark:border-emerald-950 dark:from-emerald-950/50 dark:via-zinc-900 dark:to-zinc-900 sm:p-10 lg:p-14">
           <div className="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-500/10" />
           <div className="relative max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:border-emerald-900 dark:bg-zinc-900/80 dark:text-emerald-300">
